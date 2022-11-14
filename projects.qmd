@@ -1,0 +1,14 @@
+---
+title: "projects"
+---   
+
+- sfdep
+- spdep
+- genius (RIP)
+- Urban Informatics Toolkit
+- Music Information Retrieval in R (mirrr)
+- R for Progressive Campaigns
+
+
+### Open source contributions
+

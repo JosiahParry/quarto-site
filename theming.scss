@@ -1,0 +1,10 @@
+/*-- scss:defaults --*/
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans');
+
+$font-family-serif: "Noto Serif","Segoe UI","Helvetica Neue",Helvetica,Roboto,FreeSans,serif;
+$font-family-sans-serif: "Noto Sans","Segoe UI","Helvetica Neue",Helvetica,Roboto,FreeSans,sans-serif;
+
+p {
+  font-family: $font-family-sans-serif;
+}

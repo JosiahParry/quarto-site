@@ -1,0 +1,15 @@
+---
+title: Creating my quarto blog
+---
+
+more stuff 
+
+This really feels a lot more like the general programming exerpeicen I've gotten in every language that isn't R.
+
+The documentation is thin. The Google brain hasn't yet propagated the best blog posts to the top, yet. 
+
+The github discussions use the words "just" and "simply" quite a bit as if it's easy and simple. Like you should have _just_ known to do that. It's so obvious, clearly! 
+
+https://github.com/quarto-dev/quarto-cli/discussions/2949#discussioncomment-3924396
+
+https://github.com/quarto-dev/quarto-cli/discussions/2389#discussioncomment-3613262

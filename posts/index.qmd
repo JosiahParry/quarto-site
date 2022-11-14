@@ -1,0 +1,6 @@
+---
+title: recent posts
+listing:
+  contents: ./
+  type: default
+---

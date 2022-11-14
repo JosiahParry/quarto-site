@@ -1,0 +1,11 @@
+# Options specified here will apply to all posts in this folder
+# freeze computational output
+freeze: true
+
+
+# Author name of all blog posts
+author: "Josiah Parry"
+
+# Table of content settings
+toc: true
+toc-depth: 3
