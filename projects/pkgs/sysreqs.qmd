@@ -1,0 +1,11 @@
+---
+title: "R package system requirements"
+tags: [package]
+---
+
+- [{{< fa brands github >}} GitHub repo](https://github.com/JosiahParry/r-sysreqs)
+- [Related blog post](/posts/2022-04-05-an-open-system-requirements-database.html)
+
+The goal of sysreqs is to make it easy to identify R package system dependencies. There are two components to this package: an "API" and a wrapper package.
+
+This API and package is based on rstudio/r-system-requirements and the API client for RStudio Package Manager. The functionality is inspired by pak::pkg_system_requirements().

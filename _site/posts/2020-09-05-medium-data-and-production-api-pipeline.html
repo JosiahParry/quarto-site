@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2020-09-05">
+
+<title>Josiah Parry - Medium Data and Production API Pipeline</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - Medium Data and Production API Pipeline">
+<meta name="twitter:description" content="Compress your JSON with gzip to increase API speed and reduce memory utilization in R">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Medium Data and Production API Pipeline</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#context" id="toc-context" class="nav-link" data-scroll-target="#context">Context</a></li>
+  <li><a href="#standard-approach" id="toc-standard-approach" class="nav-link" data-scroll-target="#standard-approach">Standard approach</a></li>
+  <li><a href="#alternative-approach" id="toc-alternative-approach" class="nav-link" data-scroll-target="#alternative-approach">Alternative approach</a>
+  <ul class="collapse">
+  <li><a href="#posting-a-file" id="toc-posting-a-file" class="nav-link" data-scroll-target="#posting-a-file">POSTing a file</a></li>
+  <li><a href="#comparing-r-object-to-gzip" id="toc-comparing-r-object-to-gzip" class="nav-link" data-scroll-target="#comparing-r-object-to-gzip">Comparing R object to gzip</a></li>
+  </ul></li>
+  <li><a href="#benchmarking" id="toc-benchmarking" class="nav-link" data-scroll-target="#benchmarking">Benchmarking</a>
+  <ul class="collapse">
+  <li><a href="#making-it-functional" id="toc-making-it-functional" class="nav-link" data-scroll-target="#making-it-functional">Making it functional</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Medium Data and Production API Pipeline</h1>
+<p class="subtitle lead">Compress your JSON with gzip to increase API speed and reduce memory utilization in R</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">production</div>
+    <div class="quarto-category">api</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 5, 2020</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="page-columns page-full"><p>“[P]arsing huge json strings is difficult and inefficient.”<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> If you have an API that needs to receive a large amount of json, sending that over will be slow.</p><div class="no-row-height column-margin column-container"><li id="fn1"><p><sup>1</sup>&nbsp;<a href="https://www.opencpu.org/posts/jsonlite-streaming/" class="uri">https://www.opencpu.org/posts/jsonlite-streaming/</a></p></li></div></div>
+<p>Q: How can we improve that? A: Compression.</p>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>An API is an application programming interface. APIs are how machines talk to other machines. APIs are useful because they are language agnostic meaning that the same API request from Python, or R, or JavaScript will work and return the same results. To send data to an API we use a POST request. The data that we send is usually required to be in json format.</p>
+</section>
+<section id="context" class="level2">
+<h2 class="anchored" data-anchor-id="context">Context</h2>
+<p><strong>Problem</strong>: With large data API POST requests can become extremely slow and take up a lot of storage space. This can cause a bottleneck.</p>
+<p><strong>Solution</strong>: Compress your data and send a file instead of sending plain text json.</p>
+</section>
+<section id="standard-approach" class="level2">
+<h2 class="anchored" data-anchor-id="standard-approach">Standard approach</h2>
+<p>Interacting with an API from R is usually done with the <code>{httr}</code> package. Imagine you want to send a dataframe to an API as json. We can do that by using the <a href="https://httr.r-lib.org/reference/POST.html"><code>httr::POST()</code></a>, providing a dataframe to the body, and encoding it to json by setting <code>encode = "json"</code>.</p>
+<p>First let’s load our libraries:</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://httr.r-lib.org/">httr</a></span><span class="o">)</span>          <span class="c"># interacts with apis</span>
+<span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://arxiv.org/abs/1403.2805">jsonlite</a></span><span class="o">)</span>      <span class="c"># works with json (for later)</span>
+<span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://github.com/hadley/nycflights13">nycflights13</a></span><span class="o">)</span>  <span class="c"># data for posting </span></code></pre>
+</div>
+<p>Next, let’s create a sample <a href="https://httr.r-lib.org/reference/POST.html"><code>POST()</code></a> request to illustrate how posting a dataframe as json works.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r">
+<span class="nv">b_url</span> <span class="o">&lt;-</span> <span class="s">"http://httpbin.org/post"</span> <span class="c"># an easy to work with sample API POST endpoint</span>
+
+<span class="nf"><a href="https://httr.r-lib.org/reference/POST.html">POST</a></span><span class="o">(</span>url <span class="o">=</span> <span class="nv">b_url</span>, 
+     body <span class="o">=</span> <span class="nf"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="o">(</span>x <span class="o">=</span> <span class="nv">cars</span><span class="o">)</span>,
+     encode <span class="o">=</span> <span class="s">"json"</span><span class="o">)</span>
+<span class="c">#&gt; Response [http://httpbin.org/post]</span>
+<span class="c">#&gt;   Date: 2022-11-14 22:14</span>
+<span class="c">#&gt;   Status: 200</span>
+<span class="c">#&gt;   Content-Type: application/json</span>
+<span class="c">#&gt;   Size: 4.81 kB</span>
+<span class="c">#&gt; {</span>
+<span class="c">#&gt;   "args": {}, </span>
+<span class="c">#&gt;   "data": "{\"x\":[{\"speed\":4,\"dist\":2},{\"speed\":4,\"dist\":10},{\"speed\":7,\"...</span>
+<span class="c">#&gt;   "files": {}, </span>
+<span class="c">#&gt;   "form": {}, </span>
+<span class="c">#&gt;   "headers": {</span>
+<span class="c">#&gt;     "Accept": "application/json, text/xml, application/xml, */*", </span>
+<span class="c">#&gt;     "Accept-Encoding": "deflate, gzip", </span>
+<span class="c">#&gt;     "Content-Length": "1150", </span>
+<span class="c">#&gt;     "Content-Type": "application/json", </span>
+<span class="c">#&gt; ...</span></code></pre>
+</div>
+</section>
+<section id="alternative-approach" class="level2">
+<h2 class="anchored" data-anchor-id="alternative-approach">Alternative approach</h2>
+<p>An alternative approach would be to write our dataframe as json to a compressed gzip file. The process will be to:</p>
+<ol type="1">
+<li>Create a temporary file which will store our compressed json.</li>
+<li>Create a gzip file connection to write the temporary file as a gzip.</li>
+<li>Upload the temporary file to the API.</li>
+<li>Remove the temporary file.</li>
+</ol>
+<p>Writing to a temporary gzipped file looks like:</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># create the tempfile </span>
+<span class="nv">tmp</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="o">(</span><span class="o">)</span>
+
+<span class="c"># create a gzfile connection (to enable writing gz)</span>
+<span class="nv">gz_tmp</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/connections.html">gzfile</a></span><span class="o">(</span><span class="nv">tmp</span><span class="o">)</span>
+
+<span class="c"># write json to the gz file connection</span>
+<span class="nf"><a href="https://rdrr.io/pkg/jsonlite/man/read_json.html">write_json</a></span><span class="o">(</span><span class="nv">cars</span>, <span class="nv">gz_tmp</span><span class="o">)</span>
+
+<span class="c"># close the gz file connection</span>
+<span class="nf"><a href="https://rdrr.io/r/base/connections.html">close</a></span><span class="o">(</span><span class="nv">gz_tmp</span><span class="o">)</span></code></pre>
+</div>
+<p>Let’s read the temp file to see what it contains.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># read the temp file for illustration </span>
+<span class="nf"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span><span class="o">(</span><span class="nv">tmp</span><span class="o">)</span>
+<span class="c">#&gt; [1] "[{\"speed\":4,\"dist\":2},{\"speed\":4,\"dist\":10},{\"speed\":7,\"dist\":4},{\"speed\":7,\"dist\":22},{\"speed\":8,\"dist\":16},{\"speed\":9,\"dist\":10},{\"speed\":10,\"dist\":18},{\"speed\":10,\"dist\":26},{\"speed\":10,\"dist\":34},{\"speed\":11,\"dist\":17},{\"speed\":11,\"dist\":28},{\"speed\":12,\"dist\":14},{\"speed\":12,\"dist\":20},{\"speed\":12,\"dist\":24},{\"speed\":12,\"dist\":28},{\"speed\":13,\"dist\":26},{\"speed\":13,\"dist\":34},{\"speed\":13,\"dist\":34},{\"speed\":13,\"dist\":46},{\"speed\":14,\"dist\":26},{\"speed\":14,\"dist\":36},{\"speed\":14,\"dist\":60},{\"speed\":14,\"dist\":80},{\"speed\":15,\"dist\":20},{\"speed\":15,\"dist\":26},{\"speed\":15,\"dist\":54},{\"speed\":16,\"dist\":32},{\"speed\":16,\"dist\":40},{\"speed\":17,\"dist\":32},{\"speed\":17,\"dist\":40},{\"speed\":17,\"dist\":50},{\"speed\":18,\"dist\":42},{\"speed\":18,\"dist\":56},{\"speed\":18,\"dist\":76},{\"speed\":18,\"dist\":84},{\"speed\":19,\"dist\":36},{\"speed\":19,\"dist\":46},{\"speed\":19,\"dist\":68},{\"speed\":20,\"dist\":32},{\"speed\":20,\"dist\":48},{\"speed\":20,\"dist\":52},{\"speed\":20,\"dist\":56},{\"speed\":20,\"dist\":64},{\"speed\":22,\"dist\":66},{\"speed\":23,\"dist\":54},{\"speed\":24,\"dist\":70},{\"speed\":24,\"dist\":92},{\"speed\":24,\"dist\":93},{\"speed\":24,\"dist\":120},{\"speed\":25,\"dist\":85}]"</span></code></pre>
+</div>
+<section id="posting-a-file" class="level3">
+<h3 class="anchored" data-anchor-id="posting-a-file">POSTing a file</h3>
+<p>To post a file we use the function <a href="https://httr.r-lib.org/reference/upload_file.html"><code>httr::upload_file()</code></a>. The argument we provide is the path, in this case the file path is stored in the <code>tmp</code> object.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://httr.r-lib.org/reference/POST.html">POST</a></span><span class="o">(</span><span class="nv">b_url</span>, body <span class="o">=</span> <span class="nf"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="o">(</span>x <span class="o">=</span> <span class="nf"><a href="https://httr.r-lib.org/reference/upload_file.html">upload_file</a></span><span class="o">(</span><span class="nv">tmp</span><span class="o">)</span><span class="o">)</span><span class="o">)</span>
+<span class="c">#&gt; Response [http://httpbin.org/post]</span>
+<span class="c">#&gt;   Date: 2022-11-14 22:14</span>
+<span class="c">#&gt;   Status: 200</span>
+<span class="c">#&gt;   Content-Type: application/json</span>
+<span class="c">#&gt;   Size: 874 B</span>
+<span class="c">#&gt; {</span>
+<span class="c">#&gt;   "args": {}, </span>
+<span class="c">#&gt;   "data": "", </span>
+<span class="c">#&gt;   "files": {</span>
+<span class="c">#&gt;     "x": "data:text/plain;base64,H4sIAAAAAAAAA4XSPQ6DMAwF4L3HyMyQ+C8JV6m6wdCtEt0q7t6p...</span>
+<span class="c">#&gt;   }, </span>
+<span class="c">#&gt;   "form": {}, </span>
+<span class="c">#&gt;   "headers": {</span>
+<span class="c">#&gt;     "Accept": "application/json, text/xml, application/xml, */*", </span>
+<span class="c">#&gt;     "Accept-Encoding": "deflate, gzip", </span>
+<span class="c">#&gt; ...</span></code></pre>
+</div>
+</section>
+<section id="comparing-r-object-to-gzip" class="level3">
+<h3 class="anchored" data-anchor-id="comparing-r-object-to-gzip">Comparing R object to gzip</h3>
+<p>Now, you may be asking, is this really that big of a difference? It actually is. If you’ll notice from the first response where we POSTed the <code>cars</code> dataframe the response size was 4.81kB. This response with the compressed file was only 870B. Thats a whole lot smaller.</p>
+<p>We can compare the object size to the file size for another look. The below is in bytes.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="o">(</span><span class="s">" cars: "</span>, <span class="nf"><a href="https://rdrr.io/r/utils/object.size.html">object.size</a></span><span class="o">(</span><span class="nv">cars</span><span class="o">)</span>, <span class="s">"\n"</span>,
+    <span class="s">"compressed cars: "</span>, <span class="nf"><a href="https://rdrr.io/r/base/file.info.html">file.size</a></span><span class="o">(</span><span class="nv">tmp</span><span class="o">)</span><span class="o">)</span>
+<span class="c">#&gt;  cars:  1648 </span>
+<span class="c">#&gt;  compressed cars:  210</span></code></pre>
+</div>
+</section>
+</section>
+<section id="benchmarking" class="level2">
+<h2 class="anchored" data-anchor-id="benchmarking">Benchmarking</h2>
+<p>Let’s extend this example to some larger datasets as well as benchmark the results. We’ll use data from <code>nycflights13</code>. In this example we’ll send two dataset to an API as the parameters <code>metadata</code> and <code>data</code>. Generally metadata is smaller than the data. So for this example we’ll send 1,000 rows as the metadata and 10,000 rows as the data. We’ll call on the <code>weather</code> and <code>flights</code> datasets from <code>nycflights13</code>.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">small_weather</span> <span class="o">&lt;-</span> <span class="nf">dplyr</span><span class="nf">::</span><span class="nf"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span><span class="o">(</span><span class="nv">weather</span>, <span class="m">1000</span><span class="o">)</span>
+<span class="nv">small_flights</span> <span class="o">&lt;-</span> <span class="nf">dplyr</span><span class="nf">::</span><span class="nf"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span><span class="o">(</span><span class="nv">flights</span>, <span class="m">10000</span><span class="o">)</span></code></pre>
+</div>
+<section id="making-it-functional" class="level3">
+<h3 class="anchored" data-anchor-id="making-it-functional">Making it functional</h3>
+<p>As always, I recommend making your repetitive tasks into functions. Here we will create two functions. One for posting the data as gzip files and the second as pure json. These will be labeled <code>post_gz()</code> and <code>post_json()</code> respectively.</p>
+<p>These functions will take two parameters: <code>metadata</code> and <code>data</code>.</p>
+<p>Define <code>post_gz()</code></p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">post_gz</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">metadata</span>, <span class="nv">data</span><span class="o">)</span> <span class="o">{</span>
+  
+  <span class="c"># write metadata to temp file</span>
+  <span class="nv">tmp_meta</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="o">(</span><span class="s">"metadata"</span><span class="o">)</span>
+  <span class="nv">gz_temp_meta</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/connections.html">gzfile</a></span><span class="o">(</span><span class="nv">tmp_meta</span><span class="o">)</span>
+  <span class="nf"><a href="https://rdrr.io/pkg/jsonlite/man/read_json.html">write_json</a></span><span class="o">(</span><span class="nv">metadata</span>, <span class="nv">gz_temp_meta</span><span class="o">)</span>
+  <span class="nf"><a href="https://rdrr.io/r/base/connections.html">close</a></span><span class="o">(</span><span class="nv">gz_temp_meta</span><span class="o">)</span>
+  
+  <span class="c"># write data to temp file</span>
+  <span class="nv">tmp_data</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="o">(</span><span class="s">"data"</span><span class="o">)</span>
+  <span class="nv">gz_temp_data</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/connections.html">gzfile</a></span><span class="o">(</span><span class="nv">tmp_data</span><span class="o">)</span>
+  <span class="nf"><a href="https://rdrr.io/pkg/jsonlite/man/read_json.html">write_json</a></span><span class="o">(</span><span class="nv">data</span>, <span class="nv">gz_temp_data</span><span class="o">)</span>
+  <span class="nf"><a href="https://rdrr.io/r/base/connections.html">close</a></span><span class="o">(</span><span class="nv">gz_temp_data</span><span class="o">)</span>
+  
+  <span class="c"># post </span>
+  <span class="nv">q</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://httr.r-lib.org/reference/POST.html">POST</a></span><span class="o">(</span><span class="nv">b_url</span>, 
+       body <span class="o">=</span> <span class="nf"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="o">(</span>
+         metadata <span class="o">=</span> <span class="nf"><a href="https://httr.r-lib.org/reference/upload_file.html">upload_file</a></span><span class="o">(</span><span class="nv">tmp_meta</span><span class="o">)</span>,
+         data <span class="o">=</span> <span class="nf"><a href="https://httr.r-lib.org/reference/upload_file.html">upload_file</a></span><span class="o">(</span><span class="nv">tmp_data</span><span class="o">)</span>
+       <span class="o">)</span><span class="o">)</span>
+  
+  <span class="c"># remove temp files</span>
+  <span class="nf"><a href="https://rdrr.io/r/base/unlink.html">unlink</a></span><span class="o">(</span><span class="nv">tmp_meta</span><span class="o">)</span>
+  <span class="nf"><a href="https://rdrr.io/r/base/unlink.html">unlink</a></span><span class="o">(</span><span class="nv">tmp_data</span><span class="o">)</span>
+  
+  <span class="c"># return a character for purposes of bench marking</span>
+  <span class="s">"Posted..."</span>
+<span class="o">}</span></code></pre>
+</div>
+<p>Define <code>post_json()</code>.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">post_json</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">metadata</span>, <span class="nv">data</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nv">q</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://httr.r-lib.org/reference/POST.html">POST</a></span><span class="o">(</span><span class="nv">b_url</span>, 
+       body <span class="o">=</span> <span class="nf"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="o">(</span>
+         metadata <span class="o">=</span> <span class="nv">metadata</span>,
+         data <span class="o">=</span> <span class="nv">data</span>
+       <span class="o">)</span>,
+       encode <span class="o">=</span> <span class="s">"json"</span><span class="o">)</span> 
+  
+  <span class="s">"Posted..."</span>
+<span class="o">}</span></code></pre>
+</div>
+<p>Now that these functions have been defined, let’s compare their performance using the package <code>bench</code>. We’ll run each function 50 times to get a good understanding of their respective performance.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">bm</span> <span class="o">&lt;-</span> <span class="nf">bench</span><span class="nf">::</span><span class="nf"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="o">(</span>
+  <span class="nf">post_gz</span><span class="o">(</span><span class="nv">small_weather</span>, <span class="nv">small_flights</span><span class="o">)</span>,
+  <span class="nf">post_json</span><span class="o">(</span><span class="nv">small_weather</span>, <span class="nv">small_flights</span><span class="o">)</span>,
+  iterations <span class="o">=</span> <span class="m">5</span>
+  <span class="o">)</span>
+
+<span class="nv">bm</span></code></pre>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">ggplot2</span><span class="nf">::</span><span class="nf"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">autoplot</a></span><span class="o">(</span><span class="nv">bm</span><span class="o">)</span></code></pre>
+</div>
+
+
+</section>
+</section>
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

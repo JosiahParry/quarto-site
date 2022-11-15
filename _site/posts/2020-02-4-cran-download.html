@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2020-02-04">
+
+<title>Josiah Parry - R Security Concerns and 2019 CRAN downloads</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - R Security Concerns and 2019 CRAN downloads">
+<meta name="twitter:description" content="The number of downloads that a package has can tell us a number of things. For example, how much other packages rely on it. A great case of this is rlang.">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">R Security Concerns and 2019 CRAN downloads</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#package-checks" id="toc-package-checks" class="nav-link active" data-scroll-target="#package-checks">Package Checks</a></li>
+  <li><a href="#instituting-checks" id="toc-instituting-checks" class="nav-link" data-scroll-target="#instituting-checks">Instituting Checks</a>
+  <ul class="collapse">
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">R Security Concerns and 2019 CRAN downloads</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 4, 2020</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>The number of downloads that a package has can tell us a number of things. For example, how much other packages rely on it. A great case of this is <a href="https://github.com/r-lib/rlang"><code>rlang</code></a>. Not many of use <code>rlang</code>, know what it does, or even bother to dive into it. But in reality it is the backbone of so many packages that we know and love and use every day.</p>
+<p>The other thing that we can infer from the download numbers is how trusted a package may be. Packages that have been downloaded time and time and again have <em>likely</em> been scoped out thoroughly for any bugs. This can be rather comforting for security conscious groups.</p>
+<p>With a little <a href="https://github.com/tidyverse/rvest"><code>rvest</code></a>-web-scraping-magic we can obtain the name of every package published to <a href="https://cran.r-project.org/">CRAN</a>.</p>
+<div class="highlight">
+
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://rvest.tidyverse.org/">rvest</a></span><span class="o">)</span>
+<span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="o">)</span>
+<span class="nv">url</span> <span class="o">&lt;-</span> <span class="s">"https://cran.r-project.org/web/packages/available_packages_by_name.html"</span>
+<span class="nv">cran_packages</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rvest.tidyverse.org/reference/rename.html">html_session</a></span><span class="o">(</span><span class="nv">url</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+    <span class="nf"><a href="https://rvest.tidyverse.org/reference/rename.html">html_nodes</a></span><span class="o">(</span><span class="s">"table a"</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+    <span class="nf"><a href="https://rvest.tidyverse.org/reference/html_text.html">html_text</a></span><span class="o">(</span><span class="o">)</span></code></pre>
+</div>
+<p>RStudio keeps daily logs of packages downloaded from their CRAN mirror. The package <a href="https://r-hub.github.io/cranlogs"><code>cranlogs</code></a> makes the data available via and API and an R package. Below is a lightweight function which sums the total number of downloads for the entire year. <code>furrr</code> was used to speed up the computation a bit. This takes ~40 minutes to run, as such use the exported data in <code>data/cran-2019-total-downloads.csv</code>.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">get_year_downloads</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">pkg</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nf">cranlogs</span><span class="nf">::</span><span class="nf">cran_downloads</span><span class="o">(</span><span class="nv">pkg</span>, 
+                           from <span class="o">=</span> <span class="s">"2019-01-01"</span>,
+                           to <span class="o">=</span> <span class="s">"2019-12-31"</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+    <span class="nf"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="o">(</span><span class="nv">package</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+    <span class="nf"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="o">(</span>total_downloads <span class="o">=</span> <span class="nf"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="o">(</span><span class="nv">count</span><span class="o">)</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="nv">total_cran_downloads</span> <span class="o">&lt;-</span> <span class="nf">furrr</span><span class="nf">::</span><span class="nf"><a href="https://rdrr.io/pkg/furrr/man/future_map.html">future_map_dfr</a></span><span class="o">(</span>
+  <span class="nv">cran_packages</span>, 
+  .f <span class="o">=</span> <span class="nf"><a href="https://purrr.tidyverse.org/reference/safely.html">possibly</a></span><span class="o">(</span><span class="nv">get_year_downloads</span>, otherwise <span class="o">=</span> <span class="nf"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="o">(</span><span class="o">)</span><span class="o">)</span>
+  <span class="o">)</span></code></pre>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">total_cran_downloads</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="o">(</span><span class="s">"data/cran-2019-total-downloads.csv"</span><span class="o">)</span>
+<span class="nf"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="o">(</span><span class="nv">total_cran_downloads</span><span class="o">)</span></code></pre>
+</div>
+<p>While this is helpful, these packges also have dependencies, and those dependencies have dependencies. The R core team have built out the <code>tools</code> package which contains, yes, wonderful tools. The function <a href="https://rdrr.io/r/tools/package_dependencies.html"><code>tools::package_dependencies()</code></a> provides us with the dependencies.</p>
+<p>The below code identifies the top 500 downloaded packages and their dependencies.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">top_500_cran</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://dplyr.tidyverse.org/reference/top_n.html">top_n</a></span><span class="o">(</span><span class="nv">total_cran_downloads</span>, <span class="m">500</span>, <span class="nv">total_downloads</span><span class="o">)</span>
+<span class="c">#pull the package dependencies</span>
+<span class="nv">pkg_deps</span> <span class="o">&lt;-</span> <span class="nv">top_500_cran</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="nf"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="o">(</span><span class="nv">package</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="nf">tools</span><span class="nf">::</span><span class="nf"><a href="https://rdrr.io/r/tools/package_dependencies.html">package_dependencies</a></span><span class="o">(</span>recursive <span class="o">=</span> <span class="kc">TRUE</span><span class="o">)</span></code></pre>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="o">(</span><span class="nv">pkg_deps</span><span class="o">)</span></code></pre>
+</div>
+<section id="package-checks" class="level2">
+<h2 class="anchored" data-anchor-id="package-checks">Package Checks</h2>
+<p>Each package on CRAN goes through a rigorous checking process. The r cmd check is ran on each package for twelve different flavors from a combination of Linux and Windows. If you trust the checks that the R Core team do, I wouldn’t reinvent the wheel.</p>
+<p>The data are not provided directly from CRAN though an individual has provided these data via an API. I recommend using the API as a check against packages on ingest. I’d also do this process for every time you’re syncing. Again, this doesn’t mean that there are no vulnerabilities. But if there are functions that will literally break the machine, then the checks in general shouldn’t work.</p>
+<p>The biggest risk is really in the development and publication of applications. The greatest risk you are likely to face are going to be internal or accidental. For example using base R and Shiny, a developer can make an app unintentionally malicious—i.e.&nbsp;permitting system calls or creating a SQL injection. Though this would be rather difficult to build into an app, it is possible. The process here would be to institute a peer review process for the apps developed. Also, you’re going to want to sandbox the applications—which Connect does and will improve with launcher in the future.</p>
+</section>
+<section id="instituting-checks" class="level2">
+<h2 class="anchored" data-anchor-id="instituting-checks">Instituting Checks</h2>
+<p>We can use the <a href="https://github.com/ropenscilabs/cchecks"><code>cchecks</code></a> packge to interact with R-Hub’s CRAN check API. They have done a wonderful job aggregating package check data. The data it returns, however, is in a rather deeply nested list. Below is a function defintion which can tidy up some of the important information produced from the API query.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c">#devtools::install_github("ropenscilabs/cchecks")</span>
+<span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv">cchecks</span><span class="o">)</span>
+<span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="o">)</span>
+<span class="nv">tidy_checks</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">checks</span><span class="o">)</span> <span class="o">{</span>
+  
+  <span class="nv">check_res</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nv">checks</span>, <span class="nv">pluck</span>, <span class="s">"data"</span>, <span class="s">"checks"</span><span class="o">)</span>
+  <span class="nv">check_pkg</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nv">checks</span>, <span class="nv">pluck</span>, <span class="s">"data"</span>, <span class="s">"package"</span><span class="o">)</span>
+  <span class="nv">check_deets</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nv">checks</span>, <span class="nv">pluck</span>, <span class="s">"data"</span>, <span class="s">"check_details"</span><span class="o">)</span>
+  <span class="nv">check_summ</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nv">checks</span>, <span class="nv">pluck</span>, <span class="s">"data"</span>, <span class="s">"summary"</span><span class="o">)</span>
+  
+  <span class="nf"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="o">(</span>pkg <span class="o">=</span> <span class="nf"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="o">(</span><span class="nv">check_pkg</span><span class="o">)</span>,
+         check_results <span class="o">=</span> <span class="nv">check_res</span>,
+         check_details <span class="o">=</span> <span class="nv">check_deets</span>,
+         check_summary <span class="o">=</span> <span class="nv">check_summ</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+    <span class="nf"><a href="https://tidyr.tidyverse.org/reference/hoist.html">unnest_wider</a></span><span class="o">(</span><span class="nv">check_summary</span><span class="o">)</span>
+  
+<span class="o">}</span></code></pre>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># query the API for packages</span>
+<span class="nv">checks</span>  <span class="o">&lt;-</span> <span class="nf">cch_pkgs</span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="o">(</span><span class="s">"spotifyr"</span>, <span class="s">"genius"</span><span class="o">)</span><span class="o">)</span>
+<span class="c"># tidy up the checks</span>
+<span class="nv">clean_checks</span> <span class="o">&lt;-</span> <span class="nf">tidy_checks</span><span class="o">(</span><span class="nv">checks</span><span class="o">)</span>
+<span class="c"># get check results</span>
+<span class="nv">clean_checks</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="o">(</span><span class="nv">check_results</span><span class="o">)</span>
+<span class="c"># get check details</span>
+<span class="nv">clean_checks</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf"><a href="https://tidyr.tidyverse.org/reference/hoist.html">unnest_wider</a></span><span class="o">(</span><span class="nv">check_details</span><span class="o">)</span></code></pre>
+</div>
+<p>You can pull these checks for the top 500 packages and their dependencies in a rather straightforward manner now. You can iterate through these all. Note that this is an API and you may see some lag time. So go make some tea.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">top_checks</span> <span class="o">&lt;-</span> <span class="nf">cch_pkgs</span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="o">(</span><span class="nv">top_500_cran</span><span class="o">$</span><span class="nv">package</span><span class="o">)</span><span class="o">)</span>
+<span class="nf">tidy_checks</span><span class="o">(</span><span class="nv">top_checks</span><span class="o">)</span></code></pre>
+</div>
+<section id="resources" class="level3">
+<h3 class="anchored" data-anchor-id="resources">Resources</h3>
+<ul>
+<li><a href="https://environments.rstudio.com/validation.html" class="uri">https://environments.rstudio.com/validation.html</a></li>
+<li><a href="https://www.r-bloggers.com/overview-of-the-cran-checks-api/amp" class="uri">https://www.r-bloggers.com/overview-of-the-cran-checks-api/amp</a></li>
+<li><a href="https://blog.r-hub.io/2019/04/25/r-devel-linux-x86-64-debian-clang/" class="uri">https://blog.r-hub.io/2019/04/25/r-devel-linux-x86-64-debian-clang/</a></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

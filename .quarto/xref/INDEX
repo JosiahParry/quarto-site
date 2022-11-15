@@ -13,5 +13,191 @@
   },
   "about.qmd": {
     "about.html": "d991a532"
+  },
+  "posts/a-post.qmd": {
+    "a-post.html": "eee0f6f6"
+  },
+  "posts/another-one.qmd": {
+    "another-one.html": "f116012b"
+  },
+  "posts/2022-10-03-spacetime-representations/index.qmd": {
+    "index.html": "624e1f8f"
+  },
+  "posts/this-is-markdown.md": {
+    "this-is-markdown.html": "2f35335b"
+  },
+  "posts/2022-04-05-an-open-system-requirements-database/index.md": {
+    "index.html": "287f6e72"
+  },
+  "posts/2022-05-11-make-your-r-scripts-databricks-notebooks/index.md": {
+    "index.html": "e48fae91"
+  },
+  "posts/2018-04-14-the-easyway-first.md": {
+    "2018-04-14-the-easyway-first.html": "c4fd1ad8"
+  },
+  "posts/2021-03-14-cpcinema.md": {
+    "2021-03-14-cpcinema.html": "4515897f"
+  },
+  "posts/2020-02-4-cran-download.md": {
+    "2020-02-4-cran-download.html": "e7dd69f4"
+  },
+  "posts/2021-03-28-language-agnostic.md": {
+    "2021-03-28-language-agnostic.html": "2da7cc8c"
+  },
+  "posts/2021-04-28-user-apr-27-2021/index.md": {
+    "index.html": "cd50678a"
+  },
+  "posts/2018-12-1-plot_xgboost.md": {
+    "2018-12-1-plot_xgboost.html": "e8e50193"
+  },
+  "posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes/index.md": {
+    "index.html": "fb7cecd5"
+  },
+  "posts/2018-11-25-representation-i.md": {
+    "2018-11-25-representation-i.html": "d4deb7e3"
+  },
+  "posts/2020-12-09-secure-package-environment.md": {
+    "2020-12-09-secure-package-environment.html": "90c64f2a"
+  },
+  "posts/2020-03-01-excel-in-prod.md": {
+    "2020-03-01-excel-in-prod.html": "ddc1e466"
+  },
+  "posts/2019-03-30-plumber-genius-api.md": {
+    "2019-03-30-plumber-genius-api.html": "f4b5f53e"
+  },
+  "posts/2020-06-12-red-queen.md": {
+    "2020-06-12-red-queen.html": "233bac17"
+  },
+  "posts/2019-06-11-trendyy-campaigns.md": {
+    "2019-06-11-trendyy-campaigns.html": "304a718e"
+  },
+  "posts/2019-05-25-introducing-trendyy.md": {
+    "2019-05-25-introducing-trendyy.html": "aedab09c"
+  },
+  "posts/2019-09-12-intro-tidymodels.md": {
+    "2019-09-12-intro-tidymodels.html": "28d8a3dc"
+  },
+  "posts/2020-01-13-gs4-auth.md": {
+    "2020-01-13-gs4-auth.html": "53d286bf"
+  },
+  "posts/2019-02-06-shutdown-politics.md": {
+    "2019-02-06-shutdown-politics.html": "720f5ac5"
+  },
+  "posts/2020-09-07-demographic-change-white-fear-and-social-construction-of-race.md": {
+    "2020-09-07-demographic-change-white-fear-and-social-construction-of-race.html": "69691b7a"
+  },
+  "posts/2018-10-27-chunk_csv.md": {
+    "2018-10-27-chunk_csv.html": "ecd9f507"
+  },
+  "posts/2021-06-18-sliced-a-brief-reflection/index.md": {
+    "index.html": "216a0c4c"
+  },
+  "posts/2020-09-14-what-the-hell-is-critical-race-theory.md": {
+    "2020-09-14-what-the-hell-is-critical-race-theory.html": "aa0cd55c"
+  },
+  "posts/2021-04-04-OSINT-youtube.md": {
+    "2021-04-04-OSINT-youtube.html": "1564bb48"
+  },
+  "posts/2022-04-06-my-new-ide-theme-xxemocandylandxx/index.md": {
+    "index.html": "e360d759"
+  },
+  "posts/2019-08-09-epa-waterquality.md": {
+    "2019-08-09-epa-waterquality.html": "c4bd7cb4"
+  },
+  "posts/2022-05-11-exploratory-spatial-data-analysis-in-r/index.md": {
+    "index.html": "b5c76a0b"
+  },
+  "posts/2019-06-11-scraping-4-campaigns.md": {
+    "2019-06-11-scraping-4-campaigns.html": "9cc3c6c7"
+  },
+  "posts/2018-11-15-introducing-letters-to-a-layperson.md": {
+    "2018-11-15-introducing-letters-to-a-layperson.html": "60cd7f27"
+  },
+  "posts/2018-11-28-function-methods.md": {
+    "2018-11-28-function-methods.html": "b62ed15a"
+  },
+  "posts/2019-03-17-the-fallacy-of-one-person-one-vote.md": {
+    "2019-03-17-the-fallacy-of-one-person-one-vote.html": "72d55506"
+  },
+  "posts/2022-11-08-spatial-randomness/index.md": {
+    "index.html": "ed60d18e"
+  },
+  "posts/2018-10-27-read_multiple_csv.md": {
+    "2018-10-27-read_multiple_csv.html": "9cb993d6"
+  },
+  "posts/2021-03-28-python-r.md": {
+    "2021-03-28-python-r.html": "a3009acf"
+  },
+  "posts/2020-02-19-r-history.md": {
+    "2020-02-19-r-history.html": "99f8b387"
+  },
+  "posts/2018-01-27-introducing-geniusr.md": {
+    "2018-01-27-introducing-geniusr.html": "1def102c"
+  },
+  "posts/2019-08-04-my-parts.md": {
+    "2019-08-04-my-parts.html": "39b823d9"
+  },
+  "posts/2019-05-08-genius-learnr-tutorial.md": {
+    "2019-05-08-genius-learnr-tutorial.html": "ba3b26f8"
+  },
+  "posts/2020-09-05-medium-data-and-production-api-pipeline.md": {
+    "2020-09-05-medium-data-and-production-api-pipeline.html": "a0b1ba1b"
+  },
+  "posts/2019-12-14-spss-haven.md": {
+    "2019-12-14-spss-haven.html": "6a4d638e"
+  },
+  "posts/2022-02-12-the-heck-is-a-statistical-moment/index.md": {
+    "index.html": "4c4a3afb"
+  },
+  "posts/2022-05-11-make-your-r-scripts-databricks-notebooks.md": {
+    "2022-05-11-make-your-r-scripts-databricks-notebooks.html": "053bc96b"
+  },
+  "posts/2022-10-03-spacetime-representations.qmd": {
+    "2022-10-03-spacetime-representations.html": "fa4eb09b"
+  },
+  "posts/2022-02-12-the-heck-is-a-statistical-moment.md": {
+    "2022-02-12-the-heck-is-a-statistical-moment.html": "10963f57"
+  },
+  "posts/2022-05-11-exploratory-spatial-data-analysis-in-r.md": {
+    "2022-05-11-exploratory-spatial-data-analysis-in-r.html": "1d274e4e"
+  },
+  "posts/2022-04-06-my-new-ide-theme-xxemocandylandxx.md": {
+    "2022-04-06-my-new-ide-theme-xxemocandylandxx.html": "f61f6125"
+  },
+  "posts/2022-04-05-an-open-system-requirements-database.md": {
+    "2022-04-05-an-open-system-requirements-database.html": "aaef1370"
+  },
+  "posts/2021-04-28-user-apr-27-2021.md": {
+    "2021-04-28-user-apr-27-2021.html": "153f7df5"
+  },
+  "posts/2021-06-18-sliced-a-brief-reflection.md": {
+    "2021-06-18-sliced-a-brief-reflection.html": "ae4ca9ba"
+  },
+  "posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes.md": {
+    "2022-02-12-installing-python-on-my-m1-in-under-10-minutes.html": "a03dbc8a"
+  },
+  "projects/sfdep.md": {
+    "sfdep.html": "2c15a453"
+  },
+  "projects/spdep.md": {
+    "spdep.html": "ae3fc5b6"
+  },
+  "projects/genius.md": {
+    "genius.html": "e3d2123a"
+  },
+  "projects/genius.qmd": {
+    "genius.html": "9910132b"
+  },
+  "projects/writing/uitk.qmd": {
+    "uitk.html": "5579bdf6"
+  },
+  "projects/writing/mirr.qmd": {
+    "mirr.html": "0182ae6e"
+  },
+  "projects/pkgs/sysreqs.qmd": {
+    "sysreqs.html": "ec9e9127"
+  },
+  "projects/writing/r4campaigns.qmd": {
+    "r4campaigns.html": "cc8a9c82"
   }
 }

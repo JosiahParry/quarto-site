@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2018-12-01">
+
+<title>Josiah Parry - xgboost feature importance</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - xgboost feature importance">
+<meta name="twitter:description" content="Extracting and plotting feature importance">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">xgboost feature importance</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#prepping-the-environment" id="toc-prepping-the-environment" class="nav-link active" data-scroll-target="#prepping-the-environment">Prepping the Environment</a></li>
+  <li><a href="#loading-the-data" id="toc-loading-the-data" class="nav-link" data-scroll-target="#loading-the-data">Loading the data</a></li>
+  <li><a href="#train-the-decision-tree" id="toc-train-the-decision-tree" class="nav-link" data-scroll-target="#train-the-decision-tree">Train the decision tree</a></li>
+  <li><a href="#extract-feature-importance" id="toc-extract-feature-importance" class="nav-link" data-scroll-target="#extract-feature-importance">Extract feature importance</a></li>
+  <li><a href="#plotting-feature-importance" id="toc-plotting-feature-importance" class="nav-link" data-scroll-target="#plotting-feature-importance">Plotting feature importance</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">xgboost feature importance</h1>
+<p class="subtitle lead">Extracting and plotting feature importance</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">machine learning</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 1, 2018</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>This post will go over extracting feature (variable) importance and creating a function for creating a ggplot object for it. I will draw on the simplicity of Chris Albon’s post. For steps to do the following in Python, I recommend his <a href="https://chrisalbon.com/machine_learning/trees_and_forests/feature_importance/">post</a>.</p>
+<p><img alt="Feature Importance by Chris Albon" src="https://chrisalbon.com/images/machine_learning_flashcards/Feature_Importance_print.png"></p>
+<p>If you’ve ever created a decision tree, you’ve probably looked at measures of feature importance. In the above flashcard, impurity refers to how many times a feature was use and lead to a misclassification. Here, we’re looking at the importance of a feature, so how much it helped in the classification or prediction of an outcome.</p>
+<p>This example will draw on the build in data <code>Sonar</code> from the <code>mlbench</code> package.</p>
+<section id="prepping-the-environment" class="level3">
+<h3 class="anchored" data-anchor-id="prepping-the-environment">Prepping the Environment</h3>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://github.com/topepo/caret/">caret</a></span><span class="o">)</span>
+<span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://github.com/dmlc/xgboost">xgboost</a></span><span class="o">)</span>
+<span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="o">)</span></code></pre>
+</div>
+</section>
+<section id="loading-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="loading-the-data">Loading the data</h3>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="o">(</span><span class="s">"Sonar"</span>, package <span class="o">=</span> <span class="s">"mlbench"</span><span class="o">)</span></code></pre>
+</div>
+</section>
+<section id="train-the-decision-tree" class="level3">
+<h3 class="anchored" data-anchor-id="train-the-decision-tree">Train the decision tree</h3>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">xgb_fit</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/pkg/caret/man/train.html">train</a></span><span class="o">(</span><span class="nv">Class</span> <span class="o">~</span> <span class="nv">.</span>,
+                 data <span class="o">=</span> <span class="nv">Sonar</span>,
+                 method <span class="o">=</span> <span class="s">"xgbLinear"</span><span class="o">)</span>
+</code></pre>
+</div>
+<div class="highlight">
+
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">xgb_fit</span>
+<span class="c">#&gt; eXtreme Gradient Boosting </span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; 208 samples</span>
+<span class="c">#&gt;  60 predictor</span>
+<span class="c">#&gt;   2 classes: 'M', 'R' </span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; No pre-processing</span>
+<span class="c">#&gt; Resampling: Bootstrapped (25 reps) </span>
+<span class="c">#&gt; Summary of sample sizes: 208, 208, 208, 208, 208, 208, ... </span>
+<span class="c">#&gt; Resampling results across tuning parameters:</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt;   lambda  alpha  nrounds  Accuracy   Kappa    </span>
+<span class="c">#&gt;   0e+00   0e+00   50      0.7954411  0.5856736</span>
+<span class="c">#&gt;   0e+00   0e+00  100      0.7955067  0.5859968</span>
+<span class="c">#&gt;   0e+00   0e+00  150      0.7955067  0.5859968</span>
+<span class="c">#&gt;   0e+00   1e-04   50      0.7931161  0.5807902</span>
+<span class="c">#&gt;   0e+00   1e-04  100      0.7896880  0.5736899</span>
+<span class="c">#&gt;   0e+00   1e-04  150      0.7896880  0.5736899</span>
+<span class="c">#&gt;   0e+00   1e-01   50      0.7974045  0.5899654</span>
+<span class="c">#&gt;   0e+00   1e-01  100      0.8007978  0.5965433</span>
+<span class="c">#&gt;   0e+00   1e-01  150      0.8018652  0.5987027</span>
+<span class="c">#&gt;   1e-04   0e+00   50      0.7936100  0.5817500</span>
+<span class="c">#&gt;   1e-04   0e+00  100      0.7902008  0.5746993</span>
+<span class="c">#&gt;   1e-04   0e+00  150      0.7902008  0.5746993</span>
+<span class="c">#&gt;   1e-04   1e-04   50      0.7916874  0.5777943</span>
+<span class="c">#&gt;   1e-04   1e-04  100      0.7883283  0.5708511</span>
+<span class="c">#&gt;   1e-04   1e-04  150      0.7883283  0.5708511</span>
+<span class="c">#&gt;   1e-04   1e-01   50      0.7974045  0.5899654</span>
+<span class="c">#&gt;   1e-04   1e-01  100      0.8007978  0.5965433</span>
+<span class="c">#&gt;   1e-04   1e-01  150      0.8018652  0.5987027</span>
+<span class="c">#&gt;   1e-01   0e+00   50      0.7937810  0.5824365</span>
+<span class="c">#&gt;   1e-01   0e+00  100      0.7958099  0.5863334</span>
+<span class="c">#&gt;   1e-01   0e+00  150      0.7958099  0.5863334</span>
+<span class="c">#&gt;   1e-01   1e-04   50      0.7953707  0.5854209</span>
+<span class="c">#&gt;   1e-01   1e-04  100      0.7963228  0.5873658</span>
+<span class="c">#&gt;   1e-01   1e-04  150      0.7963228  0.5873658</span>
+<span class="c">#&gt;   1e-01   1e-01   50      0.7987849  0.5923712</span>
+<span class="c">#&gt;   1e-01   1e-01  100      0.8034709  0.6018293</span>
+<span class="c">#&gt;   1e-01   1e-01  150      0.8049729  0.6047501</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; Tuning parameter 'eta' was held constant at a value of 0.3</span>
+<span class="c">#&gt; Accuracy was used to select the optimal model using the largest value.</span>
+<span class="c">#&gt; The final values used for the model were nrounds = 150, lambda = 0.1, alpha = 0.1</span>
+<span class="c">#&gt;  and eta = 0.3.</span></code></pre>
+</div>
+</section>
+<section id="extract-feature-importance" class="level3">
+<h3 class="anchored" data-anchor-id="extract-feature-importance">Extract feature importance</h3>
+<p>Since we are using the <code>caret</code> package we can use the built in function to extract feature importance, or the function from the <code>xgboost</code> package. We will do both.</p>
+<section id="caret-feature-importance" class="level4">
+<h4 class="anchored" data-anchor-id="caret-feature-importance"><code>caret</code> feature importance</h4>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">caret_imp</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/pkg/caret/man/varImp.html">varImp</a></span><span class="o">(</span><span class="nv">xgb_fit</span><span class="o">)</span>
+<span class="c">#&gt; Warning in value[[3L]](cond): The model had been generated by XGBoost version 1.0.0 or earlier and was loaded from a RDS file. We strongly ADVISE AGAINST using saveRDS() function, to ensure that your model can be read in current and upcoming XGBoost releases. Please use xgb.save() instead to preserve models for the long term. For more details and explanation, see https://xgboost.readthedocs.io/en/latest/tutorials/saving_model.html</span>
+<span class="c">#&gt; [16:44:09] WARNING: amalgamation/../src/learner.cc:940: Loading model from XGBoost &lt; 1.0.0, consider saving it again for improved compatibility</span>
+<span class="nv">caret_imp</span>
+<span class="c">#&gt; xgbLinear variable importance</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt;   only 20 most important variables shown (out of 60)</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt;     Overall</span>
+<span class="c">#&gt; V11 100.000</span>
+<span class="c">#&gt; V45  26.941</span>
+<span class="c">#&gt; V16  24.354</span>
+<span class="c">#&gt; V21  21.665</span>
+<span class="c">#&gt; V51  18.798</span>
+<span class="c">#&gt; V4   18.140</span>
+<span class="c">#&gt; V48  14.366</span>
+<span class="c">#&gt; V9   12.607</span>
+<span class="c">#&gt; V31  12.489</span>
+<span class="c">#&gt; V27  12.347</span>
+<span class="c">#&gt; V15  11.269</span>
+<span class="c">#&gt; V34   9.125</span>
+<span class="c">#&gt; V37   8.805</span>
+<span class="c">#&gt; V20   8.792</span>
+<span class="c">#&gt; V52   8.114</span>
+<span class="c">#&gt; V28   7.162</span>
+<span class="c">#&gt; V32   5.897</span>
+<span class="c">#&gt; V55   4.584</span>
+<span class="c">#&gt; V17   4.490</span>
+<span class="c">#&gt; V49   4.129</span></code></pre>
+</div>
+</section>
+<section id="xgboost-feature-importance" class="level4">
+<h4 class="anchored" data-anchor-id="xgboost-feature-importance"><code>xgboost</code> feature importance</h4>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">xgb_imp</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/pkg/xgboost/man/xgb.importance.html">xgb.importance</a></span><span class="o">(</span>feature_names <span class="o">=</span> <span class="nv">xgb_fit</span><span class="o">$</span><span class="nv">finalModel</span><span class="o">$</span><span class="nv">feature_names</span>,
+               model <span class="o">=</span> <span class="nv">xgb_fit</span><span class="o">$</span><span class="nv">finalModel</span><span class="o">)</span>
+
+<span class="nf"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="o">(</span><span class="nv">xgb_imp</span><span class="o">)</span>
+<span class="c">#&gt;    Feature       Gain      Cover  Frequency</span>
+<span class="c">#&gt; 1:     V11 0.25619825 0.12851518 0.03283582</span>
+<span class="c">#&gt; 2:     V45 0.06902206 0.04458378 0.03582090</span>
+<span class="c">#&gt; 3:     V16 0.06239349 0.04163116 0.01492537</span>
+<span class="c">#&gt; 4:     V21 0.05550596 0.03471532 0.02686567</span>
+<span class="c">#&gt; 5:     V51 0.04816044 0.04527491 0.05373134</span>
+<span class="c">#&gt; 6:      V4 0.04647539 0.03484924 0.03880597</span></code></pre>
+</div>
+</section>
+</section>
+<section id="plotting-feature-importance" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-feature-importance">Plotting feature importance</h3>
+<section id="caret" class="level4">
+<h4 class="anchored" data-anchor-id="caret">caret</h4>
+<p>You have a few options when it comes to plotting feature importance. You can call plot on the saved object from caret as follows:</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="o">(</span><span class="nv">caret_imp</span><span class="o">)</span>
+</code></pre>
+<p><img src="figs/unnamed-chunk-8-1.png" width="700px" style="display: block; margin: auto;"></p>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="o">(</span><span class="nv">caret_imp</span><span class="o">)</span> <span class="o">+</span>
+  <span class="nf"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="o">(</span><span class="o">)</span>
+</code></pre>
+<p><img src="figs/unnamed-chunk-9-1.png" width="700px" style="display: block; margin: auto;"></p>
+</div>
+</section>
+<section id="xgboost" class="level4">
+<h4 class="anchored" data-anchor-id="xgboost"><code>xgboost</code></h4>
+<p>You can use the plot functionality from <code>xgboost</code></p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/pkg/xgboost/man/xgb.plot.importance.html">xgb.plot.importance</a></span><span class="o">(</span><span class="nv">xgb_imp</span><span class="o">)</span>
+</code></pre>
+<p><img src="figs/unnamed-chunk-10-1.png" width="700px" style="display: block; margin: auto;"></p>
+</div>
+<p>Or use their ggplot feature</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/pkg/xgboost/man/xgb.plot.importance.html">xgb.ggplot.importance</a></span><span class="o">(</span><span class="nv">xgb_imp</span><span class="o">)</span></code></pre>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

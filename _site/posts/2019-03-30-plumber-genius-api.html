@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2019-03-30">
+
+<title>Josiah Parry - genius Plumber API</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - genius Plumber API">
+<meta name="twitter:description" content="get started here">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">genius Plumber API</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects &amp; contributions</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#using-plumber" id="toc-using-plumber" class="nav-link active" data-scroll-target="#using-plumber">Using plumber</a>
+  <ul class="collapse">
+  <li><a href="#creating-the-api" id="toc-creating-the-api" class="nav-link" data-scroll-target="#creating-the-api">Creating the API</a></li>
+  </ul></li>
+  <li><a href="#writing-a-python-wrapper" id="toc-writing-a-python-wrapper" class="nav-link" data-scroll-target="#writing-a-python-wrapper">Writing a Python Wrapper</a></li>
+  <li><a href="#containerize-with-docker" id="toc-containerize-with-docker" class="nav-link" data-scroll-target="#containerize-with-docker">Containerize with Docker</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">genius Plumber API</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">Docker</div>
+    <div class="quarto-category">Python</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 30, 2019</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><em>get started <a href="https://github.com/JosiahParry/genius-api">here</a></em></p>
+<p>Since I created <code>genius</code>, I’ve wanted to make a version for python. But frankly, that’s a daunting task for me seeing as my python skills are intermediate at best. But recently I’ve been made aware of the package <code>plumber</code>. To put it plainly, <code>plumber</code> takes your R code and makes it accessible via an API.</p>
+<p>I thought this would be difficult. I was so wrong.</p>
+<p><img src="https://media.giphy.com/media/l0MYOMxG9ijrXhF3q/giphy.gif" class="img-fluid"></p>
+<section id="using-plumber" class="level2">
+<h2 class="anchored" data-anchor-id="using-plumber">Using plumber</h2>
+<p>Plumber works by using <code>roxygen</code> like comments (<code>#*</code>). Using a single comment, you can define the request type and the end point. Following that you define a function. The arguments to the funciton become the query parameters.</p>
+<p>The main <code>genius</code> functions only require two main arguments <code>artist</code> and <code>album</code> or <code>song</code>. Making these accessible by API is as simple as:</p>
+<pre><code>#* @get /track
+function(artist, song) {
+  genius::genius_lyrics(artist, song)
+}</code></pre>
+<p>With this line of code I created an endpoint called <code>track</code> to retrieve song lyrics. The two parameters as defined by the anonymous function are <code>artist</code> and <code>song</code>. This means that song lyrics are accessible with a query looking like <code>http://hostname/track?artist=artist_name&amp;song=song_name</code>.</p>
+<p>But as it stands, this isn’t enough to host the API locally. Save your functions with plumber documentation into a file (I named mine <code>plumber.R</code>).</p>
+<section id="creating-the-api" class="level3">
+<h3 class="anchored" data-anchor-id="creating-the-api">Creating the API</h3>
+<p>Creating the API is probably the easiest part. It takes quite literally, two lines of code. The function <code>plumb()</code> takes two arguments, the <code>file</code> which contains your plumber commented code, and the <code>dir</code>ectory that houses it.</p>
+<p><code>plumb()</code> creates a router which is “responsible for taking an incoming request, submitting it through the appropriate filters.”</p>
+<p>I created a plumber router which would be used to route income queries.</p>
+<pre><code>pr &lt;- plumb("plumber.R")</code></pre>
+<p>The next step is to actually run the router. Again, this is quite simple by calling the <code>run()</code> method of the <code>pr</code> object. All I need to do is specify the <code>port</code> that the API will listen on, and optionally the <code>host</code> address.</p>
+<pre><code>pr$run(port = 80, host = "0.0.0.0")</code></pre>
+<p>Now I can construct queries in my browser. An example query is <code>http://localhost/track?artist=andrew%20bird&amp;song=proxy%20war</code>. Sending this request produces a very friendly <code>json</code> output.</p>
+<pre><code>[
+{"track_title":"Proxy War","line":1,"lyric":"He don't have to get over her"},
+{"track_title":"Proxy War","line":2,"lyric":"She don't to have get over him"},
+{"track_title":"Proxy War","line":3,"lyric":"With all their words preserved forevermore"},
+{"track_title":"Proxy War","line":4,"lyric":"You don't have to get over her"},
+{"track_title":"Proxy War","line":5,"lyric":"She don't have to get over you"},
+{"track_title":"Proxy War","line":6,"lyric":"It's true these two have never met before"},
+{"track_title":"Proxy War","line":7,"lyric":"At least not in real life"},
+{"track_title":"Proxy War","line":8,"lyric":"Where your words cut like a knife"},
+{"track_title":"Proxy War","line":9,"lyric":"Conjuring blood, biblical floods"},
+{"track_title":"Proxy War","line":10,"lyric":"Looks that stop time"},
+{"track_title":"Proxy War","line":11,"lyric":"You don't have to remember"},
+{"track_title":"Proxy War","line":12,"lyric":"We forget what memories are for"},
+{"track_title":"Proxy War","line":13,"lyric":"Now we store them in the atmosphere"},
+{"track_title":"Proxy War","line":14,"lyric":"If you don't want to get too close"},
+{"track_title":"Proxy War","line":15,"lyric":"You don't have to get too close"},
+{"track_title":"Proxy War","line":16,"lyric":"It's just what we're calling peer-to-peer"},
+{"track_title":"Proxy War","line":17,"lyric":"You don't want to get over"},
+{"track_title":"Proxy War","line":18,"lyric":"You don't have to get over"},
+{"track_title":"Proxy War","line":19,"lyric":"We store them in the atmosphere"},
+{"track_title":"Proxy War","line":20,"lyric":"If you don't want to get over her"},
+{"track_title":"Proxy War","line":21,"lyric":"She don't have to get over you"},
+{"track_title":"Proxy War","line":22,"lyric":"It's true these two have never met before"},
+{"track_title":"Proxy War","line":23,"lyric":"At least not in real life"},
+{"track_title":"Proxy War","line":24,"lyric":"Where your words cut like a knife"},
+{"track_title":"Proxy War","line":25,"lyric":"Conjuring blood, biblical floods"},
+{"track_title":"Proxy War","line":26,"lyric":"Looks that stop time"},
+{"track_title":"Proxy War","line":27,"lyric":"If you don't want to get over her"},
+{"track_title":"Proxy War","line":28,"lyric":"You don't have to get over her"},
+{"track_title":"Proxy War","line":29,"lyric":"If you don't want to get too close"},
+{"track_title":"Proxy War","line":30,"lyric":"You don't have to get too close"},
+{"track_title":"Proxy War","line":31,"lyric":"If you want to remember"},
+{"track_title":"Proxy War","line":32,"lyric":"If you don't want to get over"},
+{"track_title":"Proxy War","line":33,"lyric":"If you don't want to get over"},
+{"track_title":"Proxy War","line":34,"lyric":"If you don't want to get over"}
+]</code></pre>
+</section>
+</section>
+<section id="writing-a-python-wrapper" class="level2">
+<h2 class="anchored" data-anchor-id="writing-a-python-wrapper">Writing a Python Wrapper</h2>
+<p>One of the appeals of writing an API is that it can be accessed from any language. This was the inspiriation of creating this API. I want to be able to call R using Python. Creating an API is a great intermediary as writing an API wrapper is much easier for me than recreating all of the code that I wrote in R.</p>
+<p>I want to be able to recreate the three main functions of <code>genius</code>. These are <code>genius_lyrics()</code>, <code>genius_album()</code>, and <code>genius_tracklist()</code>. In doing this there are two steps I have to consider. The first is creating query urls, and the second is parsing json.</p>
+<p>To create the urls, the <code>requests</code> library is used. Next, I created a template for the urls.</p>
+<pre><code>import requests
+url_template = "http://localhost:80/track?artist={}&amp;song={}"</code></pre>
+<p>The idea here is that the <a href="https://rdrr.io/r/base/Paren.html"><code>{}</code></a> characters will be filled with provided parameters by using the <code>.format()</code> method.</p>
+<p>For example, if I wanted to get lyrics for Proxy War by Andrew Bird, I would supply <code>"Andrew Bird"</code> and <code>"Proxy War"</code> as the arguments to <a href="https://rdrr.io/r/base/format.html"><code>format()</code></a>. It’s important to note that these arguments are taken positionally. The url is created using this method.</p>
+<pre><code>url = url_template.format("andrew bird", "proxy war")</code></pre>
+<p>Now I am at the point where I can ping the server to receive the json. This is accomplished by using the <code>.get()</code> method from <code>requests</code>.</p>
+<pre><code>response = requests.get(url)</code></pre>
+<p>This returns an object that contains the json response. Next, in order to get this into a format that can be analysed, it needs to be parsed. I prefer a Pandas <code>DataFrame</code>, and fortunately Pandas has a lovely <code>read_json</code> function. I will call the <code>.content</code> attribute of the <code>response</code> objectm and feed that into the <code>read_json()</code> function.</p>
+<pre><code>import pandas as pd
+
+proxy_war = pd.read_json(response.content)
+
+proxy_war.head()
+
+    line    lyric                                   track_title
+0   1   He don't have to get over her               Proxy War
+1   2   She don't to have get over him              Proxy War
+2   3   With all their words preserved forevermore  Proxy War
+3   4   You don't have to get over her              Proxy War
+4   5   She don't have to get over you              Proxy War</code></pre>
+<p>Beautiful. Song lyrics are available through this API and can easily be accessed via python. The next step is to generalize this and the other two functions. The below is the code to create the <code>genius_lyrics()</code> function in python. It works almost identically as in R. However, at this moment it does not have the ability to set the <code>info</code> argument. But this can be changed easily in the original <code>plumber.R</code> file.</p>
+<pre><code># Define genius_lyrics()
+def genius_lyrics(artist, song):
+
+    url_template = "http://localhost:80/track?artist={}&amp;song={}"
+    
+    url = url_template.format(artist, song)
+
+    response = requests.get(url)
+    
+    song = pd.read_json(response.content)
+    
+    return(song)</code></pre>
+<p>At this point I’m feeling extremely stoked on the fact that I can use <code>genius</code> with python. Who says R and python practitioners can’t work together?</p>
+<p><img src="https://media.giphy.com/media/l2JJyDYEX1tXFmCd2/giphy.gif" class="img-fluid"></p>
+</section>
+<section id="containerize-with-docker" class="level2">
+<h2 class="anchored" data-anchor-id="containerize-with-docker">Containerize with Docker</h2>
+<p><img src="https://media.giphy.com/media/cUMNWzWZ5n75LvcCIe/giphy.gif" class="img-fluid"></p>
+<p>To make the process of setting up this genius API up easier for those who don’t necessarily interact with R, I created a lightweight-ish Docker container. The idea for this was to be able to pull a Docker image, run a command, and then the API will be available on a local port without having to interact with R at all.</p>
+<p>I’m not the most experience person with creating Docker containers but I can borrow code quite well. Fortunately I came across some wonderful <a href="https://nolisllc.com/assets/presentations/r-tensorflow-api.pdf">slides</a> from <code>rstudio::conf 2019</code>. <a href="https://twitter.com/heatherklus">Heather Nollis</a> and <a href="https://twitter.com/skyetetra">Jacqueline Nolis</a> presented on “API development with R and TensorFlow at T-Mobile”.</p>
+<p>This container needs two things: a linux environment and an installation of R with plumber, genius, and its dependencies. An organization called <a href="https://www.rocker-project.org/">The Rocker Project</a> has created a number of Docker images that are stable and easy to install.</p>
+<p>Since <code>genius</code> relies on many packages from the <a href="https://tidyverse.org">tidyverse</a>, the <a href="https://hub.docker.com/r/rocker/tidyverse"><code>rocker/tidyverse</code></a> image was used. To use their wonderful image, only one line is needed in my <code>Dockerfile</code>.</p>
+<pre><code># Import existing Docker image
+FROM rocker/tidyverse:3.5.2</code></pre>
+<p>Now, not knowing exactly what I was doing, I copied code from Jacqueline and Heather’s sample <code>Dockerfile</code> in their slides. Their comment says that this is necessary to have the <em>“needed linux libraries for plumber”</em>, I went with it.</p>
+<pre><code># install needed linux libraries for plumber
+RUN apt-get update -qq &amp;&amp; apt-get install -y \
+  libssl-dev \
+  libcurl4-gnutls-dev</code></pre>
+<p><code>genius</code> and <code>plumber</code> are not part of the tidyverse image and have to be installed manually. The following lines tell Docker to run the listed R commands. For some unknown reason there was an issue with installing <code>genius</code> from CRAN so the <code>repos</code> argument was stated explicitly.</p>
+<pre><code># Install R packages
+RUN R -e "install.packages('genius', repos = 'http://cran.rstudio.com/')"
+RUN R -e "install.packages('plumber')"</code></pre>
+<p>In addition to the <code>Dockerfile</code> there are two files in my directory which are used to launch the API. The <code>plumber.R</code> and <code>launch_api.R</code> files. These need to be copied into the container. The line <code>COPY / /</code> copies from the location <code>/</code> in my directory to the location <code>/</code> in the container.</p>
+<p>The Docker image has the libraries and files needed, but it needs to be able to actually launch the API. Since the <code>plumber.R</code> file specifies that the API will be listening on port <code>80</code>, I need to expose that port in my Docker image using <code>EXPOSE 80</code>.</p>
+<p>The last part of this is to run the <code>launch_api.R</code> so the API is available. The <code>ENTRYPOINT</code> command tells Docker what to run when the container is launched. In this case <code>ENTRYPOINT ["Rscript", "launch_api.R"]</code> tells Docker to run the <code>Rscript</code> command with the argument <code>launch_api.R</code>. And with that, the <code>Dockerfile</code> is complete and read to run.</p>
+<p>The image needs to be built and ran. The simplest way to do this for me was to work from <a href="https://cloud.docker.com/repository/docker/josiahparry/genius-api">Dockerhub</a>. Thus to run this container only three lines of code are needed!</p>
+<pre><code>docker pull josiahparry/genius-api:working
+
+docker build -t josiahparry/genius-api .
+
+docker run --rm -p 80:80 josiahparry/genius-api</code></pre>
+<p><img src="https://media.giphy.com/media/3o7qDEq2bMbcbPRQ2c/giphy.gif" class="img-fluid"></p>
+<p>Boom, now you have an API that will be able to use the functionality of <code>genius</code>. If you wish to use Python with the API, I wrote a simple script which creates a nice tidy <a href="https://github.com/JosiahParry/genius-api/blob/master/genius.py">wrapper</a> around it.</p>
+<hr>
+<p>If anyone is interested in writing a more stable Python library that can call the functionality described above I’d love your help to make <code>genius</code> more readily available to the python community.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

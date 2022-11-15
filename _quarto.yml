@@ -1,23 +1,39 @@
 project:
-  type: site
+  type: website
 
 website:
   title: "Josiah Parry"
-  navbar:
-    right:
+  sidebar:
+    style: "docked"
+    contents:
       - href: index.qmd
         text: home
       - about.qmd
       - href: posts/index.qmd
         text: "posts"
       - href: projects.qmd
-
 format:
   html:
-    theme: theming.scss
-    css: styles.css
+    twitter-card:
+      creator: "@josiahparry"
+      #image: ""
+      card-style: summary_large_image
+    comments:
+      utterances:
+        repo: josiahparry/quarto-site
     toc: true
-    mainfont: "Noto Serif"
+    toc-location: "left"
+    code-link: true
+    anchor-sections: true
+    fig-cap-location: margin
+    reference-location: margin
+    footnotes-hover: true
+    fontsize: 1em
+    theme: 
+      - lux
+      - theming.scss
+    css: styles.css
+    mainfont: "Open Sans"
 
 
 

@@ -1,0 +1,9 @@
+---
+title: "Urban Informatics Toolkit"
+tags: [urban-informatics, writing]
+---
+
+The [Urban Informatics Toolkit (uitk)](https://ui.josiahparry.com/) is an open text book I wrote with the intention of teaching first year graduate students in Urban Informatics the R programming language.
+
+Within it are two years of study in the Urban Informatics Program at Northeastern University, five years of self-directed education in R, two years of teaching R, and innumerable hours learning R.
+

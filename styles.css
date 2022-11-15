@@ -1,1 +1,39 @@
 /* css styles */
+
+.navbar a:hover{
+  color: #ff6700;
+}
+
+/* .quarto-listing-category {
+ font-family: "Fira Mono";
+}*/
+
+/* categories no transform */
+.quarto-title .quarto-categories .quarto-category {
+  text-transform: none;
+}
+
+div.quarto-post .listing-categories .listing-category {
+  text-transform: none;
+}
+
+
+/* remove spacing and transformation from headers */
+h1, h2, h3, h4, h5, h6 {
+  text-transform: none;
+  letter-spacing: 0px;
+  font-weight: 100;
+}
+
+/* remove spacing from body text */
+body {
+  letter-spacing: 0px;
+  font-weight: 400;
+}
+
+
+/* have table of contents title be all lowercase */
+#toc-title {
+  text-transform: lowercase;
+}
+

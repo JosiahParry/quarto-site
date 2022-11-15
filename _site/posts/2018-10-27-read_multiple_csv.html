@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2018-10-27">
+
+<title>Josiah Parry - Reading Multiple csvs as 1 data frame</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - Reading Multiple csvs as 1 data frame">
+<meta name="twitter:description" content="Reading chunked csv files">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Reading Multiple csvs as 1 data frame</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Reading Multiple csvs as 1 data frame</h1>
+<p class="subtitle lead">Reading chunked csv files</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">tutorial</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 27, 2018</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In an earlier <a href="josiahparry.com/post/write-chunked-csv">posting</a> I wrote about having to break a single csv into multiple csvs. In other scenarios one data set maybe provided as multiple a csvs.</p>
+<p>Thankfully <code>purrr</code> has a beautiful function called <a href="https://purrr.tidyverse.org/reference/map.html"><code>map_df()</code></a> which will make this into a two liner. This process has essentially 3 steps.</p>
+<ol type="1">
+<li>Create a vector of all <code>.csv</code> files that should be merged together.</li>
+<li>Read each file using <a href="https://readr.tidyverse.org/reference/read_delim.html"><code>readr::read_csv()</code></a></li>
+<li>Combine each dataframe into one.</li>
+</ol>
+<p><a href="https://purrr.tidyverse.org/reference/map.html"><code>map_df()</code></a> maps (applys) a function to each value of an object and produces a dataframe of all outputs.</p>
+<p>For this example I will use the csvs I created in a previous tutorial utilizing a dataset from the Quantitative Social Science book.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># Get all csv file names </span>
+<span class="nv">file_names</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="o">(</span><span class="s">"../../static/data/chunk_data"</span>, pattern <span class="o">=</span> <span class="s">"\\.csv"</span>, full.names <span class="o">=</span> <span class="kc">TRUE</span><span class="o">)</span>
+<span class="nv">file_names</span>
+<span class="c">#&gt;  [1] "../../static/data/chunk_data/social_chunked_1.csv" </span>
+<span class="c">#&gt;  [2] "../../static/data/chunk_data/social_chunked_10.csv"</span>
+<span class="c">#&gt;  [3] "../../static/data/chunk_data/social_chunked_11.csv"</span>
+<span class="c">#&gt;  [4] "../../static/data/chunk_data/social_chunked_12.csv"</span>
+<span class="c">#&gt;  [5] "../../static/data/chunk_data/social_chunked_13.csv"</span>
+<span class="c">#&gt;  [6] "../../static/data/chunk_data/social_chunked_2.csv" </span>
+<span class="c">#&gt;  [7] "../../static/data/chunk_data/social_chunked_3.csv" </span>
+<span class="c">#&gt;  [8] "../../static/data/chunk_data/social_chunked_4.csv" </span>
+<span class="c">#&gt;  [9] "../../static/data/chunk_data/social_chunked_5.csv" </span>
+<span class="c">#&gt; [10] "../../static/data/chunk_data/social_chunked_6.csv" </span>
+<span class="c">#&gt; [11] "../../static/data/chunk_data/social_chunked_7.csv" </span>
+<span class="c">#&gt; [12] "../../static/data/chunk_data/social_chunked_8.csv" </span>
+<span class="c">#&gt; [13] "../../static/data/chunk_data/social_chunked_9.csv"</span></code></pre>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="o">)</span>
+<span class="c"># apply </span>
+<span class="nv">all_csvs</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map_df</a></span><span class="o">(</span><span class="nv">file_names</span>, <span class="nv">read_csv</span><span class="o">)</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">5866</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="c">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">25000</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">6</span></span>
+<span class="c">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────</span></span>
+<span class="c">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="c">#&gt; <span style="color: #BB0000;">chr</span> (2): sex, messages</span>
+<span class="c">#&gt; <span style="color: #00BB00;">dbl</span> (4): yearofbirth, primary2004, primary2006, hhsize</span>
+<span class="c">#&gt; </span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="c">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+
+<span class="c"># preview the data</span>
+<span class="nf"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="o">(</span><span class="nv">all_csvs</span><span class="o">)</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tibble: 6 × 6</span></span>
+<span class="c">#&gt;   sex    yearofbirth primary2004 messages   primary2006 hhsize</span>
+<span class="c">#&gt;   <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span> male          <span style="text-decoration: underline;">1</span>941           0 Civic Duty           0      2</span>
+<span class="c">#&gt; <span style="color: #555555;">2</span> female        <span style="text-decoration: underline;">1</span>947           0 Civic Duty           0      2</span>
+<span class="c">#&gt; <span style="color: #555555;">3</span> male          <span style="text-decoration: underline;">1</span>951           0 Hawthorne            1      3</span>
+<span class="c">#&gt; <span style="color: #555555;">4</span> female        <span style="text-decoration: underline;">1</span>950           0 Hawthorne            1      3</span>
+<span class="c">#&gt; <span style="color: #555555;">5</span> female        <span style="text-decoration: underline;">1</span>982           0 Hawthorne            1      3</span>
+<span class="c">#&gt; <span style="color: #555555;">6</span> male          <span style="text-decoration: underline;">1</span>981           0 Control              0      3</span></code></pre>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

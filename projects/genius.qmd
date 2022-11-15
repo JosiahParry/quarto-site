@@ -1,0 +1,10 @@
+---
+title: "genius (retired)"
+tags: [package]
+---
+
+genius was my first R package and my first digital child. genius provided a way to programatically access song lyrics from genius.com. This included ways to fetch single songs, albums, and track lists. It was, at one point, integrated with the [spotifyr](https://www.rcharlie.com/spotifyr/) package. 
+
+This R package was the basis of much of my learning of the data science ecosystem. Including [APIs and Docker](https://github.com/JosiahParry/genius-api). Creating stacked ensemble machine learning models using LDA outputs as model inputs (see online [guide](https://mirr.netlify.app/index.html))
+
+- [ {{< fa brands github >}} GitHub](https://github.com/josiahparry/genius)

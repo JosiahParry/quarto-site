@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2021-03-28">
+
+<title>Josiah Parry - APIs: the language agnostic love story</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - APIs: the language agnostic love story">
+<meta name="twitter:description" content="Moving Beyond the R &amp; Python love story">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">APIs: the language agnostic love story</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#extending-the-love-story-through-design-choices" id="toc-extending-the-love-story-through-design-choices" class="nav-link active" data-scroll-target="#extending-the-love-story-through-design-choices">Extending the love story through design choices</a></li>
+  <li><a href="#the-r-python-love-story" id="toc-the-r-python-love-story" class="nav-link" data-scroll-target="#the-r-python-love-story">The R &amp; Python love story</a></li>
+  <li><a href="#moving-beyond-r-python" id="toc-moving-beyond-r-python" class="nav-link" data-scroll-target="#moving-beyond-r-python">Moving beyond R &amp; Python</a></li>
+  <li><a href="#apis-in-very-brief" id="toc-apis-in-very-brief" class="nav-link" data-scroll-target="#apis-in-very-brief">APIs in very brief</a></li>
+  <li><a href="#making-the-leap" id="toc-making-the-leap" class="nav-link" data-scroll-target="#making-the-leap">Making the leap</a></li>
+  <li><a href="#the-tools" id="toc-the-tools" class="nav-link" data-scroll-target="#the-tools">The tools</a></li>
+  <li><a href="#motivating-examples" id="toc-motivating-examples" class="nav-link" data-scroll-target="#motivating-examples">Motivating examples</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">APIs: the language agnostic love story</h1>
+<p class="subtitle lead">Moving Beyond the R &amp; Python love story</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 28, 2021</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="extending-the-love-story-through-design-choices" class="level2">
+<h2 class="anchored" data-anchor-id="extending-the-love-story-through-design-choices">Extending the love story through design choices</h2>
+<p>You may have noticed by now that we at RStudio have been emphatic about the R &amp; Python love story. This is driven by our efforts to unify data science teams and bridge the language divide. Our efforts are largely characterized by our development of the package <a href="https://rstudio.github.io/reticulate/">{reticulate}</a> and our professional product suite, RStudio Team.</p>
+<div class="highlight">
+<p><img src="https://rstudio.github.io/reticulate/images/reticulated_python.png" width="35%" style="float:right; padding:10px"></p>
+</div>
+<p>The R &amp; Python love story is based on the axiom that data scientists shouldn’t be forced to use a single tool. They should be able to use whichever tools that a) they prefer or b) gets the job done effectively. For the most part, this is a statement of “use R <em>or</em> Python, we will support you.” But we can go beyond that to “use R <em>and</em> Python.” It’s a bit of leap in your mental framework.</p>
+<p>When it comes to RStudio Team, the software will support either language exceptionally well. The exceptionally brief overview of the capabilities are as follows:</p>
+<ul>
+<li>RStudio Package Manager: provides a centralized location to install R <em>and</em> Python libraries.</li>
+<li>RStudio Connect: provides a way to deploy R and Python content.</li>
+<li>RStudio Server Pro: provides a centralized and scalable location to develop R and Python.</li>
+</ul>
+<div class="highlight">
+<p><img src="../images/rstudio-team.png" width="75%" style="display: block; margin: auto;"></p>
+</div>
+</section>
+<section id="the-r-python-love-story" class="level2">
+<h2 class="anchored" data-anchor-id="the-r-python-love-story">The R &amp; Python love story</h2>
+<p>The R and Python love story is something that we have been leaning into here at RStudio. It is most evidenced by our development of the {reticulate} R library which has enabled features such as executing Python code chunks in R Markdown documents which gives you all of the power of R Markdown and Python. Additionally the RStudio IDE has been improved to display Python objects in your environment.</p>
+<p>One of the key challenges is that reticulate cannot be used to help Python users call R. reticulate assists R users who want to utilize Python, but not the other way around. There exists the library <a href="https://rpy2.github.io/doc/latest/html/overview.html#background"><code>rpy2</code></a> but it is not as easy to use as reticulate—which comes with the same complexities as any other Python installation. So where do we go from here?</p>
+</section>
+<section id="moving-beyond-r-python" class="level2">
+<h2 class="anchored" data-anchor-id="moving-beyond-r-python">Moving beyond R &amp; Python</h2>
+<p>It is clear that the R &amp; Python love story is wanting to some degree. reticulate is an R native way of using Python within R code. reticulate also increases the likelihood of running into environment management challenges. Rather than managing just an R or Python environment, you’re now managing the intersection of two environments. Someone can probably provide the math to illustrate the possible complications here, but it’s not me!</p>
+<p>You might be thinking that I sound like a pessimist. To that I’d say, just you wait a minute! One of the solutions has been sitting in front of us this whole time—APIs.</p>
+</section>
+<section id="apis-in-very-brief" class="level2">
+<h2 class="anchored" data-anchor-id="apis-in-very-brief">APIs in very brief</h2>
+<p>Application programming interfaces (APIs) are a way to enable the use of a tool by another regardless of the underlying implementation. APIs, simply put, enable machines to talk to machines. There are many different types of APIs though most commonly you’ll encounter RESTful APIs. RESTful APIs work over HTTP (hyper text transfer protocol)—the stuff the internet uses. Every tool worth its salt can make an HTTP API call. In R we have <a href="https://httr.r-lib.org/"><code>{httr}</code></a> and in Python we have <a href="https://requests.readthedocs.io/en/master/"><code>requests</code></a>.</p>
+<p>If you’ve ever tried to get Tweets from twitter using <code>{rtweet}</code> or <a href="https://www.tweepy.org/"><code>Tweepy</code></a>, you’ve interacted with an API. Both rtweet and tweepy end up making the same exact HTTP requests. The difference is the language that started the request. The key thing to take away is that APIs do not care what language you use to call them.</p>
+</section>
+<section id="making-the-leap" class="level2">
+<h2 class="anchored" data-anchor-id="making-the-leap">Making the leap</h2>
+<p>APIs enable us to develop exceptionally modular code / functionality. Just like how if you want to make some functionality reproducible, you might make a function to make that easier, you might make a API instead. Think of an API as a function that can be made available to absolutely anyone. If your target audience is <em>just</em> R users, you might make a package. However, say you have a team of web developers who are making a new app and they want to utilize your model predictions, you would make an API. Or, say you have a data science team that has developed a neural network in PyTorch and you want to deliver the predictions through a shiny application, they would host the model in an API.</p>
+</section>
+<section id="the-tools" class="level2">
+<h2 class="anchored" data-anchor-id="the-tools">The tools</h2>
+<p>The tools to make your R and Python code already exist. And they are already superbly supported in RStudio Connect. Within the R ecosystem the <a href="https://www.rplumber.io/">plumber</a> package will let you turn any R function into a RESTful API endpoint. And within the Python ecosystem, Flask serves the same purpose. Now when you need to have cross team tool sharing, it is my recommendation to consider creating an API. Your colleagues won’t have to translate your code, learn a new language, or create a clunky intermediate step of data export and conversion.</p>
+<div class="highlight">
+<p><img src="https://raw.githubusercontent.com/rstudio/plumber/master/logo/plumber.svg" width="10%" style="float:right; padding:10px"></p>
+</div>
+<p>By incorporating APIs into your data science toolkit, you can greatly extend the reach of your work. You can build incredible standalone infrastructure that can be utilized to by people regardless of their language of choice. Rather than thinking about how you can achieve a tasks in a single R or Python script, we can begin thinking about how existing APIs can be tied together to create an immaculate data pipeline. APIs let us move beyond the dichotomy of R and Python and become language agnostic thereby embracing <em>every</em> language that may be useful to your team and your work.</p>
+</section>
+<section id="motivating-examples" class="level2">
+<h2 class="anchored" data-anchor-id="motivating-examples">Motivating examples</h2>
+<p>In another post which can be found <a href="http://josiahparry.com/post/2021-03-28-python-r/">here</a>, I will briefly go over two motivating examples that illustrate how a plumber API can be used to fit an XGBoost model with Scikit Learn and an exploratory analysis of financial data provided from a Flask app.</p>
+<p><em>Disclaimer: This is a personal opinion and not endorsed or published by RStudio. My statements represent no one but myself—sometimes not even that.</em></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

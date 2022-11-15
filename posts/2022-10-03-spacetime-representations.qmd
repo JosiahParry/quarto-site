@@ -1,0 +1,130 @@
+---
+title: "spacetime representations aren't good—yet"
+date: '2022-11-07'
+categories: [sfdep, rstats, spacetime]
+---
+
+
+My beliefs can be summarized somewhat succinctly. 
+
+We should not limit space-time data to dates or timestamps. 
+
+The R ecosystem should always utilize a normalized approach as described above. Further, a representation should use friendly R objects. The friendliest object is a data frame. A new representation should allow context switching between geometries and temporal data. That new representation should always use time-long formats and the geometries should _never_ be repeated. 
+
+A spacetime representation should give users complete and total freedom to manipulate their data as they see fit (e.g. dplyr or data.table operations).
+
+The only time to be strict in the format of spacetime data is when statstics are going to be derived from the data.
+
+## Background
+
+While implementing emerging hotspot analysis in `sfdep` I encountered the need for a formalized spacetime class in R. As my focus in sfdep has been tidyverse-centric functionality, I desired a "tidy" data frame that could be used as a spacetime representation. Moreover, space (in the spacetime representation) should be represented as an sf or sfc object. In sfdep I introduced the new S3 class `spacetime` based on Edzer Pebesma's 2012 article ["spacetime: Spatio-Temporal Data in R"](https://www.jstatsoft.org/article/view/v051i07) and Thomas Lin Pederson's [tidygraph package](https://ggraph.data-imaginist.com/articles/tidygraph.html).
+
+## Representations of Spatial Data
+
+Before describing my preferences in a spacetime representation in R, I want to review possible representations of spacetime data. 
+
+Pebesma (2012) outlines three tabular representations of spatio-temporal data. 
+
+- "**Time-wide**: Where different columns reflect different moments in time.
+- **Space-wide**: Where different columns reflect different measurement locations or areas.
+- **Long formats**: Where each record reflects a single time and space combination.
+
+The "long format" is what we may consider "tidy" per [Wickham (2014)](https://www.jstatsoft.org/article/view/v059i10). In this case, both time and space are variables with unique combinations as rows. 
+
+Pebesma further qualifies spatial data representation into a "sparse grid" and a "full grid." Say we have a variable X. In a spatio temporal full grid we will store all combinations of time (t) and locations (i) . If Xi is missing at any of those location and time combinations (Xit is missing), the value of X is recorded as a missing value. Whereas in a sparse grid, if there is any missing data, the observation is omitted. Necessarily, in a full grid there will be i x t number of rows. In a sparse grid there will be fewer than i x t rows. 
+
+Very recently in an r-spatial [blog post, "Vector Data Cubes"](https://r-spatial.org/r/2022/09/12/vdc.html#multiple-long-table-forms-database-normalization), Edzer describes another approach to representing spacetime using a database normalization approach. Database normalization is a process that reduces redundancy by creating a number of smaller tables containing IDs and values. These tables can then be joined only when needed. When we consider spacetime data, we have repeating geometries across time. It is inefficient to to keep multiple copies of the geometry. Instead, we can keep track of the unique ID of a geometry and store the geometry in another table. 
+
+## sfdep spacetime representation
+
+The spacetime class in [sfdep](https://sfdep.josiahparry.com) is in essence a database normalization approach (see above blog post). It is implemented with the database normalization approach and the ergonomics of [tidygraph](https://tidygraph.data-imaginist.com/) in mind. 
+
+The objective of the spacetime class in sfdep is to 
+
+- allow complete freedom of data manipulation via data.frame objects,
+- prevent duplication of geometries,
+- and provide leeway in what "time" can be defined as.
+
+Similar to tidygraph, `spacetime` provides access to two contexts: data and geometry. The data context is a data frame and the geometry context. These are linked based on a unqie identifie that is present in both contexts.
+
+<details>
+  <summary> _R code_ </summary>
+
+```{r, message=FALSE}
+library(dplyr)
+
+times <- seq(
+  Sys.time(), 
+  Sys.time() + lubridate::hours(5),
+  length.out = 5
+)
+
+locations <- c("001", "002")
+
+data_context <- tidyr::crossing(
+  location = locations,
+  time = times
+) |> 
+  mutate(value = rnorm(n())) |> 
+  arrange(location)
+```
+
+```{r}
+library(sf)
+
+geometry_context <- st_sfc(
+  list(st_point(c(0, 1)), st_point(c(1, 1)))
+  ) |> 
+  st_as_sf() |> 
+  mutate(location = c("001", "002"))
+```
+
+Use the spacetime constructor
+
+```{r}
+library(sfdep)
+spt <- spacetime(
+  .data = data_context,
+  .geometry = geometry_context, 
+  .loc_col = "location", 
+  .time_col = "time"
+)
+```
+
+
+Swap contexts with activate
+
+```{r, output = "asis"}
+activate(spt, "geometry")
+```
+
+</details> 
+
+
+One of my very strong beliefs is that temporal data does not, and should not, always be represented as a date or a timestamp. This paradigm is too limiting. What about panel data where you're measuring cohorts along periods 1 - 10? Should these be represented as dates? No, definitely not. Because of this, sfdep allows you to utilize any numeric column that can be sorted. 
+
+> _Perhaps I've just spent too much time listening to ecometricians..._
+
+<details> 
+  <summary> _example of using integers_ </summary>
+
+```{r}
+spacetime(
+  mutate(data_context, period = row_number()),
+  geometry_context, 
+  .loc_col = "location",
+  .time_col = "period"
+)
+
+```
+</details>
+
+
+
+## Qualifiers 
+
+I don't think my spacetime class is the panacea. I don't have the technical chops to make a great data format. I also don't want to have that burden. Additionally, the class is desgned with lattice data in mind. I don't think it is sufficient for trajectories or point pattern without repeating locations.
+
+There's a new R package called `cubble` for spatio-temporal data. I've not explored it. It may be better suited to your tidy-centric spatio-temporal data. 
+
+

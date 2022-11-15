@@ -1,14 +1,11 @@
 ---
-title: "projects"
+title: "projects & contributions"
+
+listing:
+  contents: projects
+  type: grid
+  id: "pkgs"
 ---   
-
-- sfdep
-- spdep
-- genius (RIP)
-- Urban Informatics Toolkit
-- Music Information Retrieval in R (mirrr)
-- R for Progressive Campaigns
-
 
 ### Open source contributions
 

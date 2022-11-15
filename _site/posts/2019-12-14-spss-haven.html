@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2019-12-14">
+
+<title>Josiah Parry - Finding an SPSS {haven}</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - Finding an SPSS {haven}">
+<meta name="twitter:description" content="How to deal with `.sav` files from SPSS">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Finding an SPSS {haven}</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#haven" id="toc-haven" class="nav-link active" data-scroll-target="#haven">{haven}</a></li>
+  <li><a href="#gripes" id="toc-gripes" class="nav-link" data-scroll-target="#gripes">Gripes</a>
+  <ul class="collapse">
+  <li><a href="#gripe-1-numbers-representing-characters-or-labels" id="toc-gripe-1-numbers-representing-characters-or-labels" class="nav-link" data-scroll-target="#gripe-1-numbers-representing-characters-or-labels">Gripe 1: numbers representing characters (or labels)</a></li>
+  <li><a href="#gripe-2-uninformative-column-names" id="toc-gripe-2-uninformative-column-names" class="nav-link" data-scroll-target="#gripe-2-uninformative-column-names">Gripe 2: uninformative column names</a></li>
+  <li><a href="#gripe-3-user-defined-missing-values" id="toc-gripe-3-user-defined-missing-values" class="nav-link" data-scroll-target="#gripe-3-user-defined-missing-values">Gripe 3: user defined missing values</a></li>
+  </ul></li>
+  <li><a href="#take-aways" id="toc-take-aways" class="nav-link" data-scroll-target="#take-aways">Take aways</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Finding an SPSS {haven}</h1>
+<p class="subtitle lead">How to deal with <code>.sav</code> files from SPSS</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 14, 2019</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<blockquote class="blockquote">
+<p>Note (2022-11-14): the dataset that was used can no longer be access from the url I provided in this blog post. I have found it at a zip file in a blog post at <a href="https://blog.faradars.org/wp-content/uploads/2020/07/noisedata.zip" class="uri">https://blog.faradars.org/wp-content/uploads/2020/07/noisedata.zip</a> if you want to try downloading it from there.</p>
+</blockquote>
+<p>My education as a social scientist—undergratuate studies in sociology and anthropology—was largely focused on theory and the application of theory to social problems. For the most part, I taught myself how to apply those methods through R. I was fortunate enough to have avoided ever using SPSS. Perhaps that is good. Perhaps it is not. The use of R in the social sciences is increasing and I will go as far as to say that that is great news. However, there are still holdouts.</p>
+<p>Very recently I came across data exported from SPSS in the wild. In the work that I get to engage in at the Boston Area Research Initiative (<a href="https://www.northeastern.edu/csshresearch/bostonarearesearchinitiative/">BARI</a>) we receive data from various sources, whether these be municipal organizations, the police department, or non-profits, and as Tolstoy said:</p>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+“All clean datasets are alike; every messy dataset is messy in its own way.”, Leo Tolstoy. <a href="https://t.co/Z70eXgKRaK">https://t.co/Z70eXgKRaK</a>
+</p>
+— Maria Khalusova (<span class="citation" data-cites="mariaKhalusova">@mariaKhalusova</span>) <a href="https://twitter.com/mariaKhalusova/status/1204853611743842304?ref_src=twsrc%5Etfw">December 11, 2019</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>In this post I want to illustrate two of the main pain points I encountered while working with data from SPSS.I also go rather deep into the weeds about R data structures and how we can manipulate them. While this is “about” SPSS data, folks looking for a better understanding of R object may benefit from this as well (specifically Gripe 2).</p>
+<section id="haven" class="level2">
+<h2 class="anchored" data-anchor-id="haven">{haven}</h2>
+<p>I am not sure where the inspiration for the name “haven” came from. But I am sure that its name does indeed speak for itself. haven enables R programmers that are SPSS—Stata and SAS as well—illiterate to work with data that is not naturally intended for R use. There are two key behaviors of SPSS data that I was unaware of and that plagued me. I break these down into three gripes below.</p>
+</section>
+<section id="gripes" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="gripes">Gripes</h2>
+<p>I maintain three gripes about SPSS data.</p>
+<ol type="1">
+<li>Factor values are represented numerically and the values that they represent are stored in metadata.</li>
+<li>Column names are vague. The values they represent are stored as a label (metadata).</li>
+<li>Missing values can be represented innumerably. Each column can have user defined missing values, i.e.&nbsp;<code>9999</code>.</li>
+</ol>
+<p>Now, I must say that I have found it best practice to try and combat my own gripes.</p>
+<p>In regards to the former two gripes, this is not unheard of behavior nor is it rare. Associating numeric values with <em>related</em> values—oh, I don’t know…think of a user ID and an email address—is in essence the core of relational database systems (RDBMS). One may even have the gall to argue that RDBMS power many of the tools I use and take for granted. I would most likely be willing to concede that point.</p>
+<p>The third gripe can be quite easily countered if I am to be frank. Missing data is in of itself data. An <code>NA</code> is an <code>NA</code> is an <code>NA</code> may not be a generalizable statement. Providing values such as <code>9999</code> in place of a missing value in some cases may be a relic of antiquity where missingness could not be handled by software. Or, perhaps we can frame missingness other ways. Let’s imagine we are conducting a study and we want to keep track of why there was missing data. This could have been from a non-response, or a withdrawal, or erroneously entered data, or any other number of reasons. Keeping a record of that missing data may useful.</p>
+<section id="gripe-1-numbers-representing-characters-or-labels" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="gripe-1-numbers-representing-characters-or-labels">Gripe 1: numbers representing characters (or labels)</h3>
+<div class="page-columns page-full"><p>Sometimes I really would like <code>stringsAsFactors = TRUE</code>. Working with survey data tends to be one of those times. R has a robust method of creating, handling, and manipulating factors<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and because of this, we aren’t required to numerically encode our data. This may be a personal preference, but I really like to be reminded of <em>what</em> I am working with and seeing the factor levels clearly spelled out for me is quite nice.</p><div class="no-row-height column-margin column-container"><li id="fn1"><p><sup>1</sup>&nbsp;Check out <a href="https://forcats.tidyverse.org/">forcats</a> for working with factors.</p></li></div></div>
+<div class="page-columns page-full"><p>Since the data I am working with at BARI is confidential, I’ve found some SPSS data hosted by the <a href="https://www.bath.ac.uk/">University of Bath</a><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> to illustrate this with.</p><div class="no-row-height column-margin column-container"><li id="fn2"><p><sup>2</sup>&nbsp;Anthony Horowitz wrote a rather fun murder mystery novel titled <a href="https://www.amazon.com/Magpie-Murders-Novel-Anthony-Horowitz/dp/0062645226">Magpie Murders</a> which takes place in a small town outside of bath. I recommend it.</p></li></div></div>
+<p>Reading in data is rather straightforward. SPSS data come with a <code>.sav</code> file extension. Following standard <a href="https://readr.tidyverse.org/"><code>readr</code></a> convention we can read a .sav file with <a href="https://haven.tidyverse.org/reference/read_spss.html"><code>haven::read_sav()</code></a>.</p>
+<p><em>Note: the syntax above is used for referencing an exported function from a namespace (package name). The syntax is <code>pkgname::function()</code>.</em></p>
+<p>The below line reads in the sav file from the University of Bath.</p>
+<p><em>Note: by wrapping an object assignment expression, such as the below, in parentheses the object is then printed (I just recently figured this out).</em></p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://haven.tidyverse.org">haven</a></span><span class="o">)</span>
+
+<span class="c"># read in sav file</span>
+<span class="o">(</span><span class="nv">noise</span> <span class="o">&lt;-</span> <span class="nf">haven</span><span class="nf">::</span><span class="nf"><a href="https://haven.tidyverse.org/reference/read_spss.html">read_sav</a></span><span class="o">(</span><span class="s">"http://staff.bath.ac.uk/pssiw/stats2/noisedata.sav"</span><span class="o">)</span><span class="o">)</span></code></pre>
+</div>
+<p>The above shows <code>GENDER</code> codes as a numeric value. But if you print out the tibble to your console you will see labels. So in this case, where there is a <code>1</code> under <code>GENDER</code>, the printed console shows <code>[male]</code>, and the same is true for <code>2</code> and <code>[female]</code>. We can get a sense of this by viewing the structure of the tibble.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="o">(</span><span class="nv">noise</span><span class="o">)</span></code></pre>
+</div>
+<p>Above we can see that <code>GENDER</code> has an attribute <code>labels</code> which is a named numeric vector. The unique values are 1 and 2 representing “male” and “female” respectively. I struggle to keep this mental association. I’d prefer to have this shown explicitly. Fortunately, haven provides the function <a href="https://haven.tidyverse.org/reference/as_factor.html"><code>haven::as_factor()</code></a> which will convert these pesky integer columns to their respective factor values. We just need to pass the data frame as the only argument—sure, there are other arguments if you want to get fancy.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># selecting just 2 columns and 2 rows for simlicity.</span>
+<span class="nv">small_lil_df</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="o">(</span><span class="nv">noise</span>, <span class="m">1</span>, <span class="m">20</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="o">(</span><span class="m">1</span>, <span class="m">2</span><span class="o">)</span>
+
+<span class="c"># convert coded response to response text</span>
+<span class="nf">haven</span><span class="nf">::</span><span class="nf"><a href="https://haven.tidyverse.org/reference/as_factor.html">as_factor</a></span><span class="o">(</span><span class="nv">small_lil_df</span><span class="o">)</span></code></pre>
+</div>
+<p>And now we can just forget those integers ever existed in the firstplace!</p>
+</section>
+<section id="gripe-2-uninformative-column-names" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="gripe-2-uninformative-column-names">Gripe 2: uninformative column names</h3>
+<p>There are three key rules to <a href="https://vita.had.co.nz/papers/tidy-data.pdf">tidy data</a>.</p>
+<ol type="1">
+<li>Each variable forms a column.</li>
+<li>Each observation forms a row.</li>
+<li>Each type of observational unit forms a table.</li>
+</ol>
+<p>Each variable forms a column. Got it. So this means that any thing that can help describe our observation should be a column. Say we have a table of survey respondents. In this case each row should be a respondent and each column should be a variable (or feature, or predictor, or x, or whatever) associate with that respondent. This could be something like age, birth date, or the respondents response to a survey question.</p>
+<p>In the <a href="https://style.tidyverse.org/index.html">tidyverse style guide</a> Hadley Wickham writes</p>
+<blockquote class="blockquote">
+<p>Generally, variable names should be nouns and function names should be verbs. Strive for names that are concise and meaningful (this is not easy!).</p>
+</blockquote>
+<p>I personaly try to extend this to column names as well. Feature names are important so I, as a researcher, can remember what is what. From my encounters with SPSS data, I’ve found that feature names can be rather uninformative e.g.&nbsp;“Q12.” Much like factors, columns may have associated information hidden somewhere within them.</p>
+<p>We read in the personality data set from the Universit of Bath below.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># read in sav file with column labels</span>
+<span class="o">(</span><span class="nv">personality</span> <span class="o">&lt;-</span> <span class="nf">haven</span><span class="nf">::</span><span class="nf"><a href="https://haven.tidyverse.org/reference/read_spss.html">read_sav</a></span><span class="o">(</span><span class="s">"http://staff.bath.ac.uk/pssiw/stats2/personality.sav"</span><span class="o">)</span><span class="o">)</span></code></pre>
+</div>
+<p>The first thing that I notice is rather apalling: each <em>column</em> represents a <em>person</em>. oof, untidy. But this issue isn’t what brought me to these data. If you print the data to the console, you see something similar as what is above. If you <em>view</em> (<code>View(df)</code>) the data, the story is different. There is associated information underneath each column header.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="o">(</span><span class="nv">personality</span><span class="o">[</span>,<span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="o">]</span><span class="o">)</span></code></pre>
+</div>
+<p>Yikes. These labels seem to be character judgements! Whatever the labels represent, I want them, and I want them as the column headers.</p>
+<p>From looking at the structure of the data frame we can glean that each column has a label.</p>
+<p><strong>Warning</strong>: I’m going to walk through a fair bit of the theory and under the hood work to make these labels column names. Scroll to the bottom of this section to find the function definition.</p>
+<section id="aside-r-theory" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="aside-r-theory">Aside: R theory:</h4>
+<ul>
+<li>Each column of a data frame is actually just a vector. Each vector can have it’s own attributes (as above).</li>
+<li>A data frame is actually just a list of equal length vectors (same number of observations).<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></li>
+<li>“All objects can have arbitrary additional attributes, used to store metadata about the object.”<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></li>
+<li>We can fetch list elements using <code>[[</code> notation, e.g.&nbsp;<code>my_list[[1]]</code>
+<ul>
+<li><a href="https://purrr.tidyverse.org/reference/pluck.html"><code>purrr::pluck()</code></a> is an alternative to using <code>[[</code> for grabbing the underlying elements inside of a data structure. This means we can use <code>pluck(my_list, 1)</code> in place of <code>my_list[[1]]</code></li>
+</ul></li>
+</ul>
+<div class="no-row-height column-margin column-container"><li id="fn3"><p><sup>3</sup>&nbsp;<a href="http://adv-r.had.co.nz/Data-structures.html#data-frames" class="uri">http://adv-r.had.co.nz/Data-structures.html#data-frames</a></p></li><li id="fn4"><p><sup>4</sup>&nbsp;<a href="http://adv-r.had.co.nz/Data-structures.html#attributes" class="uri">http://adv-r.had.co.nz/Data-structures.html#attributes</a></p></li></div><p>Okay, but <em>how</em> does one actually get the label from the vector? The first step is to actually grab the vector. Below I use <a href="https://purrr.tidyverse.org/reference/pluck.html"><code>purrr::pluck()</code></a>to pull the first column. Note that <a href="https://dplyr.tidyverse.org/reference/slice.html"><code>slice()</code></a> is used for grabing specific row indexes. The below code is equivalent to <code>personality[1:10,][[1]]</code>. I prefer using the purrr functions because they are more legible.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">col_1</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="o">(</span><span class="nv">personality</span>, <span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="o">(</span><span class="m">1</span><span class="o">)</span></code></pre>
+</div>
+<p>We can access all of the vectors attributes with, you guessed it, the <a href="https://rdrr.io/r/base/attributes.html"><code>attributes()</code></a> function.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="o">(</span><span class="nv">col_1</span><span class="o">)</span></code></pre>
+</div>
+<p>This returns a named list. We can access (or set) specific attributes using the <a href="https://rdrr.io/r/base/attr.html"><code>attr()</code></a> function. The two arguments we must supply are <code>x</code>, the object, and <code>which</code>, which attribute we seek. In this case the values are <code>col_1</code> and <code>label</code> respectively.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="o">(</span><span class="nv">col_1</span>, <span class="s">"label"</span><span class="o">)</span></code></pre>
+</div>
+<div class="page-columns page-full"><p>purrr yet again makes working with list objects easy. purrr exports a function factory<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> called <a href="https://purrr.tidyverse.org/reference/attr_getter.html"><code>purrr::attr_getter()</code></a>. This function generates a function which accesses specific attributes. We can create a function <code>get_label()</code> using <a href="https://purrr.tidyverse.org/reference/attr_getter.html"><code>attr_getter()</code></a> all we have to do is tell it <em>which</em> attribute we would like.</p><div class="no-row-height column-margin column-container"><li id="fn5"><p><sup>5</sup>&nbsp;A function factory is an object which creates other function objects.</p></li></div></div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># generate a get_label f(x) via purr</span>
+<span class="nv">get_label</span> <span class="o">&lt;-</span> <span class="nf">purrr</span><span class="nf">::</span><span class="nf"><a href="https://purrr.tidyverse.org/reference/attr_getter.html">attr_getter</a></span><span class="o">(</span><span class="s">"label"</span><span class="o">)</span>
+
+<span class="nf">get_label</span><span class="o">(</span><span class="nv">col_1</span><span class="o">)</span></code></pre>
+</div>
+<p>Well, lovely. Let’s just use this on our <code>personality</code> data frame.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">get_label</span><span class="o">(</span><span class="nv">personality</span><span class="o">)</span></code></pre>
+</div>
+<p>Ope. Welp. That didn’t work. We should just give up 🤷.</p>
+<p><img src="https://media.giphy.com/media/O5xChSjqUIxsk/giphy.gif" class="img-fluid"></p>
+<p>The reason this didn’t work is because we tried to use <code>get_label()</code> on a tibble which didn’t have the “label” attribute. We can verify this by looking at the list names of the attributes of <code>personality</code>.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="o">(</span><span class="nv">personality</span><span class="o">)</span><span class="o">)</span></code></pre>
+</div>
+<div class="page-columns page-full"><p>But what about the attribtues of each column? We can iterate over each column using <a href="https://purrr.tidyverse.org/reference/map.html"><code>map()</code></a> to look at the attributes. Below I iterate over the first five columns. More on <a href="https://purrr.tidyverse.org/reference/map.html"><code>map()</code></a><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p><div class="no-row-height column-margin column-container"><li id="fn6"><p><sup>6</sup>&nbsp;<a href="https://adv-r.hadley.nz/functionals.html#map" class="uri">https://adv-r.hadley.nz/functionals.html#map</a></p></li></div></div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nf"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="o">(</span><span class="nv">personality</span>, <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="o">)</span>, <span class="o">~</span><span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="o">(</span><span class="nv">.</span><span class="o">)</span><span class="o">)</span><span class="o">)</span></code></pre>
+</div>
+<p>Well, now that we’ve iterated over the columns and illustrated that the attributes live there, why not iterate over the columns and use <code>get_label()</code>?</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># use get_label to retrieve column labels</span>
+<span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map_chr</a></span><span class="o">(</span><span class="nf"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="o">(</span><span class="nv">personality</span>, <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="o">)</span>, <span class="nv">get_label</span><span class="o">)</span></code></pre>
+</div>
+<p>Again, yikes @ the labels. Let’s store these results into a vector so we can rename the original columns.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">pers_labels</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map_chr</a></span><span class="o">(</span><span class="nv">personality</span>, <span class="nv">get_label</span><span class="o">)</span></code></pre>
+</div>
+<p>We can now change the names using <a href="https://rdrr.io/r/stats/setNames.html"><code>setNames()</code></a> from base R. We will then make the column headers tidy (personal definition of tidy column names) using <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>janitor::clean_names()</code></a>.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="o">(</span><span class="nv">personality</span>, <span class="nv">pers_labels</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf">janitor</span><span class="nf">::</span><span class="nf"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="o">(</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="o">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="o">)</span></code></pre>
+</div>
+<p>In the case that a column doesn’t have a label, <code>get_label()</code> will return <code>NULL</code> and then <a href="https://rdrr.io/r/stats/setNames.html"><code>setNames()</code></a> will fail. To work around this, you can use the name of the column rather than the label value. Below is a function definition which handles this for you and, optionally, lets you specify which columns to rename based on a regex pattern. I think we’ve done enough list manipulation for the day. If you have questions about the function definition I’d be happy to work through it one on one with you via twitter DMs.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">label_to_colname</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">df</span>, <span class="nv">pattern</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nv">get_label</span> <span class="o">&lt;-</span> <span class="nf">purrr</span><span class="nf">::</span><span class="nf"><a href="https://purrr.tidyverse.org/reference/attr_getter.html">attr_getter</a></span><span class="o">(</span><span class="s">"label"</span><span class="o">)</span>
+  <span class="nv">col_labels</span> <span class="o">&lt;-</span> <span class="nf">purrr</span><span class="nf">::</span><span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nv">df</span>, <span class="nv">get_label</span><span class="o">)</span>
+
+  <span class="nv">col_labels</span><span class="o">[</span><span class="nf"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="o">(</span><span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nv">col_labels</span>, <span class="nv">is.null</span><span class="o">)</span><span class="o">)</span><span class="o">]</span>  <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nv">col_labels</span><span class="o">[</span><span class="nf"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="o">(</span><span class="nf">purrr</span><span class="nf">::</span><span class="nf"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="o">(</span><span class="nv">col_labels</span>, <span class="nv">is.null</span><span class="o">)</span><span class="o">)</span><span class="o">]</span><span class="o">)</span>
+
+  <span class="kr">if</span> <span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/missing.html">missing</a></span><span class="o">(</span><span class="nv">pattern</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nv">names_to_replace</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="o">(</span><span class="kc">TRUE</span>, <span class="nf"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="o">(</span><span class="nv">df</span><span class="o">)</span><span class="o">)</span>
+  <span class="o">}</span> <span class="kr">else</span> <span class="o">{</span>
+    <span class="nv">names_to_replace</span> <span class="o">&lt;-</span> <span class="nf">stringr</span><span class="nf">::</span><span class="nf"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nv">col_labels</span><span class="o">)</span>, <span class="nv">pattern</span><span class="o">)</span>
+  <span class="o">}</span>
+  
+  <span class="nf"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="o">(</span><span class="nv">df</span><span class="o">)</span><span class="o">[</span><span class="nv">names_to_replace</span><span class="o">]</span> <span class="o">&lt;-</span> <span class="nf">janitor</span><span class="nf">::</span><span class="nf"><a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html">make_clean_names</a></span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="o">(</span><span class="nv">col_labels</span><span class="o">[</span><span class="nv">names_to_replace</span><span class="o">]</span><span class="o">)</span><span class="o">)</span>
+
+  <span class="nf">haven</span><span class="nf">::</span><span class="nf"><a href="https://haven.tidyverse.org/reference/zap_label.html">zap_label</a></span><span class="o">(</span><span class="nv">df</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="nf">label_to_colname</span><span class="o">(</span><span class="nv">personality</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="o">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="o">)</span>
+
+<span class="c"># heh.</span>
+<span class="nf">label_to_colname</span><span class="o">(</span><span class="nv">personality</span>, <span class="s">"PERS37"</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="nf"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="o">(</span><span class="m">37</span><span class="o">)</span></code></pre>
+</div>
+</section>
+</section>
+<section id="gripe-3-user-defined-missing-values" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="gripe-3-user-defined-missing-values">Gripe 3: user defined missing values</h3>
+<p>I’ll keep this one short. If there are user defined missing values in a <code>.sav</code> file, you can encode these as <code>NA</code> by setting the <code>user_na</code> arugment to <code>TRUE</code>.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># there aren't any missing values but you get the idea</span>
+<span class="nv">noise</span> <span class="o">&lt;-</span> <span class="nf">haven</span><span class="nf">::</span><span class="nf"><a href="https://haven.tidyverse.org/reference/read_spss.html">read_sav</a></span><span class="o">(</span><span class="s">"http://staff.bath.ac.uk/pssiw/stats2/noisedata.sav"</span>,
+                         user_na <span class="o">=</span> <span class="kc">TRUE</span><span class="o">)</span></code></pre>
+</div>
+<div class="page-columns page-full"><p>And if for any reason that did not suffice, you can replace missing values with <a href="https://tidyr.tidyverse.org/reference/replace_na.html"><code>replace_na()</code></a><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p><div class="no-row-height column-margin column-container"><li id="fn7"><p><sup>7</sup>&nbsp;<a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="uri">https://tidyr.tidyverse.org/reference/replace_na.html</a></p></li></div></div>
+</section>
+</section>
+<section id="take-aways" class="level2">
+<h2 class="anchored" data-anchor-id="take-aways">Take aways</h2>
+<ul>
+<li>All data is messy in it’s own way.</li>
+<li><a href="https://haven.tidyverse.org/reference/read_spss.html"><code>haven::read_sav()</code></a> will read SPSS data.</li>
+<li><a href="https://haven.tidyverse.org/reference/as_factor.html"><code>haven::as_factor()</code></a> will apply column labels in place of the numeric values (if present).<br>
+</li>
+<li>Replace user defined NA values by setting <code>user_na = TRUE</code> i.e.&nbsp;<code>haven::read_sav("filepath.sav", user_na = TRUE)</code></li>
+<li>All R objects can have attributes.</li>
+<li>You can access attributes using <a href="https://rdrr.io/r/base/attributes.html"><code>attributes()</code></a> or <a href="https://rdrr.io/r/base/attr.html"><code>attr()</code></a>.</li>
+<li>Data frames are made of vectors.</li>
+<li>Data frames are actually just lists masquerading as rectangles.</li>
+</ul>
+
+
+</section>
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

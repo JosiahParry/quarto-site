@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="R package build">
+<meta name="dcterms.date" content="2021-06-18">
+
+<title>Josiah Parry - SLICED! a brief reflection</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta name="twitter:title" content="Josiah Parry - SLICED! a brief reflection">
+<meta name="twitter:description" content="A few weeks ago I was a contestant on the machine learning game show #SLICED! The format of the challenge is as follows:">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">SLICED! a brief reflection</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#how-i-got-roped-in" id="toc-how-i-got-roped-in" class="nav-link active" data-scroll-target="#how-i-got-roped-in">How I got roped in</a></li>
+  <li><a href="#getting-a-grip-on-tidymodels" id="toc-getting-a-grip-on-tidymodels" class="nav-link" data-scroll-target="#getting-a-grip-on-tidymodels">Getting a grip on {tidymodels}</a></li>
+  <li><a href="#understanding-tidymodels-libraries" id="toc-understanding-tidymodels-libraries" class="nav-link" data-scroll-target="#understanding-tidymodels-libraries">Understanding tidymodels libraries</a></li>
+  <li><a href="#tidymodels-resources" id="toc-tidymodels-resources" class="nav-link" data-scroll-target="#tidymodels-resources">Tidymodels resources</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">SLICED! a brief reflection</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>R package build </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 18, 2021</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>A few weeks ago I was a contestant on the machine learning game show #SLICED! The format of the challenge is as follows:</p>
+<ul>
+<li>The competition is a total of 2 hours 15 mins</li>
+<li>The first 15 minutes are spent looking at a data set—no programming allowed!</li>
+<li>The next two hours are dedicated to building the best machine learning model possible</li>
+<li>Predictions are submitted to Kaggle, only one prediction set can be used</li>
+<li>Person with the best model wins</li>
+<li>Points are allocated for:
+<ul>
+<li>Best model</li>
+<li>Best graphing</li>
+<li>Crowd favorites</li>
+</ul></li>
+</ul>
+<p>My stream is uploaded to youtube so you can catch it in all of its glory.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/4RnegRlUKVw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
+</iframe>
+<section id="how-i-got-roped-in" class="level2">
+<h2 class="anchored" data-anchor-id="how-i-got-roped-in">How I got roped in</h2>
+<p>About a month ago I saw the below tweet from Jesse Mostipak. Naturally, it piqued my interest.</p>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+Come play with meeeeee! I promise to make you look good. <a href="https://t.co/U7DRXM8deP">https://t.co/U7DRXM8deP</a>
+</p>
+— Jesse Mostipak is making mirepoix for #SLICED (<span class="citation" data-cites="kierisi">@kierisi</span>) <a href="https://twitter.com/kierisi/status/1390828946191753217?ref_src=twsrc%5Etfw">May 8, 2021</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>Everyone’s favorite Tidy-Tuesday-Tom essentially voluntold me. I decided to put my name in the hat and see if I can compete. The challenge, though, is that I have only ever dabbled in machine learning. In May it was something that I had only done a handful of times and with a much older toolset-e.g.&nbsp;caret. If there is one thing I know about myself, it’s that there is nothing like a deadline and a concrete objective to get me to learn something.</p>
+<p>I am a strong believer in <a href="https://en.wikipedia.org/wiki/Parkinson's_law">Parkinson’s Law</a>—you can thank my father for that—which is characterized by the saying “If you wait until the last minute, it only takes a minute to do.” Or, more formally, “work expands so as to fill the time available for its completion.”</p>
+<p>In essence, the best way for me to get better at machine learning would be to put myself in a situation—as uncomfortable it may be—where I would have to do machine learning. Alternatively, I could just faily miserably but I don’t like that.</p>
+</section>
+<section id="getting-a-grip-on-tidymodels" class="level2">
+<h2 class="anchored" data-anchor-id="getting-a-grip-on-tidymodels">Getting a grip on {tidymodels}</h2>
+<p>I have been loosely following the tidymodels ecosystem since the beginning. Previously my understanding of tidymodels only included, recipes, rsample, and parsnip. These three packages can get you exceptionally far, but there are so many additional packages that are instrumental to improving the ML workflow for useRs. These are tune, workflows, and workflowsets.</p>
+<p>The most challenging part of getting started with tidymodels was understanding where each package fits in during the process. The challenging task was to figure out which packages were low level APIs and which were abstractions.</p>
+</section>
+<section id="understanding-tidymodels-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-tidymodels-libraries">Understanding tidymodels libraries</h2>
+<p>The most basic component of a tidymodel ML process is a recipe ({recipes}) and a model specification ({parsnip}). The recipe determines the features used and any preprocessing steps. The model specification determines which model will be trained. Additionally, we often want to include resampling—e.g.&nbsp;bootstrap or cross validation (called a resamples ({rsample}) object in tidymodels). With these three components we can then utilize the {tune} package to train our model on our resamples. We can build a layer of abstraction from these four components which is called a <code>workflow</code>.</p>
+<p>In the ML process we want to train many models. And rather than just repeating the steps manually for each model, the package <code>workflowsets</code> will create many workflows for you and help you train all of those models quickly. Workflowsets were essential in my approach to sliced.</p>
+</section>
+<section id="tidymodels-resources" class="level2">
+<h2 class="anchored" data-anchor-id="tidymodels-resources">Tidymodels resources</h2>
+<p>Getting up to speed with tidymodels was a bit of a challenge. The packages are still actively under development so building corresponding documentation must be a bit of a challenge for the team! With that said, there are so many resources that you can use to get started. Below are some of the ones that I utilized and found helpful.</p>
+<ul>
+<li><a href="http://tmwr.org/">Tidymodeling with R</a></li>
+<li><a href="https://workflowsets.tidymodels.org/articles/evaluating-different-predictor-sets.html">Workflowsets vignette</a></li>
+<li><a href="http://juliasilge.com/">Julia Silge’s blog</a></li>
+<li>And a bunch of the help docs</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

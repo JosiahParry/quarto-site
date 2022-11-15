@@ -1,0 +1,12 @@
+---
+title: "mirrr - song genre classification"
+tags: [writing]
+---
+
+Tidy Music Information Retrieval was a bookdown project I wrote back in 2019 that created a stacked ensemble model that predicted musical genre from song audio features and song lyrics.
+
+I created 3 models. The first utilized LDA text classification outputs from song lyrics as inputs into a classification model. The second used song audio features from spotify. The third model used the outputs of both to create a stacked ensemble model. 
+
+
+
+

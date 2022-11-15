@@ -1,10 +1,31 @@
 /*-- scss:defaults --*/
+//$theme: "simplex" !default;
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 
 $font-family-serif: "Noto Serif","Segoe UI","Helvetica Neue",Helvetica,Roboto,FreeSans,serif;
-$font-family-sans-serif: "Noto Sans","Segoe UI","Helvetica Neue",Helvetica,Roboto,FreeSans,sans-serif;
+$font-family-sans-serif: "Open Sans","Segoe UI","Helvetica Neue",Helvetica,Roboto,FreeSans,sans-serif;
 
-p {
-  font-family: $font-family-sans-serif;
+// Headings formatting
+$headings-font-family: $font-family-serif;
+$headings-font-style: oblique;
+
+
+
+// sidebar title 
+.sidebar-title {
+  font-family: $headings-font-family;
+  font-style: $headings-font-style;
 }
+
+/*-- scss:rules --*/
+
+
+$navbar-dark-hover-color:           "#ff6700" !default;
+$navbar-light-hover-color:          "#ff6700" !default;
+
+
+
+
+

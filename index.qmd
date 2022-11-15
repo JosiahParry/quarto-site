@@ -1,11 +1,27 @@
 ---
-title: "Home Page"
+comments: false
+listing:
+  - id: "blog-posts"
+    sort-ui: false
+    sort: "date desc"
+    filter-ui: false
+    categories: false
+    type: grid
+    page-size: 6
+    fields: [title, description]
+    contents: 
+      - "/posts*/!(index).*md"
 ---
 
-This is a Quarto website. help me
+hey, welcome to my website. 
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+I occasionally will put things here.
 
-```{r}
-1 + 1
-```
+
+-----------
+
+### posts
+::: {#blog-posts}
+:::
+
+-----

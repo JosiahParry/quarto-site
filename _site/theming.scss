@@ -1,0 +1,22 @@
+/*-- scss:defaults --*/
+//$theme: "simplex" !default;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans');
+
+$font-family-serif: "Noto Serif","Segoe UI","Helvetica Neue",Helvetica,Roboto,FreeSans,serif;
+$font-family-sans-serif: "Noto Sans","Segoe UI","Helvetica Neue",Helvetica,Roboto,FreeSans,sans-serif;
+
+// Headings formatting
+$headings-font-family: $font-family-serif;
+$headings-font-style: oblique;
+
+/*-- scss:rules --*/
+
+
+$navbar-dark-hover-color:           "#ff6700" !default;
+$navbar-light-hover-color:          "#ff6700" !default;
+
+
+
+

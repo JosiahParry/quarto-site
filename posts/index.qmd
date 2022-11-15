@@ -3,4 +3,7 @@ title: recent posts
 listing:
   contents: ./
   type: default
+  sort: "date desc"
+  categories: true
+comments: false
 ---

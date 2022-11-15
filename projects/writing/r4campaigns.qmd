@@ -1,0 +1,10 @@
+---
+title: "R for Progressive Campaigns"
+tags: [writing]
+---
+
+[Read the book here](https://r4campaigns.netlify.app/).
+
+In 2008, the Obama campaign revolutionized the use of data in political campaigns. Since then, data teams have expanded and grown in size, capacity, and complexity.
+
+This short bookdown project is intended to illustrate how data can be used in campaigns through the statistical programming language R. This is a collection of small “recipes” that I have created that are intended to aid data teams in leveraging R.
