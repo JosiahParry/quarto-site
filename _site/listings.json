@@ -96,13 +96,13 @@
   {
     "listing": "/projects.html",
     "items": [
-      "/projects/writing/r4campaigns.html",
       "/projects/pkgs/sysreqs.html",
+      "/projects/pkgs/genius.html",
+      "/projects/pkgs/sfdep.html",
+      "/projects/pkgs/spdep.html",
+      "/projects/writing/r4campaigns.html",
       "/projects/writing/uitk.html",
-      "/projects/genius.html",
-      "/projects/writing/mirr.html",
-      "/projects/sfdep.html",
-      "/projects/spdep.html"
+      "/projects/writing/mirr.html"
     ]
   }
 ]

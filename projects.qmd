@@ -1,11 +1,25 @@
 ---
 title: "projects & contributions"
-
+comments: false
 listing:
-  contents: projects
-  type: grid
-  id: "pkgs"
+  - id: pkgs
+    contents: "/projects/pkgs"
+    type: grid
+    fields: [title, categories, description]
+  - id: writings
+    contents: "/projects/writing"
+    type: grid
+    fields: [title, categories, description]
+  
 ---   
 
-### Open source contributions
 
+### R packages & contributions to R packages
+
+::: {#pkgs}
+:::
+
+### Things I've written 
+
+::: {#writings}
+:::

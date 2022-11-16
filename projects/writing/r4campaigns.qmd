@@ -1,6 +1,6 @@
 ---
 title: "R for Progressive Campaigns"
-tags: [writing]
+categories: [writing, politics]
 ---
 
 [Read the book here](https://r4campaigns.netlify.app/).

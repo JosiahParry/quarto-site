@@ -70,13 +70,41 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-author','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-title','listing-categories','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-date","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-pkgs'] = new List('listing-pkgs', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-writings .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-categories','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
       searchColumns: ["listing-title","listing-author","listing-description"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-pkgs'] = new List('listing-pkgs', options);
+    window['quarto-listings']['listing-writings'] = new List('listing-writings', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -153,7 +181,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#open-source-contributions" id="toc-open-source-contributions" class="nav-link active" data-scroll-target="#open-source-contributions">Open source contributions</a></li>
+  <li><a href="#r-packages-contributions-to-r-packages" id="toc-r-packages-contributions-to-r-packages" class="nav-link active" data-scroll-target="#r-packages-contributions-to-r-packages">R packages &amp; contributions to R packages</a></li>
+  <li><a href="#things-ive-written" id="toc-things-ive-written" class="nav-link" data-scroll-target="#things-ive-written">Things I’ve written</a></li>
   </ul>
 </nav>
 </nav>
@@ -180,143 +209,90 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="open-source-contributions" class="level3">
-<h3 class="anchored" data-anchor-id="open-source-contributions">Open source contributions</h3>
-
-
-
-</section>
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-pkgs">
+<section id="r-packages-contributions-to-r-packages" class="level3">
+<h3 class="anchored" data-anchor-id="r-packages-contributions-to-r-packages">R packages &amp; contributions to R packages</h3>
+<div id="listing-pkgs" class="quarto-listing quarto-listing-container-grid">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-file-modified-sort="1668524330451" data-listing-reading-time-sort="0.35">
-<a href="./projects/writing/r4campaigns.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-R for Progressive Campaigns
-</h5>
-<div class="card-text listing-description">
-Read the book here.
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-file-modified-sort="1668530220087" data-listing-reading-time-sort="0.295">
+<div class="g-col-1" data-index="0" data-categories="package" data-listing-date-sort="1660104000000" data-listing-file-modified-sort="1668638650913" data-listing-reading-time-sort="0.295">
 <a href="./projects/pkgs/sysreqs.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 R package system requirements
 </h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
+package
+</div>
+</div>
 <div class="card-text listing-description">
 The goal of sysreqs is to make it easy to identify R package system dependencies. There are two components to this package: an “API” and a wrapper package.
 </div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
-</div>
 </div>
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="2" data-listing-file-modified-sort="1668524090568" data-listing-reading-time-sort="0.295">
-<a href="./projects/writing/uitk.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Urban Informatics Toolkit
-</h5>
-<div class="card-text listing-description">
-The Urban Informatics Toolkit (uitk) is an open text book I wrote with the intention of teaching first year graduate students in Urban Informatics the R programming language.
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="3" data-listing-file-modified-sort="1668523684943" data-listing-reading-time-sort="0.425">
-<a href="./projects/genius.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="1" data-categories="package,music" data-listing-file-modified-sort="1668639227042" data-listing-reading-time-sort="0.425">
+<a href="./projects/pkgs/genius.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 genius (retired)
 </h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
+package
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('music'); return false;">
+music
+</div>
+</div>
 <div class="card-text listing-description">
 genius was my first R package and my first digital child. genius…
 </div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
-</div>
 </div>
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="4" data-listing-file-modified-sort="1668524220612" data-listing-reading-time-sort="0.36">
-<a href="./projects/writing/mirr.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-mirrr - song genre classification
-</h5>
-<div class="card-text listing-description">
-Tidy…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="5" data-listing-file-modified-sort="1668523709046" data-listing-reading-time-sort="0.485">
-<a href="./projects/sfdep.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="2" data-categories="package,spatial" data-listing-file-modified-sort="1668638946337" data-listing-reading-time-sort="0.485">
+<a href="./projects/pkgs/sfdep.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 sfdep
 </h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
+package
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
+spatial
+</div>
+</div>
 <div class="card-text listing-description">
 sfdep is an R package that…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
 </div>
 </div>
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="6" data-listing-file-modified-sort="1668523719556" data-listing-reading-time-sort="0.31">
-<a href="./projects/spdep.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="3" data-categories="package,spatial" data-listing-file-modified-sort="1668638952212" data-listing-reading-time-sort="0.31">
+<a href="./projects/pkgs/spdep.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
-spdep
+spdep (contributor)
 </h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
+package
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
+spatial
+</div>
+</div>
 <div class="card-text listing-description">
 spdep is an absolute…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
 </div>
 </div>
 </div>
@@ -326,7 +302,89 @@ spdep is an absolute…
 <div class="listing-no-matching d-none">
 No matching items
 </div>
-</div></main> <!-- /main -->
+</div>
+</section>
+<section id="things-ive-written" class="level3">
+<h3 class="anchored" data-anchor-id="things-ive-written">Things I’ve written</h3>
+<div id="listing-writings" class="quarto-listing quarto-listing-container-grid">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-categories="writing,politics" data-listing-file-modified-sort="1668639237474" data-listing-reading-time-sort="0.35">
+<a href="./projects/writing/r4campaigns.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+R for Progressive Campaigns
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('writing'); return false;">
+writing
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('politics'); return false;">
+politics
+</div>
+</div>
+<div class="card-text listing-description">
+Read the book here.
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="1" data-categories="writing,urban-informatics,textbook" data-listing-file-modified-sort="1668639243897" data-listing-reading-time-sort="0.295">
+<a href="./projects/writing/uitk.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Urban Informatics Toolkit
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('writing'); return false;">
+writing
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('urban-informatics'); return false;">
+urban-informatics
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('textbook'); return false;">
+textbook
+</div>
+</div>
+<div class="card-text listing-description">
+The Urban Informatics Toolkit (uitk) is an open text book I wrote with the intention of teaching first year graduate students in Urban Informatics the R programming language.
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="2" data-categories="writing" data-listing-file-modified-sort="1668637658646" data-listing-reading-time-sort="0.36">
+<a href="./projects/writing/mirr.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+mirrr - song genre classification
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('writing'); return false;">
+writing
+</div>
+</div>
+<div class="card-text listing-description">
+Tidy…
+</div>
+</div>
+</div>
+</a>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div>
+
+
+
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -459,8 +517,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>
-<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
 </script>
 </div> <!-- /content -->
 

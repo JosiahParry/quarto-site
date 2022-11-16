@@ -1,6 +1,6 @@
 ---
 title: "Urban Informatics Toolkit"
-tags: [urban-informatics, writing]
+categories: [writing, urban-informatics, textbook]
 ---
 
 The [Urban Informatics Toolkit (uitk)](https://ui.josiahparry.com/) is an open text book I wrote with the intention of teaching first year graduate students in Urban Informatics the R programming language.

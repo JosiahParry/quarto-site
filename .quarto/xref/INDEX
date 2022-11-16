@@ -199,5 +199,14 @@
   },
   "projects/writing/r4campaigns.qmd": {
     "r4campaigns.html": "cc8a9c82"
+  },
+  "projects/pkgs/genius.qmd": {
+    "genius.html": "4e203799"
+  },
+  "projects/pkgs/spdep.md": {
+    "spdep.html": "5d071db0"
+  },
+  "projects/pkgs/sfdep.md": {
+    "sfdep.html": "57fc128d"
   }
 }

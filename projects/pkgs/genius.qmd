@@ -1,6 +1,7 @@
 ---
 title: "genius (retired)"
-tags: [package]
+categories: [package, music]
+author: "Josiah Parry"
 ---
 
 genius was my first R package and my first digital child. genius provided a way to programatically access song lyrics from genius.com. This included ways to fetch single songs, albums, and track lists. It was, at one point, integrated with the [spotifyr](https://www.rcharlie.com/spotifyr/) package. 

@@ -1,6 +1,6 @@
 ---
 title: "mirrr - song genre classification"
-tags: [writing]
+categories: [writing]
 ---
 
 Tidy Music Information Retrieval was a bookdown project I wrote back in 2019 that created a stacked ensemble model that predicted musical genre from song audio features and song lyrics.

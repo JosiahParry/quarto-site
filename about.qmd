@@ -29,9 +29,17 @@ comments: false
 I am a Senior Product Engineer on the Spatial Analysis team at Esri. Previously, I was at The NPD Group as a Research Analyst where I worked to modernize our data science infrastructure to use Databricks, Docker, and Spark. Before that, I was at RStudio, PBC on the customer success team enabling public sector adoption of data science tools. In 2020 I received my master’s degree in Urban Informatics from Northeastern University following my bachelor’s degree in sociology with focuses in geographic information systems and general mathematics from Plymouth State University in 2018.
 
 
+## Contact me
+
+If you want to get in contact with me please send me an email at `josiah.parry at gmail dot com`.
+
+
 ------------
 
 ### talks i've given
+
+
+<details>
 
 * [Exploratory Spatal Data Analysis in the tidyverse](https://www.rstudio.com/conference/2022/talks/exploratory-spatial-data-analysis/)
   * July 28th, 2022 rstudio::conf(2022L)
@@ -50,3 +58,6 @@ I am a Senior Product Engineer on the Spatial Analysis team at Esri. Previously,
 * [Newfound Lake Landscape Value Analysis: Exploring the efficacy of PPGIS, NESTVAL 2016](https://prezi.com/uchr4_g_qzns/newfound-lake-watershed/)
   * New England St. Lawrence River Valley regional American Associations of Geographers Conference
   * 2016
+  
+  
+</details>

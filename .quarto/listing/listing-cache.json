@@ -24,7 +24,14 @@
       "/posts/*/!(index).*md"
     ],
     "projects.qmd": [
-      "projects"
+      "projects",
+      "/projects",
+      "/projects/pkgs",
+      "/projects/*",
+      "/projects*",
+      "/projects/writings/*",
+      "/projects/writings",
+      "/projects/writing"
     ]
   }
 }

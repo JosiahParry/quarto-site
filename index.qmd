@@ -13,14 +13,16 @@ listing:
       - "/posts*/!(index).*md"
 ---
 
-hey, welcome to my website. 
+## Letters to a Layperson (myself)
 
-I occasionally will put things here.
-
+Welcome to my personal website. I always aspire to keep pumping out content, but I don't. 
+ 
+Here you will find my _"recent"_ blog posts, possibly outdated [biographical information](/about.html), my socials, and links to projects I have made or worked on.
 
 -----------
 
 ### posts
+
 ::: {#blog-posts}
 :::
 

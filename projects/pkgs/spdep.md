@@ -1,7 +1,9 @@
 ---
-tags: [package]
+categories: [package, spatial]
+author: "Roger Bivand"
 ---
-# spdep
+
+# spdep (contributor)
 
 [spdep](https://r-spatial.github.io/spdep/) is an absolute powerhouse of an R package. spdep was first released in 2002 and is one of, if not the, first package to implement many of the most important spatial statistics for aerial data. 
 
