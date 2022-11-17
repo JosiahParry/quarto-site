@@ -2,6 +2,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2022-11-17-overlapping-polys/post.html",
       "/posts/csr.html",
       "/posts/2022-10-03-spacetime-representations.html",
       "/posts/2022-05-11-make-your-r-scripts-databricks-notebooks.html",
@@ -49,6 +50,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2022-11-17-overlapping-polys/post.html",
       "/posts/csr.html",
       "/posts/2022-10-03-spacetime-representations.html",
       "/posts/2022-05-11-make-your-r-scripts-databricks-notebooks.html",

@@ -11,10 +11,11 @@ listing:
     fields: [title, description]
     contents: 
       - "/posts*/!(index).*md"
+      - "/posts/*/*.qmd"
 ---
 
 ## Letters to a Layperson (myself)
-
+ 
 Welcome to my personal website. I always aspire to keep pumping out content, but I don't. 
  
 Here you will find my _"recent"_ blog posts, possibly outdated [biographical information](/about.html), my socials, and links to projects I have made or worked on.

@@ -208,5 +208,11 @@
   },
   "projects/pkgs/sfdep.md": {
     "sfdep.html": "57fc128d"
+  },
+  "posts/2022-11-17-overlapping-polys/index.qmd": {
+    "index.html": "21f43a64"
+  },
+  "posts/2022-11-17-overlapping-polys/post.qmd": {
+    "post.html": "cb837699"
   }
 }

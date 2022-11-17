@@ -21,7 +21,8 @@
       "/posts*/!(*.index).qmd",
       "/posts*/!(index).qmd",
       "/posts*/!(index).*md",
-      "/posts/*/!(index).*md"
+      "/posts/*/!(index).*md",
+      "/posts/*/*.qmd"
     ],
     "projects.qmd": [
       "projects",
