@@ -37,3 +37,8 @@ body {
   text-transform: lowercase;
 }
 
+
+
+div.quarto-about-solana .about-entity {
+  text-align: left;
+}

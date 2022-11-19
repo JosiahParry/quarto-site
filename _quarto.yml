@@ -3,6 +3,7 @@ project:
 
 website:
   title: "Josiah Parry"
+  google-analytics: "G-8NVVBLZBVF"
   sidebar:
     style: "docked"
     contents:
@@ -12,6 +13,9 @@ website:
       - href: posts/index.qmd
         text: "posts"
       - href: projects.qmd
+
+highlight-style: pygments
+ 
 format:
   html:
     twitter-card:
