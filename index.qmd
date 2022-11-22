@@ -26,5 +26,3 @@ Here you will find my _"recent"_ blog posts, possibly outdated [biographical inf
 
 ::: {#blog-posts}
 :::
-
------
