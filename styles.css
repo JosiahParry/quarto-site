@@ -56,5 +56,5 @@ div.quarto-about-solana .about-entity {
 p a {
     font-weight: 600;
     color: #3c624f;
-    text-decoration: none;
+    text-decoration: dotted underline;
 }

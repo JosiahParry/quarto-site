@@ -1,0 +1,29 @@
+---
+title: "YouTube Videos & what not"
+---
+
+### TLDR 
+
+Please vote or post a comment in [this discuss](https://github.com/JosiahParry/quarto-site/discussions/4) on what would be helpful for you.
+
+---------
+
+
+I first made R programming videos when I had the opportunity to teach a remote and asynchronous course called [Big Data for Cities](https://bd4c.netlify.app/). I used the videos as alternative learning material besides a [text-book](https://ui.josiahparry.com/) and other required readings. 
+
+I just recently noticed that my video [Making your R Markdown Pretty](https://www.youtube.com/watch?v=v048ru5v0BE&t=1s&ab_channel=JosiahParry) has 16 thousand views. I never thought it would reach that many people! So, if I've helped even 0.1% of those people it will have been worth it. 
+
+I've started to record some more videos on spatial analaysis in R. I think the spatial anlaysis / statistics videos on youtube are lacking in diversity—with the noteable exception of [@GeostatsGuyLectures](https://www.youtube.com/@GeostatsGuyLectures) but he's more of a environmental scientist :) I will note, though, that the lectures of Luc Anselin are one of the only reason why I am where I am in my knowledge and abilities. 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/OnMNZwJywjs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+The thing about Anselin's videos, though, is that they are not about the _how_ of doing it. But they focus more on the theory and the math that sits behind the statistics themselves. 
+
+
+## I ask you! 
+
+What do you want to see? What is actually helpful? I'm sure me stumbling and mumbling for 18 minutes on spatial lags can't be too helpful. 
+
+Please [vote or leave a comment in this discussion](https://github.com/JosiahParry/quarto-site/discussions/4).
+
+
