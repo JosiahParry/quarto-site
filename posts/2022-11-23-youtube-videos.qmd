@@ -1,5 +1,6 @@
 ---
 title: "YouTube Videos & what not"
+date: 2022-11-23
 ---
 
 ### TLDR 

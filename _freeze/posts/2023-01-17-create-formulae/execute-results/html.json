@@ -1,0 +1,14 @@
+{
+  "hash": "da06e9c01383d80213e88c5ea1d1c63f",
+  "result": {
+    "markdown": "---\ntitle: \"Programatically Create Formulas in R\"\ncategories: [R, package-dev]\ndate: 2023-01-17\n---\n\n\nI'm working on a prototype of a tool using R to create some regressions. I'd like to take in independent and dependent variables as character vectors and use those to create a formula. It took me a minute to figure out how to programatically create a formula. It's a bit tricky because formula require unquoted objects (symbols).\n\nThe trick is to use the function `reformulate()` ([thanks StackOverflow](https://stackoverflow.com/questions/12967797/is-there-a-better-alternative-than-string-manipulation-to-programmatically-build)).\n\nThe syntax is `reformulate(x_vars, y_var)`\n\n\n::: {.cell}\n\n```{.r .cell-code}\nform <- reformulate(c(\"x1\", \"x2\"), \"y\")\nform\n```\n\n::: {.cell-output .cell-output-stdout}\n```\ny ~ x1 + x2\n```\n:::\n:::\n\n\nNice. Throw it into a function.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nmake_lm <- function(.data, y, x) {\n  form <- reformulate(x, y)\n  lm(form, .data)\n}\n```\n:::\n\n\n\nNow try it out :) \n\n\n::: {.cell}\n\n```{.r .cell-code}\nmake_lm(\n  iris, \n  y = \"Petal.Width\",\n  x = c(\"Sepal.Length\", \"Petal.Length\")\n)\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n\nCall:\nlm(formula = form, data = .data)\n\nCoefficients:\n (Intercept)  Sepal.Length  Petal.Length  \n   -0.008996     -0.082218      0.449376  \n```\n:::\n:::\n\n\n\nThis can be a pretty hand pattern in package development. I hope it helps you. \n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

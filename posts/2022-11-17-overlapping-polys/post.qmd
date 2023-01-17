@@ -1,6 +1,7 @@
 ---
 title: Fishnets and overlapping polygons
 categories: [r, spatial, tutorial]
+date: 2022-11-17
 ---
 
 Today a question was asked in the geocompr discord. I wanted to share part of the solution as I think it covers 2 helpful things:
