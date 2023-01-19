@@ -1,0 +1,78 @@
+---
+title: "Raw strings in R"
+date: 2023-01-19
+categories: [r]
+---
+
+The one thing about Python I actually really like is the ability to use raw strings. Raw strings are super helpful for me because at work I use a windows machine. And windows machines use a silly file path convention. The `\` back slack character is used as the file separator as opposed to the linux / unix `/` forward slash. 
+
+Using the backslash is so annoying because it's also an escape character. In python I can write the following to hard code a file path.
+
+```python
+file_path = r"nav\to\file\path.ext"
+```
+
+Whereas in R typically you would have to write:
+
+```r
+file_path <- "nav\\to\\file\\path.ext"
+```
+
+Since `\` is an escape character you have to escape it first using itself. So, its annoying. And `file.path("nav", "to", "file", "path.ext", fsep = "\\")` is a wee bit cumbersome sometimes.
+
+# WELL APPARENTLY WE HAVE ALL BEEN SLEEPING ON RAW STRINGS IN R SINCE VERSION 4.0. 
+
+# IT's VERSION 4.2.2
+
+
+![Damnit.](https://media.giphy.com/media/3o7TKA3ypeMbOXSrp6/giphy.gif)
+
+## Aight.
+
+So like, you can use raw strings today.
+
+[How can I get the R-devel news? I'm on the mailing list and get it once a week and it's like "Re: memory leak in png() ` not this stuff. Tips?]{.aside}
+
+
+It was announced in the [news for version 4.0.0 ](https://cran.r-project.org/doc/manuals/r-devel/NEWS.html).
+
+They write: 
+
+> There is a new syntax for specifying raw character constants similar to the one used in C++: r"(...)" with ... any character sequence not containing the sequence ‘⁠)"⁠’. This makes it easier to write strings that contain backslashes or both single and double quotes. For more details see ?Quotes.
+
+
+You can write raw strings using the following formats:
+
+- `r"( ... )"`
+- `r"{ ... }"`
+- `r"[ ... ]"`
+- `R"( ... )"`
+- `R"{ ... }"`
+- `R"[ ... ]"`
+
+You can even trickier by adding dashes between the quote and the delimter. The dashes need to be symmetrical though. So the following is also valid.
+
+
+- `r"-{ ... }"-`
+- `r"--{ ... }--"`
+- `r"--{ * _ * }--"`
+
+[It kinda looks like a crab]{.aside}
+
+
+Alright so back to the example
+
+```{r}
+ r"{nav\to\file\path.ext}"
+```
+Hot damn. Thats nice. 
+
+I freaked out at first though because R prints two backslashes. But if you cat the result they go away. So do not worry. 
+
+```{r}
+ r"{nav\to\file\path.ext}" |> 
+  cat()
+```
+
+
+
