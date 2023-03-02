@@ -1,10 +1,16 @@
 ---
-title: "Rust traits for R programmers"
+title: "Rust traits for R users"
+subtitle: "and how they'll make your package better"
+categories: [rust, r, package-development, tutorial]
+date: 2023-03-02
 ---
 
-In the few months that I've been programming in Rust nothing has been so fundamentally shifted the way that I think about programming and specifically R packages as Rust traits. Here I want to talk about Rust traits and why I think they can make R packages better. 
+
+In the few months that I've been programming in Rust nothing has so fundamentally shifted the way that I think about programming—and specifically R packages—as Rust traits. I want to talk briefly about Rust traits and why I think they can make R packages better. 
 
 A trait defines a set of behaviors that can be used by objects of different kinds. Each trait is a collection of methods (functions) whose behavior is defined abstractly. The traits can then be `impl`emented _for_ different object types. Any object that implements the trait can then use that method. It's kind of confusing, isn't it? Let's work through [the example in The Book™](https://doc.rust-lang.org/book/ch10-02-traits.html) and how we can implement it in R. 
+
+## Defining a Trait
 
 We start by defining a trait called `Summary` which as a single method that returns a `String`. Note how the definition is rather abstract. We know what the function is and what it returns. What happens on the inside doesn't matter to use. 
 
@@ -14,7 +20,7 @@ trait Summary {
 }
 ```
 
-Analogous in R is the definition of an S3 function generic. 
+Analogous in R is the definition of an [S3 function generic](https://adv-r.hadley.nz/s3.html). 
 
 :::{.aside} 
 It's only analogous if the trait implements only one method
@@ -42,7 +48,7 @@ pub struct NewsArticle {
 }
 ```
 
-This is similar to creating a new record in `vctrs` which is rather similar to using base R.
+This is similar to creating a new record in [`vctrs`](https://vctrs.r-lib.org/) which is rather similar to using base R.
 
 ::: {.panel-tabset}
 
@@ -77,6 +83,8 @@ vctrs::new_rcrd(
 ```
 :::
 
+
+## `impl`ementing a trait
 
 It's important that we are able to summarise our newspaper article for the socials ofc—so we need to `impl`ement the `Summary` trait for the `NewsArticle` struct. 
 
@@ -125,6 +133,7 @@ Summary.NewsArticle <- function(x) {
 ```
 
 :::
+
 
 Since Musk's takeover of twitter, tweets are getting out of hand becoming ridiculously long so we need to be able to summarize them too! So if we define a `Tweet` struct and a corresponding implementation of `Summary` we'll be able to easily summarize them exactly the same way as news articles. 
 
@@ -305,9 +314,11 @@ notify(tweet)
 notify(article)
 ```
 
+### what this means
+
 This is awesome. This means that any object that we create in the future, as long as it implements the `Summary()` function for its class we can utilize the `notify()` function. This comes with a caveat, though—as all good things do. 
 
-The Rust compiler ensures that any object that implements the `Summary` trait returns a single string. R is far more laizzes faire than Rust with classes and types. One could create a `Summary` method for an object that returns a vector of strings. That would break notify. Either `notify()` should have type checking or you should make sure that your method always produces the correct type. 
+The Rust compiler ensures that any object that implements the `Summary` trait returns a single string. R is far more laissez faire than Rust with classes and types. One could create a `Summary` method for an object that returns a vector of strings. That would break notify. Either `notify()` should have type checking or you should make sure that your method always produces the correct type. 
 
 ## Implications for R packages
 
@@ -338,7 +349,14 @@ as_sdf(g)
 
 This is super cool because we can group by and summarize the data just because we have those above functions defined for `sfc` objects (the geometry column).
 
-Say we want to create a custom `Point` class that we want to be used by an `sdf` object. We can do this rather simply. A `Point` will be a list of length 2 numeric vectors where the first element is the x coordinate and the second element is the y coordinate. 
+```{r, message = FALSE, warning = FALSE}
+library(dplyr)
+as_sdf(g) |> 
+  group_by(region) |> 
+  summarise(n = n())
+```
+
+Say we want to create a custom `Point` class that we want to be usable by an `sdf` object. We can do this rather simply by creating the proper generics. A `Point` will be a list of length 2 numeric vectors where the first element is the x coordinate and the second element is the y coordinate. 
 
 ```{r}
 # create some points
@@ -350,7 +368,7 @@ pnts <- vctrs::new_vctr(pnt_data, class = "Point")
 pnts
 ```
 
-Now we can start defining our methods. `is_geometry()` should always return TRUE for our type. We can do this simply like so:
+Now we can start defining our methods. `is_geometry()` should always return TRUE for our type. We can do this like so:
 
 ```{r}
 is_geometry.Point <- function(x) inherits(x, "Point")
@@ -362,52 +380,78 @@ This method will only be dispatched on `Point`s so it will always inherit the `P
 
 Next we need to define a method for the bounding box. This is the the maximum and minimum x and y coordinates. Our method should iterate over each point and extract the x and y into their own vector and return the minimum and maxes. These need to be structured in a particular order.
 
+
 ```{r}
-bounding_box.Point <- function(x) {
-   x <- vapply(x, `[`, numeric(1), 1)
-  y <- vapply(x, `[`, numeric(1), 2)
+bounding_box.Point <- function(.x) {
+  x <- vapply(.x, `[`, numeric(1), 1)
+  y <- vapply(.x, `[`, numeric(1), 2)
   
   c(xmin = min(x), ymin = min(y), xmax = max(x), ymax = max(y))
 }
 ```
 
-Lastly, we need a way to combine the points together. In this case, we can just "combine" the points by finding the average point. This is not geometrically sound but for the sake of example it suffices. Note that the type it returns always has to be the same! There is not a compiler forcing us so we much force ourselves! 
+Lastly, we need a way to combine the points together. In this case, we can just "combine" the points by finding the average point. This is not geometrically sound but for the sake of example it suffices. Note that the type it returns always has to be the same! There is not a compiler forcing us, so we must force ourselves! 
 
 
 ```{r}
-combine_geometry.Point <- function(x) {
-  x <- vapply(x, `[`, numeric(1), 1)
-  y <- vapply(x, `[`, numeric(1), 2)
+combine_geometry.Point <- function(.x) {
+  x <- vapply(.x, `[`, numeric(1), 1)
+  y <- vapply(.x, `[`, numeric(1), 2)
   
   vctrs::new_vctr(
-    list(mean(x), mean(y)), 
+    list(c(mean(x), mean(y))), 
     class = "Point"
     )
 }
 ```
 
 
-Now, with only just that we can create a spatial data frame. Let's use the ggplot2 diamonds data set for example since it has nice x and y coordinates. I'm 
+With only those 3 functions we've defined enough to create an `sdf` object where the geometry column is a `Point` vector. To illustrate this we can use the ggplot2 diamonds data set for example since it has nice x and y coordinates. 
 
-```{r}
+First we create a data frame with a `Point` column.
+
+```{r, message=FALSE, warning=FALSE}
 data(diamonds, package = "ggplot2")
 
-library(dplyr, warn.conflicts = FALSE)
-
 diamond_pnts <- diamonds |> 
-  select(cut, x, y) |> 
   mutate(
     pnts = vctrs::new_vctr(
-      purrr::map2(diamonds$x, diamonds$y, `c`),
+      purrr::map2(x, y, `c`),
       class = "Point"
     )
-  ) 
+  ) |> 
+  select(cut, pnts)
 
 head(diamond_pnts)
 ```
 
+Next we cast it to an `sdf` object by using `as_sdf()`.
 
 ```{r}
-as_sdf(diamond_pnts)
+diamond_sdf <- as_sdf(diamond_pnts) 
+diamond_sdf
 ```
 
+Notice that the printing method shows `Geometry Type: Point` and also has a `Bounding box:`. That means we have effectively extended the `sdf` class by implementing our own methods for the exported generic functions from `sdf`. From that alone the `sdf` methods for dplyr can be used. 
+
+```{r}
+diamond_sdf |> 
+  group_by(cut) |> 
+  summarise(n = n())
+```
+### Why this works
+
+The dplyr `sdf` methods work like a charm because they use generic functions. Take the `summarise()` method for example.
+
+```{r}
+sdf:::summarise.sdf
+```
+
+This method uses the `combine_geometry()` generic function. `combine_geometry()` takes a vector of geometries (as determined by `is_geometry()`) and returns a single element. The summarise method does not care which method is used. It only cares that the output is consistent—in this case that a scalar value is outputted and that multiple of those scalars can be combined using `c()`.
+
+
+### Another example 
+
+[For a more detailed example check out the section in the README that implements an sdf class for geos geometry](https://github.com/JosiahParry/sdf#implementing-geos-generics). If you're interested in the details I recommend looking at the source code it is very simple. 
+
+First look at the [generic method definitions](https://github.com/JosiahParry/sdf/blob/main/R/generics.R). Then look at the [`sf` compatibility methods](https://github.com/JosiahParry/sdf/blob/main/R/sf-compat.R).

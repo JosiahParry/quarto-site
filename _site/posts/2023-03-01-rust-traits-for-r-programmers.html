@@ -5,7 +5,8 @@
 <meta name="generator" content="quarto-1.2.269">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="Josiah Parry">
-<title>Josiah Parry - Rust traits for R programmers</title>
+<meta name="dcterms.date" content="2023-03-02">
+<title>Josiah Parry - Rust traits for R users</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -123,8 +124,8 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </script><link rel="stylesheet" href="../styles.css">
-<meta name="twitter:title" content="Josiah Parry - Rust traits for R programmers">
-<meta name="twitter:description" content="In the few months that I’ve been programming in Rust nothing has been so fundamentally shifted the way that I think about programming and specifically R packages as Rust traits.">
+<meta name="twitter:title" content="Josiah Parry - Rust traits for R users">
+<meta name="twitter:description" content="and how they'll make your package better">
 <meta name="twitter:creator" content="@josiahparry">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -132,7 +133,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Rust traits for R programmers</h1>
+      <h1 class="quarto-secondary-nav-title">Rust traits for R users</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -176,10 +177,19 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
     <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-<li>
-<a href="#implications-for-r-packages" id="toc-implications-for-r-packages" class="nav-link active" data-scroll-target="#implications-for-r-packages">Implications for R packages</a>
+<li><a href="#defining-a-trait" id="toc-defining-a-trait" class="nav-link active" data-scroll-target="#defining-a-trait">Defining a Trait</a></li>
+  <li>
+<a href="#implementing-a-trait" id="toc-implementing-a-trait" class="nav-link" data-scroll-target="#implementing-a-trait"><code>impl</code>ementing a trait</a>
+  <ul class="collapse">
+<li><a href="#what-this-means" id="toc-what-this-means" class="nav-link" data-scroll-target="#what-this-means">what this means</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#implications-for-r-packages" id="toc-implications-for-r-packages" class="nav-link" data-scroll-target="#implications-for-r-packages">Implications for R packages</a>
   <ul class="collapse">
 <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An example</a></li>
+  <li><a href="#why-this-works" id="toc-why-this-works" class="nav-link" data-scroll-target="#why-this-works">Why this works</a></li>
+  <li><a href="#another-example" id="toc-another-example" class="nav-link" data-scroll-target="#another-example">Another example</a></li>
   </ul>
 </li>
   </ul></nav>
@@ -187,8 +197,15 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
     </div>
 <!-- main -->
 <main class="content page-columns page-full" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title d-none d-lg-block">Rust traits for R programmers</h1>
-</div>
+<h1 class="title d-none d-lg-block">Rust traits for R users</h1>
+<p class="subtitle lead">and how they’ll make your package better</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">rust</div>
+    <div class="quarto-category">r</div>
+    <div class="quarto-category">package-development</div>
+    <div class="quarto-category">tutorial</div>
+  </div>
+  </div>
 
 
 
@@ -201,18 +218,25 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
           </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 2, 2023</p>
+    </div>
+  </div>
   
     
   </div>
   
 
-</header><p>In the few months that I’ve been programming in Rust nothing has been so fundamentally shifted the way that I think about programming and specifically R packages as Rust traits. Here I want to talk about Rust traits and why I think they can make R packages better.</p>
+</header><p>In the few months that I’ve been programming in Rust nothing has so fundamentally shifted the way that I think about programming—and specifically R packages—as Rust traits. I want to talk briefly about Rust traits and why I think they can make R packages better.</p>
 <p>A trait defines a set of behaviors that can be used by objects of different kinds. Each trait is a collection of methods (functions) whose behavior is defined abstractly. The traits can then be <code>impl</code>emented <em>for</em> different object types. Any object that implements the trait can then use that method. It’s kind of confusing, isn’t it? Let’s work through <a href="https://doc.rust-lang.org/book/ch10-02-traits.html">the example in The Book™</a> and how we can implement it in R.</p>
+<section id="defining-a-trait" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="defining-a-trait">Defining a Trait</h2>
 <p>We start by defining a trait called <code>Summary</code> which as a single method that returns a <code>String</code>. Note how the definition is rather abstract. We know what the function is and what it returns. What happens on the inside doesn’t matter to use.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">trait</span> Summary <span class="op">{</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> summarize(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span><span class="op">;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Analogous in R is the definition of an S3 function generic.</p>
+<p>Analogous in R is the definition of an <a href="https://adv-r.hadley.nz/s3.html">S3 function generic</a>.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>It’s only analogous if the trait implements only one method</p>
@@ -230,7 +254,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> author<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> content<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This is similar to creating a new record in <code>vctrs</code> which is rather similar to using base R.</p>
+<p>This is similar to creating a new record in <a href="https://vctrs.r-lib.org/"><code>vctrs</code></a> which is rather similar to using base R.</p>
 <div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist">
 <li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Base R</a></li>
@@ -284,6 +308,8 @@ attr(,"class")
 </div>
 </div>
 </div>
+</section><section id="implementing-a-trait" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="implementing-a-trait">
+<code>impl</code>ementing a trait</h2>
 <p>It’s important that we are able to summarise our newspaper article for the socials ofc—so we need to <code>impl</code>ement the <code>Summary</code> trait for the <code>NewsArticle</code> struct.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> Summary <span class="cf">for</span> NewsArticle <span class="op">{</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> summarize(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{</span></span>
@@ -507,9 +533,10 @@ attr(,"class")
 <pre><code>[1] "Breaking news! New Absolut Ad Features Swaying Mom With One Eye Closed Telling Camera She Used To Dance, by The Onion (Stockholm)"</code></pre>
 </div>
 </div>
+<section id="what-this-means" class="level3"><h3 class="anchored" data-anchor-id="what-this-means">what this means</h3>
 <p>This is awesome. This means that any object that we create in the future, as long as it implements the <code><a href="https://rdrr.io/r/methods/S4groupGeneric.html">Summary()</a></code> function for its class we can utilize the <code>notify()</code> function. This comes with a caveat, though—as all good things do.</p>
-<p>The Rust compiler ensures that any object that implements the <code>Summary</code> trait returns a single string. R is far more laizzes faire than Rust with classes and types. One could create a <code>Summary</code> method for an object that returns a vector of strings. That would break notify. Either <code>notify()</code> should have type checking or you should make sure that your method always produces the correct type.</p>
-<section id="implications-for-r-packages" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="implications-for-r-packages">Implications for R packages</h2>
+<p>The Rust compiler ensures that any object that implements the <code>Summary</code> trait returns a single string. R is far more laissez faire than Rust with classes and types. One could create a <code>Summary</code> method for an object that returns a vector of strings. That would break notify. Either <code>notify()</code> should have type checking or you should make sure that your method always produces the correct type.</p>
+</section></section><section id="implications-for-r-packages" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="implications-for-r-packages">Implications for R packages</h2>
 <p>This very simple concept can be transformative for the way that we build R packages. R packages are, for the most part, bespoke. Each one serves their own purpose and works only within its own types or types it’s aware of. But what if an R package could work with <em>any</em> object type? Using this idea we can get from Rust traits, we can do that.</p>
 <p>Packages that want to be extensible can make it easy to do so by doing two fairly simple things. Low-level and critical functions should be exported as generic functions. High level functions that perform some useful functionality should be built upon those generics.</p>
 <p>An example is the <a href="https://github.com/JosiahParry/sdf"><code>sdf</code></a> package I’ve prototyped based on this idea. In this case, I have a spatial data frame class that can be implemented on any object that implements methods for the following functions:</p>
@@ -559,9 +586,27 @@ Bounding box: xmin: 47680 ymin: 1703258 xmax: 1031401 ymax: 2677441
 </div>
 </div>
 <p>This is super cool because we can group by and summarize the data just because we have those above functions defined for <code>sfc</code> objects (the geometry column).</p>
-<p>Say we want to create a custom <code>Point</code> class that we want to be used by an <code>sdf</code> object. We can do this rather simply. A <code>Point</code> will be a list of length 2 numeric vectors where the first element is the x coordinate and the second element is the y coordinate.</p>
 <div class="cell">
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># create some points</span></span>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="fu">as_sdf</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">region</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry Type: sfc_MULTIPOLYGON
+Bounding box: xmin: 47680 ymin: 1703258 xmax: 1031401 ymax: 2677441
+# A tibble: 5 × 3
+  region     n                                                          geometry
+  &lt;fct&gt;  &lt;int&gt;                                                    &lt;MULTIPOLYGON&gt;
+1 C         17 (((710830 2137350, 711746 2136617, 712430 2135212, 712070 213413…
+2 E         17 (((801150 2092615, 800669 2093190, 800688 2095430, 800780 209579…
+3 N         17 (((729326 2521619, 729320 2521230, 729280 2518544, 728751 251752…
+4 S         17 (((747008 1925789, 746630 1925762, 745723 1925138, 744216 192523…
+5 W         17 (((456425 2120055, 456229 2120382, 455943 2121064, 456070 212219…</code></pre>
+</div>
+</div>
+<p>Say we want to create a custom <code>Point</code> class that we want to be usable by an <code>sdf</code> object. We can do this rather simply by creating the proper generics. A <code>Point</code> will be a list of length 2 numeric vectors where the first element is the x coordinate and the second element is the y coordinate.</p>
+<div class="cell">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># create some points</span></span>
 <span><span class="va">pnt_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">90</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># create new vector class</span></span>
@@ -570,87 +615,132 @@ Bounding box: xmin: 47680 ymin: 1703258 xmax: 1031401 ymax: 2677441
 <span><span class="va">pnts</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;Point[5]&gt;
-[1] 0.06340914, 74.88073559 85.43343, 61.00256      15.58566, 10.00379     
-[4] 70.90322, 81.04745      4.446685, 19.013058    </code></pre>
+[1] 23.14043, 87.07455 45.15752, 50.44104 52.56717, 68.01389 87.97772, 18.10026
+[5] 15.29674, 28.89251</code></pre>
 </div>
 </div>
-<p>Now we can start defining our methods. <code>is_geometry()</code> should always return TRUE for our type. We can do this simply like so:</p>
+<p>Now we can start defining our methods. <code>is_geometry()</code> should always return TRUE for our type. We can do this like so:</p>
 <div class="cell">
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">is_geometry.Point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"Point"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">is_geometry.Point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"Point"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>This method will only be dispatched on <code>Point</code>s so it will always inherit the <code>Point</code> class. One could just as well always return <code>TRUE</code></p>
 </div></div><p>Next we need to define a method for the bounding box. This is the the maximum and minimum x and y coordinates. Our method should iterate over each point and extract the x and y into their own vector and return the minimum and maxes. These need to be structured in a particular order.</p>
 <div class="cell">
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bounding_box.Point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>   <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bounding_box.Point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, ymin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>, xmax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, ymax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Lastly, we need a way to combine the points together. In this case, we can just “combine” the points by finding the average point. This is not geometrically sound but for the sake of example it suffices. Note that the type it returns always has to be the same! There is not a compiler forcing us so we much force ourselves!</p>
+<p>Lastly, we need a way to combine the points together. In this case, we can just “combine” the points by finding the average point. This is not geometrically sound but for the sake of example it suffices. Note that the type it returns always has to be the same! There is not a compiler forcing us, so we must force ourselves!</p>
 <div class="cell">
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">combine_geometry.Point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">combine_geometry.Point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">`[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="fu">vctrs</span><span class="fu">::</span><span class="fu"><a href="https://vctrs.r-lib.org/reference/new_vctr.html">new_vctr</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>    class <span class="op">=</span> <span class="st">"Point"</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now, with only just that we can create a spatial data frame. Let’s use the ggplot2 diamonds data set for example since it has nice x and y coordinates. I’m</p>
+<p>With only those 3 functions we’ve defined enough to create an <code>sdf</code> object where the geometry column is a <code>Point</code> vector. To illustrate this we can use the ggplot2 diamonds data set for example since it has nice x and y coordinates.</p>
+<p>First we create a data frame with a <code>Point</code> column.</p>
 <div class="cell">
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">diamonds</span>, package <span class="op">=</span> <span class="st">"ggplot2"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">diamonds</span>, package <span class="op">=</span> <span class="st">"ggplot2"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">diamond_pnts</span> <span class="op">&lt;-</span> <span class="va">diamonds</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">cut</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    pnts <span class="op">=</span> <span class="fu">vctrs</span><span class="fu">::</span><span class="fu"><a href="https://vctrs.r-lib.org/reference/new_vctr.html">new_vctr</a></span><span class="op">(</span></span>
-<span>      <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html">map2</a></span><span class="op">(</span><span class="va">diamonds</span><span class="op">$</span><span class="va">x</span>, <span class="va">diamonds</span><span class="op">$</span><span class="va">y</span>, <span class="va">`c`</span><span class="op">)</span>,</span>
+<span>      <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html">map2</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">`c`</span><span class="op">)</span>,</span>
 <span>      class <span class="op">=</span> <span class="st">"Point"</span></span>
 <span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span> </span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">cut</span>, <span class="va">pnts</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">diamond_pnts</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 4
-  cut           x     y       pnts
-  &lt;ord&gt;     &lt;dbl&gt; &lt;dbl&gt;    &lt;Point&gt;
-1 Ideal      3.95  3.98 3.95, 3.98
-2 Premium    3.89  3.84 3.89, 3.84
-3 Good       4.05  4.07 4.05, 4.07
-4 Premium    4.2   4.23 4.20, 4.23
-5 Good       4.34  4.35 4.34, 4.35
-6 Very Good  3.94  3.96 3.94, 3.96</code></pre>
+<pre><code># A tibble: 6 × 2
+  cut             pnts
+  &lt;ord&gt;        &lt;Point&gt;
+1 Ideal     3.95, 3.98
+2 Premium   3.89, 3.84
+3 Good      4.05, 4.07
+4 Premium   4.20, 4.23
+5 Good      4.34, 4.35
+6 Very Good 3.94, 3.96</code></pre>
 </div>
 </div>
+<p>Next we cast it to an <code>sdf</code> object by using <code>as_sdf()</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">as_sdf</span><span class="op">(</span><span class="va">diamond_pnts</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">diamond_sdf</span> <span class="op">&lt;-</span> <span class="fu">as_sdf</span><span class="op">(</span><span class="va">diamond_pnts</span><span class="op">)</span> </span>
+<span><span class="va">diamond_sdf</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Geometry Type: Point
-Bounding box: xmin: 0 ymin: NA xmax: 10.74 ymax: NA
-# A tibble: 53,940 × 4
-   cut           x     y       pnts
-   &lt;ord&gt;     &lt;dbl&gt; &lt;dbl&gt;    &lt;Point&gt;
- 1 Ideal      3.95  3.98 3.95, 3.98
- 2 Premium    3.89  3.84 3.89, 3.84
- 3 Good       4.05  4.07 4.05, 4.07
- 4 Premium    4.2   4.23 4.20, 4.23
- 5 Good       4.34  4.35 4.34, 4.35
- 6 Very Good  3.94  3.96 3.94, 3.96
- 7 Very Good  3.95  3.98 3.95, 3.98
- 8 Very Good  4.07  4.11 4.07, 4.11
- 9 Fair       3.87  3.78 3.87, 3.78
-10 Very Good  4     4.05 4.00, 4.05
+Bounding box: xmin: 0 ymin: 0 xmax: 10.74 ymax: 58.9
+# A tibble: 53,940 × 2
+   cut             pnts
+   &lt;ord&gt;        &lt;Point&gt;
+ 1 Ideal     3.95, 3.98
+ 2 Premium   3.89, 3.84
+ 3 Good      4.05, 4.07
+ 4 Premium   4.20, 4.23
+ 5 Good      4.34, 4.35
+ 6 Very Good 3.94, 3.96
+ 7 Very Good 3.95, 3.98
+ 8 Very Good 4.07, 4.11
+ 9 Fair      3.87, 3.78
+10 Very Good 4.00, 4.05
 # … with 53,930 more rows</code></pre>
 </div>
 </div>
+<p>Notice that the printing method shows <code>Geometry Type: Point</code> and also has a <code>Bounding box:</code>. That means we have effectively extended the <code>sdf</code> class by implementing our own methods for the exported generic functions from <code>sdf</code>. From that alone the <code>sdf</code> methods for dplyr can be used.</p>
+<div class="cell">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">diamond_sdf</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">cut</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry Type: Point
+Bounding box: xmin: 5.507 ymin: 5.52 xmax: 6.247 ymax: 6.183
+# A tibble: 5 × 3
+  cut           n               pnts
+  &lt;ord&gt;     &lt;int&gt;            &lt;Point&gt;
+1 Fair       1610 6.246894, 6.182652
+2 Good       4906 5.838785, 5.850744
+3 Very Good 12082 5.740696, 5.770026
+4 Premium   13791 5.973887, 5.944879
+5 Ideal     21551 5.507451, 5.520080</code></pre>
+</div>
+</div>
+</section><section id="why-this-works" class="level3"><h3 class="anchored" data-anchor-id="why-this-works">Why this works</h3>
+<p>The dplyr <code>sdf</code> methods work like a charm because they use generic functions. Take the <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code> method for example.</p>
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">sdf</span><span class="fu">:::</span><span class="va">summarise.sdf</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>function(.data, ...) {
+  geom_col_name &lt;- attr(.data, "geom_column")
+  geom_col &lt;- .data[[geom_col_name]]
+  gd &lt;- group_data(.data)
+
+  summarized_geoms &lt;- lapply(gd$.rows, function(ids) combine_geometry(geom_col[ids]))
+
+  res &lt;- NextMethod()
+
+  res[[geom_col_name]] &lt;- rlang::inject(c(!!!summarized_geoms))
+  as_sdf(res)
+
+}
+&lt;bytecode: 0x108f81c88&gt;
+&lt;environment: namespace:sdf&gt;</code></pre>
+</div>
+</div>
+<p>This method uses the <code>combine_geometry()</code> generic function. <code>combine_geometry()</code> takes a vector of geometries (as determined by <code>is_geometry()</code>) and returns a single element. The summarise method does not care which method is used. It only cares that the output is consistent—in this case that a scalar value is outputted and that multiple of those scalars can be combined using <code><a href="https://rdrr.io/r/base/c.html">c()</a></code>.</p>
+</section><section id="another-example" class="level3"><h3 class="anchored" data-anchor-id="another-example">Another example</h3>
+<p><a href="https://github.com/JosiahParry/sdf#implementing-geos-generics">For a more detailed example check out the section in the README that implements an sdf class for geos geometry</a>. If you’re interested in the details I recommend looking at the source code it is very simple.</p>
+<p>First look at the <a href="https://github.com/JosiahParry/sdf/blob/main/R/generics.R">generic method definitions</a>. Then look at the <a href="https://github.com/JosiahParry/sdf/blob/main/R/sf-compat.R"><code>sf</code> compatibility methods</a>.</p>
 
 
 </section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
