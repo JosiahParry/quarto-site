@@ -1,0 +1,473 @@
+---
+author: "Josiah Parry"
+format:
+  revealjs:
+    incremental: true
+---
+
+# friday evening chat
+
+:::{.notes}
+Hey everyone, my name is Josiah. Thank you all for having me. And thank you René for inviting me here to chat with you all. It excites me to see so many people being exposed to GIS and spatial analysis. I'm going to use my time to tell you all about my experience from undergraduate, graduate school, and where I am today. Then I'll talk briefly about the spatial analysis
+:::
+
+
+## objectives
+
+- tell you my story
+- maybe inspire you to program
+- a brief lesson on spatial analysis 
+- anything you want this is your time
+
+
+:::{.notes}
+ I hope that you take away from this that your degree and the classes that you take do not dictate what field you have to go in. That your personal interests and studies are just as important, and if not sometimes more important, than what you learn in the classroom. Meaning, that while college classes are a wonderful introduction to subjects and fields nothing can compare with impassioned self-directed studying.
+ 
+I want you to want to learn to program. I don't want you to begrudgingly learn to program, I want you to want to program. Being even conversational in a programming langauge can pay compounding dividends.
+
+i also want to discuss one brief but very important topic in spatial analysis.
+
+and really this time is yours so you can tell me what you want from me and i can do my best to provide 
+:::
+
+# A bit about myself
+or, why should you actually listen to me
+
+
+:::{.notes}
+i typically avoid biographical slides in my talks but as I have free reign today. I want to tell you a bit about myself. My goal in doing so is to illustrate that it doesn't really matter what your background is, spatial analysis is important and applicable to literally everyone and every domain
+:::
+
+## It's a me
+
+- MS in Urban Informatics, Northeastern
+- Sr. Product Engineer @ Esri 
+  - Spatial Statistics
+- Previously @ RStudio (now Posit)
+- Programming in R since 2014
+
+:::{.notes}
+So who am I and how am I qualified to tell you anything? I can tell you who I am but I don't know if I'm qualified for anything!
+
+I graduated with a degree in Urban informatics from NEU in April 2020. It was a really bad time but yet also very good time to finish a degree
+
+I work at a company called Esri, we make the software known as ArcGIS. I work as a Sr. Product Engineer on the spatial statistics team. That means that I and a group of about 10 other people think deeply about what tools the "-ists" need to have at their disposal and how to make them intuitive, interpretable, and easy to use. By "ists" I mean the analysts, epidemiologists, biologists, criminologists, and what not.
+
+
+Before that I worked at a company formerly called RStudio which is where I met René. I worked with government customers ensuring they could use RStudio professional products and bridge open source tools and enterprise products 
+
+:::
+
+## humble beginnings
+
+
+![Plymouth State](https://static.wixstatic.com/media/4999e9_37b24b7ea1824977926f1937eac91725~mv2.png/v1/fit/w_800%2Ch_587%2Cal_c/file.png)
+
+:::{.notes}
+Unlike many of you here I was not, and still am not, very academically inclined.
+ I went to a small school in Northern New Hampshire called Plymouth State University (PSU). 
+:::
+
+# PSU is nationally recognized
+but not in the way that most people want to be 
+
+:::{.notes}
+While unknown to many, Plymouth State is actually a nationally recognized school. 
+:::
+
+
+# 
+
+> "...this New Hampshire institution of higher learning is back. Four things students dig are skiing, skiing, studying and [partying] on the lake.
+
+:::{.caption}
+Playboy, 2010
+:::
+
+
+:::{.notes}
+recognized by playboy that is...
+this quote from playboy 2010 sort of gets to the heart of where I went to school. PSU wasn't a really academic place. And people who go there aren't typically ones who find themselves going to graduate school
+
+So the fact I work in _spatial stats_ of all things is wild.
+:::
+
+
+# finding geography
+
+from _anthropology_ & _sociology_ to GIS
+
+
+:::{.notes}
+In college I actually initially studied anthropology and sociology. My interest had been in culture and social behavior. I loved getting in the weeds with social theories like symbolic interactionism, functionalism, conflict theory and all that. I eventually took an introduction to geography which is where I had first heard Tobler's first law of geography
+:::
+
+ 
+# Tobler changed my perspective
+
+
+# 
+
+> "everything is related to everything else, but near things are more related than distant things."
+
+
+:::{.caption}
+Waldo Tobler
+:::
+
+
+
+# Humanity is inherently spatial 
+
+everything we do happens _somewhere_
+
+:::{.notes}
+
+I began to start thinking about social phenomenon from a larger perspective. Where space actually matters. I began thinking about where things happen. Social contexts should not only be framed around income, education, and parenting, but should include geographic measures such as neighborhood and other measures of proximity. 
+
+:::
+
+#  
+
+![](2015-geography-presentation.png)
+
+:::{.aside}
+circa 2014
+:::
+
+# I become a GIS _pro_
+
+![](gini-coef.png)
+
+:::{.aside}
+circa 2015
+:::
+
+## stats interest became an R interest
+
+- wanted to do more advanced stats
+- learned 1:1 with my professor
+- finding data meant cleaning data
+- explored new packages and exposed to new domains
+  - natural language
+  - software engineering
+  - etc
+
+## The next few years 
+
+- spend all my free time learning R
+- I intern at DataCamp making R courses
+- Research using interactive GIS 
+- Decide grad school was the right thing for me
+  - promptly rejected from all but one school
+  
+## Northeastern
+
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCIPAiAFpP11NpTvKw1DKXJQA2XPuuBCmuIh85qfCDE3qTxxZvqicGZs1L6TtW9zrhKgE&usqp=CAU)
+
+:::{.notes}
+at northeastern is when I really dove into spatial analysis
+my understanding and utility of it really began when i was a research assistant at the boston area research initiative 
+
+we looked at indicators of social disorder using administrative data.
+
+a lot of what we looked at were neighbor hood differences 
+but very simple differences using fixed effects in regressions
+:::
+
+
+## Advanced Spatial Analysis 
+
+![](https://geoffboeing.com/wp-content/uploads/2018/07/city-street-orientations-world-osmnx-930x1024.png)
+
+## Advanced Spatial Analysis 
+
+- one of my last courses in grad school
+- learned about spatial autocorrelation
+- spatial regression
+- basics of networks analysis 
+
+
+:::{.notes}
+
+i learned just enough to know where to look. Everything I learned 
+in my graduate program was just enough to know where to look for more if i wanted to
+:::
+
+
+## a pandemic rages 
+
+![](sfdep.png)
+
+# Going beyond maps
+
+neighborhoods, autocorrelation, and tooling
+
+:::{.notes}
+in graduate school is when i was exposed to spatial analysis
+outside of the context of map-making. though my real learning 
+didn't happen until a year or so after leaving graduate school
+
+if there is one idea in spatial analysis i want to leave you with
+it's the idea of the neighborhood and how we actually measure it. 
+
+So, at this point if anyone has any questions i'm happy to answer them
+otherwise. I'm going to discuss the very fundamental concept neighborhoods,
+neighbors and the spatial lag
+:::
+
+# Neighborhood
+fundamental concept of analysis
+## In urban studies
+
+- the neighborhood fundamental to sociology
+  - Chicago school (Park & Burgess) 
+- used to understand differences inside of the city
+- too much nuance
+
+## In spatial analysis 
+
+- are phenomena spatially dependent? 
+  - do similar values occur near each other
+- start focal with a location $i$
+- it's neighbors are $j$ 
+- $X_i$ is compared to $X_j$
+  - _not_ to $X$
+
+# how do we define the neighbors?
+it depends....
+
+:::{.notes}
+it really depends on if what you're studying are points or polygons
+and i'm most comfortable with polygons for spatial analysis 
+it also makes the ideas much simpler to follow
+:::
+
+
+## contiguities
+
+how do you choose what the neighbors are for a location?
+
+```{r}
+library(sf)
+library(spdep)
+library(sfdep)
+library(tidyverse)
+
+
+# Chess board -------------------------------------------------------------
+chess_board <- expand.grid(x = 1:8, y = 1:8) %>% 
+  mutate(z = ifelse((x + y) %% 2 == 0, TRUE, FALSE))
+
+board <- chess_board %>% 
+  ggplot(aes(x, y, fill = z)) + 
+  geom_tile() +
+  scale_fill_manual(values = c("white", "grey20")) +
+  theme_void() +
+  coord_fixed() +
+  theme(legend.position = "none") +
+  theme_void()
+
+chess_sf <- chess_board %>% 
+  st_as_sf(coords = c("x", "y")) %>% 
+  st_make_grid(n = 8) %>% 
+  st_sf() %>% 
+  mutate(color = pull(chess_board, z))
+
+boardsf <- ggplot(chess_sf, aes(fill = color)) + 
+  geom_sf() + 
+  scale_fill_manual(values = c("white", "grey20")) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# contiguities ------------------------------------------------------------
+
+
+# Create chess board neighbors
+chess_nb_q <- poly2nb(chess_sf)
+chess_nb_r <- poly2nb(chess_sf, queen = FALSE)
+
+neighbors_tidy <- nb2lines(chess_nb_q, coords = st_geometry(chess_sf), as_sf = TRUE)
+neighbors_tidy_r <- nb2lines(chess_nb_r, coords = st_geometry(chess_sf), as_sf = TRUE)
+
+queen_gg <- ggplot() +
+  geom_sf(data = chess_sf, aes(fill = color)) + 
+  geom_sf(data = neighbors_tidy, color = "#ffce40") +
+  scale_fill_manual(values = c("white", "grey20")) +
+  #  labs(title = "Queen Contiguities") +
+  theme_void() +
+  theme(legend.position = "none")
+
+
+rook_gg <- ggplot() +
+  geom_sf(data = chess_sf, aes(fill = color)) + 
+  geom_sf(data = neighbors_tidy_r, color = "#ffce40") +
+  scale_fill_manual(values = c("white", "grey20")) +
+  #  labs(title = "Rook Contiguities") +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+
+```{r}
+boardsf +
+  geom_sf(fill = "#84b1fa", data = chess_sf[37,])
+```
+
+
+## Rook Contiguity
+
+```{r}
+# queen contiguity
+board +
+  geom_point(data = slice(chess_board, chess_nb_r[[28]]), 
+             color= "#ffce40",
+             size = 5) +
+  geom_point(data = slice(chess_board, 28),
+             color = "white",
+             size = 5) +
+  #labs(title = "Queen's Gambit: Rook contiguity")
+  theme(legend.position = "none")
+```
+
+
+
+
+## Rook Contiguity
+
+
+```{r, warning = FALSE}
+rook_gg +
+  geom_sf(data = st_centroid(chess_sf), size = 3, color = "#f04665")
+```
+## Queen contiguity
+
+```{r}
+# 1. d4
+
+# queen contiguity
+board +
+  geom_point(data = slice(chess_board, chess_nb_q[[28]]),
+             color= "#ffce40",
+              size = 5) +
+  geom_point(data = slice(chess_board, 28), 
+             color = "white",
+             size = 5) +
+  # labs(title = "Queen's Gambit: Queen contiguity") +
+  theme(legend.position = "none")
+```
+
+## Queen contiguity
+
+```{r, warning = FALSE}
+queen_gg + geom_sf(data = st_centroid(chess_sf), size = 3, color = "#f04665")
+```
+
+## Neighbors in practice 
+
+
+
+```{r}
+i = 47
+plot(guerry$geometry[st_nb_lag_cumul(guerry_nb$nb, 3)[[i]]])
+plot(guerry$geometry[guerry_nb$nb[[i]]], col = 'grey', add = TRUE)
+plot(guerry$geometry[[i]], add = TRUE, col = 'black')
+
+```
+
+# Evaluating the neighborhood
+how does $i$ compare to $j$
+
+# the _spatial lag_ 
+
+the neighborhood value
+
+## Understanding the lag
+
+- "expected value" of the neighborhood
+- it is the average value of the neighborhood (excluding $i$)
+- summarizes values of $x$ for an observation $i$'s neighborhood
+
+
+## Observed values 
+
+```{r}
+ggplot(guerry) +
+  geom_sf(aes(fill = wealth), color = "black", lwd = 0.15) +
+  theme_void() +
+  scale_fill_viridis_c(option = "B", limits = c(0, 86))
+```
+
+## Neighborhood values at $i$
+
+```{r}
+guerry_nb |> 
+  mutate(wealth_lag = st_lag(wealth, nb, wt)) |> 
+  ggplot() +
+  geom_sf(aes(fill = wealth_lag), color = "black", lwd = 0.15) +
+  theme_void() +
+  scale_fill_viridis_c(option = "B", limits = c(0, 86))
+```
+
+:::{.caption}
+the lag is a neighborhood smoother
+:::
+
+## Observed vs neighborhood
+
+```{r}
+guerry_nb |> 
+  mutate(
+    wealth_lag = st_lag(wealth, nb, wt),
+    wealth_diff = wealth - wealth_lag  
+  ) |> 
+  ggplot() +
+  geom_sf(aes(fill = wealth_diff), color = "black", lwd = 0.15) +
+  theme_void() +
+  scale_fill_gradient2()
+```
+
+:::{.caption}
+where locations deviate from their neighbors
+:::
+
+
+
+## Spatial Lag is the basis of: 
+
+- spatial clustering (autocorrelation)
+- hot spot detection (clustering)
+- spatial regression 
+  - (inference / neighborhood spill over effects)
+- spatio-temporal hot spot analysis 
+
+## Example
+
+![](guns-cluster.png)
+
+## Example
+
+![](ehsa.png)
+
+## Tools in the R ecosystem
+
+- `sf` - spatial vector data
+- `spdep` - spatial statistics
+- `sfdep` - a tidy interface to spdep
+- `rgeoda` - R interface to GeoDa
+
+## Tools in Python ecosystem
+
+- `geopandas` - `sf` equivalent
+- `pysal` a very robust set of spatial statistics toools
+- `shapely` for geometries 
+
+
+## What do you want to do next?
+
+- i can answer questions
+- i can demo code
+- i can talk through the spatial lag in more detail
+- we can discuss hot spot analysis
+- anything you want :) 
+

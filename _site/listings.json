@@ -2,6 +2,8 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2023-02-10-jhu/2023-02-10-JHU.html",
+      "/posts/2023-03-01-learning-rust.html",
       "/posts/2023-01-19-raw-strings-in-r.html",
       "/posts/2023-01-17-create-formulae.html",
       "/posts/2022-11-23-youtube-videos.html",
@@ -53,6 +55,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2023-02-10-jhu/2023-02-10-JHU.html",
+      "/posts/2023-03-01-learning-rust.html",
       "/posts/2023-01-19-raw-strings-in-r.html",
       "/posts/2023-01-17-create-formulae.html",
       "/posts/2022-11-23-youtube-videos.html",

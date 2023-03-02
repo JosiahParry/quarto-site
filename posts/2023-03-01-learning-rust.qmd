@@ -1,0 +1,27 @@
+---
+title: learning rust
+categories: [rust, personal]
+date: 2023-03-01
+---
+
+
+I have been wanting to learn a low level language for quite some time. Due to the power and prominence of Rcpp I had thought I wanted to learn C++. Every fast package in R uses C++, right? 
+But Rust kept popping up. Rust, is fast. Rust is safe. Linux is going to be rewritten in Rust. Rust is the most loved language for 7 years in a row. Rust is easily multithreaded. Rust. Rust. Rust. I then heard a bit about [`rextendr`](https://extendr.github.io/rextendr/) a way to incorporate Rust into R packages. With that Rust became a real candidate language to learn. 
+
+The [@hrbrmstr](https://twitter.com/hrbrmstr) provided some sweet words of encouragement over twitter, [an example repo](https://github.com/hrbrmstr/kev-push) to reference, and provided ideas on how to [start learning Rust](https://dailyfinds.hrbrmstr.dev/p/knowledge-drop-learning-rust). 
+
+I spent some time with ["The Book"](https://doc.rust-lang.org/stable/book/) to wrap my head around the basics. I then spent some time writing a chess [FEN parser](https://github.com/josiahparry/fen). I wrote a FEN parser. I wrote a whole program in Rust. That was crazy. The reason why I was able to continue learning Rust is because it is so easy to use (in comparison to C++). Once you wrap your head around the basics it rocks. 
+
+Rust is a compiled language. Working with a compiled language is a huge paradigm shift. R is an interpreted language. Interpreted languages are super cool because we can run one line of code, do some stuff, and then run another line. Compiled languages have to take everything in at once. So there is no running a line, printing an object, then running another line. But that's actually okay because of the Rust compiler is the best teacher I've ever had. 
+
+When you make a mistake in Rust, the compiler will tell you _exactly_ where that mistake is coming from—literally the line and column position. It will also often tell you exactly what code you need to change and how to change it to make your code run. So rather than running line by line, you can compile line by line.   
+
+Learning Rust has made me a better R programmer for many reasons. Here are a few:
+
+- I am conscious of type conversions and consistency
+- I am conscientious of memory consumption
+- I am a glutton for speed now
+- I have a better understanding / framework for thinking about inheritance
+
+
+Programming in Rust has made me think of ways that R can be improved. Mostly in that scalar classes are missing from R (and from vctrs). We also lack the ability to use 64 bit integers which is a bit of a problem. I also think R packages should be designed to be extended. This would be done by exposing generic s3 functions that can be extended for your class. If the method exists for your class you inherit the functionality. I employed a prototype of this idea in the [`sdf`](https://github.com/JosiahParry/sdf/) package.
