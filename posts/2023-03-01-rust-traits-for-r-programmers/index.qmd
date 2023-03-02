@@ -3,6 +3,7 @@ title: "Rust traits for R users"
 subtitle: "and how they'll make your package better"
 categories: [rust, r, package-development, tutorial]
 date: 2023-03-02
+image: "feRris.svg"
 ---
 
 

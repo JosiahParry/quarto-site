@@ -2,6 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/index.html</loc>
-    <lastmod>2023-03-02T14:27:56.624Z</lastmod>
+    <lastmod>2023-03-02T14:32:26.240Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/index.html</loc>
+    <lastmod>2023-03-02T14:32:27.162Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/index.html</loc>
+    <lastmod>2023-03-02T14:32:27.745Z</lastmod>
   </url>
 </urlset>
