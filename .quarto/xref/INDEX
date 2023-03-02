@@ -235,5 +235,11 @@
   },
   "posts/2023-03-01-rust-traits-for-r-programmers.qmd": {
     "2023-03-01-rust-traits-for-r-programmers.html": "c54b7c0b"
+  },
+  "posts/2023-03-01-rust-traits-for-r-programmers/2023-03-01-rust-traits-for-r-programmers.qmd": {
+    "2023-03-01-rust-traits-for-r-programmers.html": "f774e4c4"
+  },
+  "posts/2023-03-01-rust-traits-for-r-programmers/index.qmd": {
+    "index.html": "f5c89a6a"
   }
 }

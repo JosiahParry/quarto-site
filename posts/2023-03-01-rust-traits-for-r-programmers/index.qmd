@@ -8,7 +8,13 @@ date: 2023-03-02
 
 In the few months that I've been programming in Rust nothing has so fundamentally shifted the way that I think about programming—and specifically R packages—as Rust traits. I want to talk briefly about Rust traits and why I think they can make R packages better. 
 
+
+:::{.aside}
+![](feRris.svg){height=150px}
+:::
+
 A trait defines a set of behaviors that can be used by objects of different kinds. Each trait is a collection of methods (functions) whose behavior is defined abstractly. The traits can then be `impl`emented _for_ different object types. Any object that implements the trait can then use that method. It's kind of confusing, isn't it? Let's work through [the example in The Book™](https://doc.rust-lang.org/book/ch10-02-traits.html) and how we can implement it in R. 
+
 
 ## Defining a Trait
 
