@@ -1,11 +1,13 @@
 ---
 author: "Josiah Parry"
+date: 2023-02-10
 format:
   revealjs:
     incremental: true
+    table-of-contents: false
 ---
 
-# friday evening chat
+# JHU talk (slides)
 
 :::{.notes}
 Hey everyone, my name is Josiah. Thank you all for having me. And thank you René for inviting me here to chat with you all. It excites me to see so many people being exposed to GIS and spatial analysis. I'm going to use my time to tell you all about my experience from undergraduate, graduate school, and where I am today. Then I'll talk briefly about the spatial analysis

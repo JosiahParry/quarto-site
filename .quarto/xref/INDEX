@@ -232,5 +232,8 @@
   },
   "posts/2023-03-01-learning-rust.qmd": {
     "2023-03-01-learning-rust.html": "0fd2043f"
+  },
+  "posts/2023-03-01-rust-traits-for-r-programmers.qmd": {
+    "2023-03-01-rust-traits-for-r-programmers.html": "c54b7c0b"
   }
 }

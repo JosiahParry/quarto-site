@@ -1,0 +1,413 @@
+---
+title: "Rust traits for R programmers"
+---
+
+In the few months that I've been programming in Rust nothing has been so fundamentally shifted the way that I think about programming and specifically R packages as Rust traits. Here I want to talk about Rust traits and why I think they can make R packages better. 
+
+A trait defines a set of behaviors that can be used by objects of different kinds. Each trait is a collection of methods (functions) whose behavior is defined abstractly. The traits can then be `impl`emented _for_ different object types. Any object that implements the trait can then use that method. It's kind of confusing, isn't it? Let's work through [the example in The Book™](https://doc.rust-lang.org/book/ch10-02-traits.html) and how we can implement it in R. 
+
+We start by defining a trait called `Summary` which as a single method that returns a `String`. Note how the definition is rather abstract. We know what the function is and what it returns. What happens on the inside doesn't matter to use. 
+
+```rust
+trait Summary {
+    fn summarize(&self) -> String;
+}
+```
+
+Analogous in R is the definition of an S3 function generic. 
+
+:::{.aside} 
+It's only analogous if the trait implements only one method
+:::
+
+
+```{r}
+Summary <- function(x) UseMethod("Summary")
+```
+
+The S3 function generic is essentially saying that there is a new function called `Summary` and it will behave differently based on the class of object passed to it.
+
+:::{.aside}
+Note that we can't specify the output type so we may want to create a validator function later
+:::
+
+Now we want to define a struct called `NewsArticle` that contains 4 fields related to the news paper itself. 
+
+```rust
+pub struct NewsArticle {
+    pub headline: String,
+    pub location: String,
+    pub author: String,
+    pub content: String,
+}
+```
+
+This is similar to creating a new record in `vctrs` which is rather similar to using base R.
+
+::: {.panel-tabset}
+
+
+## Base R
+
+```{r}
+structure(
+  list(
+    headline = character(),
+    location = character(),
+    author = character(),
+    content = character()
+    ), 
+  class = "NewsArticle"
+)
+```
+
+## `vctrs`
+
+
+```{r}
+vctrs::new_rcrd(
+  list(
+    headline = character(),
+    location = character(),
+    author = character(),
+    content = character()
+    ), 
+  class = "NewsArticle"
+)
+```
+:::
+
+
+It's important that we are able to summarise our newspaper article for the socials ofc—so we need to `impl`ement the `Summary` trait for the `NewsArticle` struct. 
+
+```rust
+impl Summary for NewsArticle {
+    fn summarize(&self) -> String {
+        format!("{}, by {} ({})", self.headline, self.author, self.location)
+    }
+}
+```
+
+:::{.aside}
+Notice that the trait is called `Summary` whereas the method it provides is called `summarize()`. For the sake of example I'm going to call the R function `Summary()` throughout the rest of the example. It's not possible to have a perfect 1:1 relationship between Rust and R ;) 
+:::
+
+This block defines how the `summarize()` method will work for a `NewsArticle` struct. It will create a string in the format of `"{title}, by {author} ({location})"`. In R, we have to define the `NewsArticle` method for the `Summary` function which is done by creating a function object with the name signature `{Generic}.{class} <- function(...) { . . . }`.
+
+
+::: {.panel-tabset}
+
+## Base R
+
+```{r}
+Summary.NewsArticle <- function(x) {
+  sprintf(
+    "%s, by %s (%s)",
+    x[["headline"]],
+    x[["author"]],
+    x[["location"]]
+  )
+}
+```
+
+## `vctrs`
+
+```{r}
+Summary.NewsArticle <- function(x) {
+  sprintf(
+    "%s, by %s (%s)",
+    vctrs::field(x, "headline"),
+    vctrs::field(x, "author"),
+    vctrs::field(x, "location")
+  )
+}
+
+```
+
+:::
+
+Since Musk's takeover of twitter, tweets are getting out of hand becoming ridiculously long so we need to be able to summarize them too! So if we define a `Tweet` struct and a corresponding implementation of `Summary` we'll be able to easily summarize them exactly the same way as news articles. 
+
+
+```rust
+// define the struct
+pub struct Tweet {
+    pub username: String,
+    pub content: String,
+    pub reply: bool,
+    pub retweet: bool,
+}
+
+// implement the trait
+impl Summary for Tweet {
+    fn summarize(&self) -> String {
+        format!("{}: {}", self.username, self.content)
+    }
+}
+```
+
+
+Correspondingly in R, we're going to be working with both Tweets and News Articles. So we need to define a tweet class to contain our tweets and a `Summary()` method for the new class. 
+
+
+:::{.panel-tabset}
+
+## Base R
+
+```{r}
+structure(
+  list(
+    username = character(),
+    content = character(),
+    reply = logical(),
+    retweet = logical()
+  ),
+  class = "Tweet"
+)
+
+Summary.Tweet <- function(x) {
+  sprintf("%s: %s", x[["username"]], x[["content"]])
+}
+```
+
+## vctrs
+
+```{r}
+vctrs::new_rcrd(
+    list(
+    username = character(),
+    content = character(),
+    reply = character(),
+    retweet = logical()
+  ),
+  class = "Tweet"
+)
+
+Summary.Tweet <- function(x) {
+  sprintf(
+    "%s: %s", 
+    vctrs::field(x, "username"), 
+    vctrs::field(x, "content")
+    )
+}
+```
+
+:::
+
+We can now define a function that utilizes this trait that will produce consistent `String` output in the same format for both tweets and new articles. 
+
+```rust
+pub fn notify(item: &impl Summary) {
+    println!("Breaking news! {}", item.summarize());
+}
+```
+
+This is huge from the R perspective because we can create a `notify()` function that calls `Summary()` and as long as a method if defined for the input class it will work! 
+
+```{r}
+notify <- function(item) {
+  sprintf("Breaking news! %s", Summary(item))
+}
+```
+
+To test this out lets create a `Tweet` and a `NewsArticle`. First we'll create constructor functions for each. 
+
+:::{.panel-tabset} 
+
+## Base R 
+
+```{r, eval = TRUE}
+new_article <- function(headline, location, author, content) {
+  structure(
+    list(
+      headline = headline,
+      location = location,
+      author = author,
+      content = content
+      ), 
+    class = "NewsArticle"
+  )
+}
+
+new_tweet <- function(username, content, reply, retweet) {
+  structure(
+    list(
+      username = username,
+      content = content,
+      reply = reply,
+      retweet = retweet
+    ),
+    class = "Tweet"
+  )
+}
+```
+
+
+
+## `vctrs`
+
+
+```{r, eval = FALSE}
+new_article <- function(headline, location, author, content) {
+  vctrs::new_rcrd(
+    list(
+      headline = headline,
+      location = location,
+      author = author,
+      content = content
+      ), 
+    class = "NewsArticle"
+  )
+}
+
+new_tweet <- function(username, content, reply, retweet) {
+  vctrs::new_rcrd(
+    list(
+      username = username,
+      content = content,
+      reply = reply,
+      retweet = retweet
+    ),
+    class = "Tweet"
+  )
+}
+
+```
+
+:::
+
+
+Using the constructors we can create a tweet and a news article. 
+
+```{r}
+# https://www.theonion.com/new-absolut-ad-features-swaying-mom-with-one-eye-closed-1850138855
+article <- new_article(
+  "New Absolut Ad Features Swaying Mom With One Eye Closed Telling Camera She Used To Dance",
+  "Stockholm",
+  "The Onion", 
+  "The ad concludes abruptly with the mother beginning to cry when, for no particular reason, she suddenly remembers the death of Princess Diana."
+)
+
+# https://twitter.com/TheOnion/status/1631104570041552896
+tweet <- new_tweet(
+  "@TheOnion",
+  "Cat Internally Debates Whether Or Not To Rip Head Off Smaller Creature It Just Met https://bit.ly/3J1kNzV",
+  FALSE,
+  FALSE
+)
+```
+
+
+We can see how notify works for both of these. 
+
+```{r}
+notify(tweet)
+notify(article)
+```
+
+This is awesome. This means that any object that we create in the future, as long as it implements the `Summary()` function for its class we can utilize the `notify()` function. This comes with a caveat, though—as all good things do. 
+
+The Rust compiler ensures that any object that implements the `Summary` trait returns a single string. R is far more laizzes faire than Rust with classes and types. One could create a `Summary` method for an object that returns a vector of strings. That would break notify. Either `notify()` should have type checking or you should make sure that your method always produces the correct type. 
+
+## Implications for R packages
+
+This very simple concept can be transformative for the way that we build R packages. R packages are, for the most part, bespoke. Each one serves their own purpose and works only within its own types or types it's aware of. But what if an R package could work with _any_ object type? Using this idea we can get from Rust traits, we can do that. 
+
+Packages that want to be extensible can make it easy to do so by doing two fairly simple things. Low-level and critical functions should be exported as generic functions. High level functions that perform some useful functionality should be built upon those generics. 
+
+An example is the [`sdf`](https://github.com/JosiahParry/sdf) package I've prototyped based on this idea. In this case, I have a spatial data frame class that can be implemented on any object that implements methods for the following functions: 
+
+- `is_geometry()`
+- `bounding_box()`
+- `combine_geometry()`
+
+
+### An example
+
+The `sdf` class is a `tibble` with a geometry column and a bounding box attribute. The function `as_sdf()` creates an `sdf` object that tells us what type of geometry is used and the bounding box of it. 
+
+```{r}
+library(sf)
+library(sdf)
+
+# get some sample data 
+g <- sfdep::guerry[, "region"]
+
+as_sdf(g)
+```
+
+This is super cool because we can group by and summarize the data just because we have those above functions defined for `sfc` objects (the geometry column).
+
+Say we want to create a custom `Point` class that we want to be used by an `sdf` object. We can do this rather simply. A `Point` will be a list of length 2 numeric vectors where the first element is the x coordinate and the second element is the y coordinate. 
+
+```{r}
+# create some points
+pnt_data <- lapply(1:5, \(x) runif(2, 0, 90))
+
+# create new vector class
+pnts <- vctrs::new_vctr(pnt_data, class = "Point")
+
+pnts
+```
+
+Now we can start defining our methods. `is_geometry()` should always return TRUE for our type. We can do this simply like so:
+
+```{r}
+is_geometry.Point <- function(x) inherits(x, "Point")
+```
+
+:::{.aside}
+This method will only be dispatched on `Point`s so it will always inherit the `Point` class. One could just as well always return `TRUE`
+:::
+
+Next we need to define a method for the bounding box. This is the the maximum and minimum x and y coordinates. Our method should iterate over each point and extract the x and y into their own vector and return the minimum and maxes. These need to be structured in a particular order.
+
+```{r}
+bounding_box.Point <- function(x) {
+   x <- vapply(x, `[`, numeric(1), 1)
+  y <- vapply(x, `[`, numeric(1), 2)
+  
+  c(xmin = min(x), ymin = min(y), xmax = max(x), ymax = max(y))
+}
+```
+
+Lastly, we need a way to combine the points together. In this case, we can just "combine" the points by finding the average point. This is not geometrically sound but for the sake of example it suffices. Note that the type it returns always has to be the same! There is not a compiler forcing us so we much force ourselves! 
+
+
+```{r}
+combine_geometry.Point <- function(x) {
+  x <- vapply(x, `[`, numeric(1), 1)
+  y <- vapply(x, `[`, numeric(1), 2)
+  
+  vctrs::new_vctr(
+    list(mean(x), mean(y)), 
+    class = "Point"
+    )
+}
+```
+
+
+Now, with only just that we can create a spatial data frame. Let's use the ggplot2 diamonds data set for example since it has nice x and y coordinates. I'm 
+
+```{r}
+data(diamonds, package = "ggplot2")
+
+library(dplyr, warn.conflicts = FALSE)
+
+diamond_pnts <- diamonds |> 
+  select(cut, x, y) |> 
+  mutate(
+    pnts = vctrs::new_vctr(
+      purrr::map2(diamonds$x, diamonds$y, `c`),
+      class = "Point"
+    )
+  ) 
+
+head(diamond_pnts)
+```
+
+
+```{r}
+as_sdf(diamond_pnts)
+```
+
