@@ -1,6 +1,7 @@
 ---
 title: "Feeling rusty: counting characters"
 date: 2023-04-13
+categories: [rust, r]
 ---
 
 I'm working on a new video for you all on GeoHashes. As I keep working on my slides and script I keep finding new things I want to explore or that I need to write. Recently, that was to compare multiple geohashes to a known geohash. The goal of that is to count how many of the first characters matched a reference. If there are matching leading characters between a geohashes that means that they are in the same geohash at some level of precision. Knowing that number of shared characters tells us at what level of precision they coexist. The challenge is that there isn't any easy way to do that in base R or packages I could find. So, what do we do when we can't find something to do a task for us? We make it. 
