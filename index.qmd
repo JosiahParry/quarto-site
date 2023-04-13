@@ -6,7 +6,7 @@ listing:
     sort: "date desc"
     filter-ui: false
     categories: false
-    type: grid
+    #type: grid
     page-size: 6
     fields: [title, description]
     contents: 
