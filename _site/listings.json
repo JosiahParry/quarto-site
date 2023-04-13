@@ -2,6 +2,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2023-04-13-counting-chars/index.html",
       "/posts/2023-03-01-rust-traits-for-r-programmers/index.html",
       "/posts/2023-03-01-learning-rust.html",
       "/posts/2023-02-10-jhu/2023-02-10-JHU.html",
@@ -56,6 +57,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2023-04-13-counting-chars/index.html",
       "/posts/2023-03-01-rust-traits-for-r-programmers/index.html",
       "/posts/2023-03-01-learning-rust.html",
       "/posts/2023-02-10-jhu/2023-02-10-JHU.html",
@@ -112,6 +114,7 @@
     "items": [
       "/projects/pkgs/sysreqs.html",
       "/projects/pkgs/genius.html",
+      "/projects/pkgs/h3o.html",
       "/projects/pkgs/sfdep.html",
       "/projects/pkgs/spdep.html",
       "/projects/writing/r4campaigns.html",

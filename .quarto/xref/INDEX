@@ -241,5 +241,11 @@
   },
   "posts/2023-03-01-rust-traits-for-r-programmers/index.qmd": {
     "index.html": "f5c89a6a"
+  },
+  "projects/pkgs/h3o.qmd": {
+    "h3o.html": "8115a487"
+  },
+  "posts/2023-04-13-counting-chars/index.qmd": {
+    "index.html": "5fefcc1d"
   }
 }

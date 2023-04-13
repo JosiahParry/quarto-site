@@ -1,5 +1,5 @@
 ---
-title: "projects & contributions"
+title: "projects"
 comments: false
 listing:
   - id: pkgs
@@ -14,7 +14,7 @@ listing:
 ---   
 
 
-### R packages & contributions to R packages
+### Packages & contributions
 
 ::: {#pkgs}
 :::

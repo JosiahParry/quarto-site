@@ -1,0 +1,104 @@
+---
+title: "h3o for H3 indexing"
+categories: [spatial, package]
+date: 2023-03-16
+---
+
+[{h3o}](https://h3o.josiahparry.com/ "Link to h3o R package") is an R package that offers high-performance geospatial indexing using the [H3 grid system](https://h3geo.org/ "H3 Uber"). The package is built using [{extendr}](https://extendr.github.io/) and provides bindings to the Rust library of the same name.
+
+The Rust community built [`h3o`](https://github.com/HydroniumLabs/h3o) which is a *pure* rust implementation of Uber's H3 hierarchical hexagon grid system. Since h3o is a pure rust library it is typically safer to use, just as fast, and dependency free.
+
+## Benefits of h3o
+
+Since h3o is built *purely* in Rust and R it is **system dependency free** and can be compiled for multiple platforms including Linux, MacOS, and Windows, making it easy to use across different OS.
+
+h3o benefits greatly from the type safety of Rust and provides robust error handling often returning 0 length vectors or NA values when appropriate where errors would typically occur using another H3 library.
+
+And moreover, it is very fast!
+
+## Features
+
+h3o supports all of the functionality that is provided by the C library and the Rust library h3o.
+
+::: aside
+If there are any features missing, please make an issue on GitHub and I'll be sure to address it!
+:::
+
+h3o was built with sf objects and the tidyverse in mind. h3o objects can be created from sf objects and vice versa. Compatibility with the tidyverse is accomplished via the vctrs package.
+
+-   `sf::st_as_sfc()` methods for `H3` and `H3Edge` vectors
+-   automatic nesting by creating lists of `H3` and `H3Edge` vectors
+    -   vectorized output will never return more objects than inputs
+
+### Example
+
+Create some points in the bounding box of Wyoming.
+
+```{r}
+library(sf)
+library(h3o)
+
+# create a bounding box
+bbox_raw <- setNames(
+  c(-111.056888, 40.994746, -104.05216, 45.005904),
+  c("xmin", "ymin", "xmax", "ymax")
+)
+
+# create some points
+pnts <- st_bbox(bbox_raw) |> 
+  st_as_sfc() |> 
+  st_set_crs(4326) |> 
+  st_sample(25)
+
+# convert to H3 index
+hexs <- h3_from_points(pnts, 4) 
+hexs
+```
+
+The `H3` vectors can be easily visualized by converting to sf objects. The `st_as_sfc()` method is defined for `H3` vectors. While you may be familair with `st_as_sf()` the `_sfc` variant is used for creating *columns* and should be used on a vector not a dataframe. This way you can use it in a dplyr pipe.
+
+```{r}
+polys <- st_as_sfc(hexs)
+polys
+```
+
+This can be plotted.
+
+```{r}
+plot(polys)
+```
+
+To illustrate tidyverse compatibility lets create an sf object and create a column of `H3` indexes.
+
+```{r}
+library(dplyr, warn.conflicts = FALSE)
+
+hexs <- tibble(geometry = pnts) |> 
+  st_as_sf() |> 
+  mutate(h3 = h3_from_points(geometry, 4))
+
+hexs
+```
+
+Afterwards, lets create a K = 3 disk around each grid cell, create a compact disk by compacting the cells, then unnest into a longer data frame, and update our geometries.
+
+```{r}
+compact_hexs <- hexs |> 
+  mutate(
+    disks = grid_disk(h3, 3),
+    compact_disks = purrr::map(disks, compact_cells)
+  ) |> 
+  tidyr::unnest_longer(compact_disks) |> 
+  mutate(geometry = st_as_sfc(compact_disks)) |> 
+  st_as_sf() 
+```
+
+Use ggplot2 to make a simple visualization.
+
+```{r}
+library(ggplot2)
+
+ggplot(compact_hexs) +
+  geom_sf(fill = NA) +
+  theme_void()
+```
