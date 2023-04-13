@@ -252,3 +252,84 @@ bench::mark(
 ```
 
 Absolutely friggin' bonkers!! If I was better at concurrency and threading I'd try to compare that but alas. I'm stopping here :) 
+
+## Double addendum....
+
+Okay, after consulting the gods in the extendr discord they pointed to a number of ways in which this can be improved and made faster.
+
+First off, `rust_function()` compiled using the `dev` profile first. This is used for debugging. If we set `profile = "release"` we compile the function for release performance. H/t to [@iliak](https://github.com/ilia).
+
+```{r}
+rextendr::rust_function("
+  fn count_seq_chars_to_ref(x: Vec<String>, y: &str) -> Vec<usize> {
+    x.into_iter()
+        .map(|xi| 
+            xi.as_str().chars().zip(y.chars())
+            .take_while(|a| a.0 == a.1)
+            .count()
+        )
+        .collect()
+  }
+",
+profile = "release"
+)
+
+bench::mark(
+  GPT_cpp = count_seq_chars_to_ref_cpp(sample_strings, "abcd123"),
+  rust = count_seq_chars_to_ref(sample_strings, "abcd123")
+)
+```
+
+This brings the run time down a whole lot. The next enhancement pointed out is that both `Vec<String>` and `Vec<usize>` use copies. Instead, I should be using `extendr` objects `Strings` and `Integers`. Here I:
+
+- change the `x` to `Strings`
+- cast usize to i32 using `.count() as i32` (h/t [@multimeric](https://github.com/multimeric))
+- use `collect_robj()` instead of `collect()` so that it turns into an `Robj` (R object)
+
+```{r}
+rextendr::rust_function(
+"    fn count_seq_chars_to_ref(x: Strings, y: &str) -> Robj {
+     x.into_iter()
+        .map(|xi| 
+          xi.as_str().chars().zip(y.chars())
+            .take_while(|a| a.0 == a.1)
+            .count() as i32
+        )
+        .collect_robj()
+        
+  }",
+profile = "release"
+)
+
+bench::mark(
+  GPT_cpp = count_seq_chars_to_ref_cpp(sample_strings, "abcd123"),
+  rust = count_seq_chars_to_ref(sample_strings, "abcd123")
+)
+```
+
+Now rust is faster.
+
+Further, shout out to [@cgmossa](https://github.com/CGMossa) for this last implementation that shaves off some more time by using `Integers` specifically. 
+
+```{r}
+rextendr::rust_function("
+  fn count_seq_chars_to_ref(x: Strings, y: &str) -> Integers {
+  x.iter()
+        .map(|xi|
+            xi.chars().zip(y.chars())
+            .take_while(|a| a.0 == a.1)
+            .count()
+        ).map(|x|(x as i32).into())
+        .collect()
+  }
+",
+extendr_fn_options = list("use_try_from" = TRUE), 
+use_dev_extendr = TRUE, 
+profile = "release")
+
+bench::mark(
+  GPT_cpp = count_seq_chars_to_ref_cpp(sample_strings, "abcd123"),
+  rust = count_seq_chars_to_ref(sample_strings, "abcd123")
+)
+```
+

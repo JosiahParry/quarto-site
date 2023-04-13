@@ -160,6 +160,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
    
   <ul>
 <li><a href="#addendum-chatgpt-rules-apparently" id="toc-addendum-chatgpt-rules-apparently" class="nav-link active" data-scroll-target="#addendum-chatgpt-rules-apparently">Addendum: ChatGPT rules apparently</a></li>
+  <li><a href="#double-addendum." id="toc-double-addendum." class="nav-link" data-scroll-target="#double-addendum.">Double addendum….</a></li>
   </ul></nav>
 </nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
@@ -308,11 +309,11 @@ Important
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_strings</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "acde512" "acde315" "abde523" "abde412" "abce453" "abce125"</code></pre>
+<pre><code>[1] "abce142" "abce451" "abde431" "abcd134" "abde523" "abce534"</code></pre>
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">count_seq_chars_to_ref</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_strings</span><span class="op">)</span>, <span class="st">"abcd123"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1 1 2 2 3 3</code></pre>
+<pre><code>[1] 3 3 2 5 2 3</code></pre>
 </div>
 </div>
 <p><a href="https://www.pmassicotte.com/">Philippe Massicotte</a> was kind enough to provide an R only example in a reply to a tweet of mine. We can compare the speed of the two implementations. A pure Rust implementation and an R native implementation.</p>
@@ -336,7 +337,7 @@ Important
 <span></span>
 <span><span class="fu">count_seq_lapply</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_strings</span><span class="op">)</span>, <span class="st">"abcd123"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1 1 2 2 3 3</code></pre>
+<pre><code>[1] 3 3 2 5 2 3</code></pre>
 </div>
 </div>
 <p>As you can see his works just as well and frankly, better. That’s because he inherits the NA handling of the base R functions he is using. If any NA are introduced into a pure Rust implementation without using <a href="https://extendr.github.io/extendr/extendr_api/">extendr</a> types and proper handling you’ll get a <code>panic!</code> which will cause the R function to error.</p>
@@ -353,8 +354,8 @@ disabled.</code></pre>
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 lapply      901.6ms  901.6ms      1.11    1.58MB     71.0
-2 rust         57.2ms   58.2ms     17.2    781.3KB      0  </code></pre>
+1 lapply      894.7ms  894.7ms      1.12    1.58MB     39.1
+2 rust         57.9ms   59.5ms     16.9    781.3KB      0  </code></pre>
 </div>
 </div>
 <p>The R implementation is still super fast. It’s just that Rust is also super super fast!</p>
@@ -403,11 +404,114 @@ disabled.</code></pre>
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 GPT_cpp      1.87ms      2ms     497.      784KB     8.28
-2 rust        56.75ms   57.5ms      17.3     781KB     0   </code></pre>
+1 GPT_cpp      1.91ms   2.02ms     484.      784KB     8.43
+2 rust         57.4ms   58.7ms      17.1     781KB     0   </code></pre>
 </div>
 </div>
 <p>Absolutely friggin’ bonkers!! If I was better at concurrency and threading I’d try to compare that but alas. I’m stopping here :)</p>
+</section><section id="double-addendum." class="level2"><h2 class="anchored" data-anchor-id="double-addendum.">Double addendum….</h2>
+<p>Okay, after consulting the gods in the extendr discord they pointed to a number of ways in which this can be improved and made faster.</p>
+<p>First off, <code>rust_function()</code> compiled using the <code>dev</code> profile first. This is used for debugging. If we set <code>profile = "release"</code> we compile the function for release performance. H/t to <a href="https://github.com/ilia"><span class="citation" data-cites="iliak">@iliak</span></a>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">rextendr</span><span class="fu">::</span><span class="fu"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  fn count_seq_chars_to_ref(x: Vec&lt;String&gt;, y: &amp;str) -&gt; Vec&lt;usize&gt; {</span></span>
+<span><span class="st">    x.into_iter()</span></span>
+<span><span class="st">        .map(|xi| </span></span>
+<span><span class="st">            xi.as_str().chars().zip(y.chars())</span></span>
+<span><span class="st">            .take_while(|a| a.0 == a.1)</span></span>
+<span><span class="st">            .count()</span></span>
+<span><span class="st">        )</span></span>
+<span><span class="st">        .collect()</span></span>
+<span><span class="st">  }</span></span>
+<span><span class="st">"</span>,</span>
+<span>profile <span class="op">=</span> <span class="st">"release"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ build directory: '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp7v1WGT/file805d1ef635d8'
+✔ Writing '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp7v1WGT/file805d1ef635d8/target/extendr_wrappers.R'</code></pre>
+</div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op">(</span></span>
+<span>  GPT_cpp <span class="op">=</span> <span class="fu">count_seq_chars_to_ref_cpp</span><span class="op">(</span><span class="va">sample_strings</span>, <span class="st">"abcd123"</span><span class="op">)</span>,</span>
+<span>  rust <span class="op">=</span> <span class="fu">count_seq_chars_to_ref</span><span class="op">(</span><span class="va">sample_strings</span>, <span class="st">"abcd123"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  expression      min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 GPT_cpp      1.92ms   2.06ms     470.      784KB     8.42
+2 rust        12.97ms  14.23ms      70.3     781KB     2.07</code></pre>
+</div>
+</div>
+<p>This brings the run time down a whole lot. The next enhancement pointed out is that both <code>Vec&lt;String&gt;</code> and <code>Vec&lt;usize&gt;</code> use copies. Instead, I should be using <code>extendr</code> objects <code>Strings</code> and <code>Integers</code>. Here I:</p>
+<ul>
+<li>change the <code>x</code> to <code>Strings</code>
+</li>
+<li>cast usize to i32 using <code>.count() as i32</code> (h/t <a href="https://github.com/multimeric"><span class="citation" data-cites="multimeric">@multimeric</span></a>)</li>
+<li>use <code>collect_robj()</code> instead of <code>collect()</code> so that it turns into an <code>Robj</code> (R object)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">rextendr</span><span class="fu">::</span><span class="fu"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op">(</span></span>
+<span><span class="st">"    fn count_seq_chars_to_ref(x: Strings, y: &amp;str) -&gt; Robj {</span></span>
+<span><span class="st">     x.into_iter()</span></span>
+<span><span class="st">        .map(|xi| </span></span>
+<span><span class="st">          xi.as_str().chars().zip(y.chars())</span></span>
+<span><span class="st">            .take_while(|a| a.0 == a.1)</span></span>
+<span><span class="st">            .count() as i32</span></span>
+<span><span class="st">        )</span></span>
+<span><span class="st">        .collect_robj()</span></span>
+<span><span class="st">        </span></span>
+<span><span class="st">  }"</span>,</span>
+<span>profile <span class="op">=</span> <span class="st">"release"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ build directory: '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp7v1WGT/file805d1ef635d8'
+✔ Writing '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp7v1WGT/file805d1ef635d8/target/extendr_wrappers.R'</code></pre>
+</div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op">(</span></span>
+<span>  GPT_cpp <span class="op">=</span> <span class="fu">count_seq_chars_to_ref_cpp</span><span class="op">(</span><span class="va">sample_strings</span>, <span class="st">"abcd123"</span><span class="op">)</span>,</span>
+<span>  rust <span class="op">=</span> <span class="fu">count_seq_chars_to_ref</span><span class="op">(</span><span class="va">sample_strings</span>, <span class="st">"abcd123"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  expression      min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 GPT_cpp      1.87ms   1.96ms      500.     784KB    10.7 
+2 rust         1.43ms   1.48ms      672.     391KB     6.24</code></pre>
+</div>
+</div>
+<p>Now rust is faster.</p>
+<p>Further, shout out to <a href="https://github.com/CGMossa"><span class="citation" data-cites="cgmossa">@cgmossa</span></a> for this last implementation that shaves off some more time by using <code>Integers</code> specifically.</p>
+<div class="cell">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">rextendr</span><span class="fu">::</span><span class="fu"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  fn count_seq_chars_to_ref(x: Strings, y: &amp;str) -&gt; Integers {</span></span>
+<span><span class="st">  x.iter()</span></span>
+<span><span class="st">        .map(|xi|</span></span>
+<span><span class="st">            xi.chars().zip(y.chars())</span></span>
+<span><span class="st">            .take_while(|a| a.0 == a.1)</span></span>
+<span><span class="st">            .count()</span></span>
+<span><span class="st">        ).map(|x|(x as i32).into())</span></span>
+<span><span class="st">        .collect()</span></span>
+<span><span class="st">  }</span></span>
+<span><span class="st">"</span>,</span>
+<span>extendr_fn_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"use_try_from"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
+<span>use_dev_extendr <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>profile <span class="op">=</span> <span class="st">"release"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ build directory: '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp7v1WGT/file805d1ef635d8'
+✔ Writing '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp7v1WGT/file805d1ef635d8/target/extendr_wrappers.R'</code></pre>
+</div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op">(</span></span>
+<span>  GPT_cpp <span class="op">=</span> <span class="fu">count_seq_chars_to_ref_cpp</span><span class="op">(</span><span class="va">sample_strings</span>, <span class="st">"abcd123"</span><span class="op">)</span>,</span>
+<span>  rust <span class="op">=</span> <span class="fu">count_seq_chars_to_ref</span><span class="op">(</span><span class="va">sample_strings</span>, <span class="st">"abcd123"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  expression      min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 GPT_cpp      1.86ms   1.99ms      488.     784KB    10.7 
+2 rust         1.36ms    1.4ms      706.     391KB     6.23</code></pre>
+</div>
+</div>
 
 
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
