@@ -163,7 +163,7 @@ count_seq_chars_to_ref(head(sample_strings), "abcd123")
 
 [Philippe Massicotte](https://www.pmassicotte.com/) was kind enough to provide an R only example in a reply to a tweet of mine. We can compare the speed of the two implementations. A pure Rust implementation and an R native implementation.
 
-{{ tweet philmassicotte 1646191363728240642 }}
+{{< tweet philmassicotte 1646191363728240642 >}}
 
 Here we wrap his implementation into a function `count_seq_lapply()`. I've modified this implementation to handle the scenario where the first element is not true so we don't get a run length of `FALSE` elements.
 

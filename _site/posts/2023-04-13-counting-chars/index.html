@@ -308,15 +308,15 @@ Important
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_strings</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "bcde123" "bcde532" "acde413" "bcde351" "abcd453" "bcde413"</code></pre>
+<pre><code>[1] "acde512" "acde315" "abde523" "abde412" "abce453" "abce125"</code></pre>
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">count_seq_chars_to_ref</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_strings</span><span class="op">)</span>, <span class="st">"abcd123"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0 0 1 0 4 0</code></pre>
+<pre><code>[1] 1 1 2 2 3 3</code></pre>
 </div>
 </div>
 <p><a href="https://www.pmassicotte.com/">Philippe Massicotte</a> was kind enough to provide an R only example in a reply to a tweet of mine. We can compare the speed of the two implementations. A pure Rust implementation and an R native implementation.</p>
-<p>{{ tweet philmassicotte 1646191363728240642 }}</p>
+<p></p>
 <p>Here we wrap his implementation into a function <code>count_seq_lapply()</code>. I’ve modified this implementation to handle the scenario where the first element is not true so we don’t get a run length of <code>FALSE</code> elements.</p>
 <div class="cell">
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">count_seq_lapply</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">ref</span><span class="op">)</span> <span class="op">{</span></span>
@@ -336,7 +336,7 @@ Important
 <span></span>
 <span><span class="fu">count_seq_lapply</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_strings</span><span class="op">)</span>, <span class="st">"abcd123"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0 0 1 0 4 0</code></pre>
+<pre><code>[1] 1 1 2 2 3 3</code></pre>
 </div>
 </div>
 <p>As you can see his works just as well and frankly, better. That’s because he inherits the NA handling of the base R functions he is using. If any NA are introduced into a pure Rust implementation without using <a href="https://extendr.github.io/extendr/extendr_api/">extendr</a> types and proper handling you’ll get a <code>panic!</code> which will cause the R function to error.</p>
@@ -353,8 +353,8 @@ disabled.</code></pre>
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 lapply      925.9ms  925.9ms      1.08    1.58MB     69.1
-2 rust         56.8ms   57.6ms     17.2    781.3KB      0  </code></pre>
+1 lapply      901.6ms  901.6ms      1.11    1.58MB     71.0
+2 rust         57.2ms   58.2ms     17.2    781.3KB      0  </code></pre>
 </div>
 </div>
 <p>The R implementation is still super fast. It’s just that Rust is also super super fast!</p>
@@ -403,8 +403,8 @@ disabled.</code></pre>
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 GPT_cpp      1.93ms   2.04ms     481.      784KB     6.17
-2 rust        58.18ms  58.56ms      17.0     781KB     2.13</code></pre>
+1 GPT_cpp      1.87ms      2ms     497.      784KB     8.28
+2 rust        56.75ms   57.5ms      17.3     781KB     0   </code></pre>
 </div>
 </div>
 <p>Absolutely friggin’ bonkers!! If I was better at concurrency and threading I’d try to compare that but alas. I’m stopping here :)</p>
