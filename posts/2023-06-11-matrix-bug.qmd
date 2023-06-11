@@ -86,4 +86,35 @@ To me, this is a fundamental inconsistency in the language. Either all poser typ
 To me, this warrants a bug report for `unclass()`. Based on the documentation, `unclass()` should _always_ remove the class attribute from an object but it fails to do so for `arrays` and `matrix`es. 
 
 
+## Looking deeper! 
 
+With some further exploratory help of June we can see the internal representation of these objects.
+
+Let's create an object with a `dim` attribute and a custom class. Suprisingly, the custom class is respected and `matrix` and `array` aren't slapped on it. 
+
+```{r}
+x <- structure(integer(1), dim = c(1, 1), class = "meep")
+class(x)
+```
+
+If we look at the internal representation using `.Internal(inspect(x))` we get to see some of the C goodies.
+
+```{r}
+.Internal(inspect(x))
+```
+
+Just look to the right hand side of these gibberish. See that the `dim` has a value of `1,1` and `class` has a value of `meep`. There is no matrix or array or nothing. 
+
+Now we remove the `meep` class and check again.
+
+```{r}
+class_unclass(x)
+```
+
+Boom matrix and array. But if we look at the internals...
+
+```{r}
+.Internal(inspect(unclass(x)))
+```
+
+THEY AREN'T THERE!!!!!!

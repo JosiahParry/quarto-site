@@ -162,7 +162,11 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </li>
     </ul>
 </div>
-    
+    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#looking-deeper" id="toc-looking-deeper" class="nav-link active" data-scroll-target="#looking-deeper">Looking deeper!</a></li>
+  </ul></nav>
 </nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
@@ -278,10 +282,53 @@ character(0)</code></pre>
 <p><a href="https://github.com/yjunechoe"><strong><span class="citation" data-cites="yjunechoe">@yjunechoe</span></strong></a> pointed me to some excerpts from <a href="https://deepr.gagolewski.com/">Deep R Programming</a>, a book I wish I had read yesterday. It refers to these attributes as “<em>special attributes</em>”. The author, <a href="https://www.gagolewski.com/">Marek Gagolewski</a> (author of <a href="https://stringi.gagolewski.com/"><code>stringi</code></a>, by the way), makes note of this special behavior of matrix but leaves it at that.</p>
 <p>To me, this is a fundamental inconsistency in the language. Either all poser types (data.frame, matrix, factor, etc) should be automatically created if their special attributes are set on the appropriate type or not at all. What justification is there for <em>only</em> <code>matrix</code> having a special behavior in <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code>?</p>
 <p>To me, this warrants a bug report for <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code>. Based on the documentation, <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code> should <em>always</em> remove the class attribute from an object but it fails to do so for <code>arrays</code> and <code>matrix</code>es.</p>
+<section id="looking-deeper" class="level2"><h2 class="anchored" data-anchor-id="looking-deeper">Looking deeper!</h2>
+<p>With some further exploratory help of June we can see the internal representation of these objects.</p>
+<p>Let’s create an object with a <code>dim</code> attribute and a custom class. Suprisingly, the custom class is respected and <code>matrix</code> and <code>array</code> aren’t slapped on it.</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/structure.html">structure</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html">integer</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"meep"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "meep"</code></pre>
+</div>
+</div>
+<p>If we look at the internal representation using <code>.Internal(inspect(x))</code> we get to see some of the C goodies.</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Internal.html">.Internal</a></span><span class="op">(</span><span class="fu">inspect</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>@10ea6ccd0 13 INTSXP g0c1 [OBJ,REF(2),ATT] (len=1, tl=0) 0
+ATTRIB:
+  @10f0d5570 02 LISTSXP g0c0 [REF(1)] 
+    TAG: @13d00e880 01 SYMSXP g1c0 [MARK,REF(2905),LCK,gp=0x4000] "dim" (has value)
+    @10ea6cd08 13 INTSXP g0c1 [REF(65535)] (len=2, tl=0) 1,1
+    TAG: @13d00e9d0 01 SYMSXP g1c0 [MARK,REF(32428),LCK,gp=0x6000] "class" (has value)
+    @12d670170 16 STRSXP g0c1 [REF(65535)] (len=1, tl=0)
+      @12d6701a8 09 CHARSXP g0c1 [REF(2),gp=0x60] [ASCII] [cached] "meep"</code></pre>
+</div>
+</div>
+<p>Just look to the right hand side of these gibberish. See that the <code>dim</code> has a value of <code>1,1</code> and <code>class</code> has a value of <code>meep</code>. There is no matrix or array or nothing.</p>
+<p>Now we remove the <code>meep</code> class and check again.</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">class_unclass</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "matrix" "array" </code></pre>
+</div>
+</div>
+<p>Boom matrix and array. But if we look at the internals…</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Internal.html">.Internal</a></span><span class="op">(</span><span class="fu">inspect</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">unclass</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>@10fa94200 13 INTSXP g0c1 [ATT] (len=1, tl=0) 0
+ATTRIB:
+  @10f31f5d8 02 LISTSXP g0c0 [REF(1)] 
+    TAG: @13d00e880 01 SYMSXP g1c0 [MARK,REF(2933),LCK,gp=0x4000] "dim" (has value)
+    @10ea6cd08 13 INTSXP g0c1 [REF(65535)] (len=2, tl=0) 1,1</code></pre>
+</div>
+</div>
+<p>THEY AREN’T THERE!!!!!!</p>
 
 
-
-</main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
