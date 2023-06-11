@@ -2,6 +2,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2023-06-11-matrix-bug.html",
       "/posts/2023-04-13-counting-chars/index.html",
       "/posts/2023-03-01-rust-traits-for-r-programmers/index.html",
       "/posts/2023-03-01-learning-rust.html",
@@ -57,6 +58,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2023-06-11-matrix-bug.html",
       "/posts/2023-04-13-counting-chars/index.html",
       "/posts/2023-03-01-rust-traits-for-r-programmers/index.html",
       "/posts/2023-03-01-learning-rust.html",
