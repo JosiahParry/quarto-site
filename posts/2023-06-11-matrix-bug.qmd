@@ -1,5 +1,7 @@
 ---
 title: "What's so special about `array`s?"
+date: 2023-06-11
+categories: [r]
 ---
 
 I'm working on a new video about S3 objects in R and class inheritance / hierarchy. One of my favorite functions for exploring objecs and their structure is `unclass()`.
