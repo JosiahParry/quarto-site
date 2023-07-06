@@ -1,0 +1,198 @@
+---
+title: "R is still fast: a salty reaction to a salty blog post"
+date: 2023-07-06
+categories: [rust, r, production]
+---
+
+
+There's this new [blog post](https://matthewrkaye.com/posts/2023-06-29-lessons-learned-from-running-r-in-production/lessons-learned-from-running-r-in-production.html) making the rounds making some claims about why they won't put R into production. Most notably they're wheeling the whole "R is slow thing" again. And there are few things that grind my gears more than that type of sentiment. It's almost always ill informed. I find that to be the case here too. 
+
+I wouldn't have known about this had it 1) not mentioned my own Rust project [Valve](https://github.com/JosiahParry/valve/) and 2) a kind stranger inform me about it on mastodon. 
+
+<iframe src="https://fosstodon.org/@jimgar/110663477958759961/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe>
+
+I've collected my reactions below as notes and sundry bench marks and bullet points. 
+
+## TL;DR
+
+- There is a concurrent web server for R and I made it [Valve](https://github.com/JosiahParry/valve/)
+- Python is really fast at serializing json and R is slower
+- Python is really slow at parsing json and R is so so soooo much faster
+- To handle types appropriately, sometimes you have to program
+- There are mock REST API testing libraries [`{httptest}`](https://enpiar.com/r/httptest/articles/httptest.html) and [`{webmockr}`](https://docs.ropensci.org/webmockr/)
+- Demand your service providers to make the tools you want 
+- Ask and you shall receive
+- R can go into production
+- **PLEASE JUST TRY VALVE YOU'LL LOVE IT**
+
+
+## Production Services
+
+There are so many people using R in production in so many ways across the world. I wish Posit did a better job getting these stories out. As a former RStudio employee, I personally met people putting R in production in most amazing ways. From the US Department of State, Defense, Biotech companies, marketing agencies, national lotteries, and so much more. The one that sticks out the most is that [Payam M.](https://www.linkedin.com/in/pmokhtarian/), when at [Tabcorp](https://www.tabcorp.com.au/) massively scaled their system using Plumber APIs and Posit Connect to such a ridiculous scale I couldn't even believe. 
+
+### Gunicorn, Web Servers, and Concurrency
+
+> "R has no widely-used web server to help it run concurrently."
+
+The premise of this whole blog post stems from the fact that there is no easily concurrent web server for R. Which is true and is the reason I built Valve. It doesn't meet the criteria of widely used because no one has used it. In part, because of posts like this that discourage people from using R in production. 
+
+### Types and Conversion
+
+There's this weird bit about how `1` and `c(1, 2)` are treated as the same class and unboxing of json. They provide the following python code as a desirable pattern for processing data.
+
+```python
+x = 1
+y = [1, 2]
+
+json.dump(x, sys.stdout)
+#> 1
+json.dump(y, sys.stdout)
+#> [1, 2]
+```
+
+They want scalars to be unboxed and lists to remain lists. This is the same behavior as `jsonlite`, though.
+
+```{r}
+jsonlite::toJSON(1, auto_unbox = TRUE)
+jsonlite::toJSON(1:2, auto_unbox = TRUE)
+```
+
+There's a difference here: one that the author fails to recognize is that a length 1 vector is handled appropriately. What the author is saying is that they don't like that R doesn't behave the same way as Python. You, as a developer should be able to guarantee that a value is length 1. It's easy. `length(x) == 1`, or if you want `is_scalar <- function(x) length(x) == 1`. This is the type system in R and json libraries handle the "edge case" appropriately. There is nothing wrong here. The reprex is the same as the python library.
+
+> "R (and Plumber) also do not enforce types of parameters to your API, as opposed to FastAPI, for instance, which does via the use of pydantic." 
+
+Python does not type check nor does FastAPI. You opt in to type checking with FastAPI. You can do the same with Plumber. A quick perusal of the docs will show you this. Find the [`@param`](https://www.rplumber.io/articles/annotations.html) section. There is some concessions here, though. The truthful part here is the type annotations do type conversion for only dynamic routes. Which, I don't know if FastAPI does. Type handling for static parameters is an [outstanding issue of mine for plumber since 2021](https://github.com/rstudio/plumber/issues/755).
+
+I've followed up on the issue above and within minutes the maintainer responded. There is an existing [PR to handle this issue](https://github.com/rstudio/plumber/pull/905). 
+
+This just goes to show if that you want something done in the open source world, just ask for it. More  than likely its already there or just waiting for the slight nudge from someone else. 
+
+While I know it's not "seemless" adding an `as.integer()` and a `stopifnot(is.integer(n))` isn't the wildest thing for a developer to do.
+
+There is a comparison between type checking in R and Python with the python example using type hints which are, again, opt-in. An unfair comparison when you say "if you don't use the opt-in features of plumber but use the opt-in features of FastAPI, FastAPI is better." 
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/types")
+async def types(n: int) -> int:
+  return n * 2
+```
+
+
+### Clients and Testing
+
+I haven't done much testing of API endpoints but I do know that there are two de facto packages for this:
+
+- [`{httptest}`](https://enpiar.com/r/httptest/articles/httptest.html) and 
+- [`{webmockr}`](https://docs.ropensci.org/webmockr/).
+
+These are pretty easy to find. Not so sure why they weren't mentioned or even tested. 
+
+### Performance
+
+JSON serialization is a quite interesting thing to base performance off of. I've never seen how fast pandas serialization is. Quite impressive! But, keep with me, because you'll see, this is fibbing with benchmarks.
+
+I do have thoughts on the use of jsonlite and it's ubiquity. jsonlite is slow. I don't like it. My belief is that everyone should use  [`{jsonify}`](https://github.com/SymbolixAU/jsonify) when creating json. It's damn good.
+
+So, when I run these bench marks on my machine for parsing I get:
+
+```{r}
+microbenchmark::microbenchmark(
+  jsonify = jsonify::to_json(iris),
+  jsonlite = jsonlite::toJSON(iris),
+  unit = "ms", 
+  times = 1000
+)
+```
+
+A very noticable difference in using jsonify over jsonlite. The same benchmark using pandas is holy sh!t fast!
+
+```python
+from timeit import timeit
+import pandas as pd
+
+iris = pd.read_csv("fastapi-example/iris.csv")
+
+N = 1000
+
+print(
+  "Mean runtime:", 
+  round(1000 * timeit('iris.to_json(orient = "records")', globals = locals(), number = N) / N, 4), 
+  "milliseconds"
+)
+#> Mean runtime: 0.0721 milliseconds
+```
+
+Now, this is only half the story. This is _serialization_. What about the other part? Where you ingest it. 
+
+Here, I will also say, again, that you shouldn't use jsonlite because it is slow. Instead, you should use [`{RcppSimdJson}`](https://github.com/eddelbuettel/rcppsimdjson). Because its 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/6E7ZGCfruaw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+Let's run another benchmark
+
+```{r}
+
+jsn <- jsonify::to_json(iris)
+
+microbenchmark::microbenchmark(
+  simd = RcppSimdJson::fparse(jsn),
+  jsonlite = jsonlite::fromJSON(jsn),
+  unit = "ms",
+  times = 1000
+)
+```
+
+RcppSimdJson is ~8 times faster than jsonlite. 
+
+Let's do a similar benchmark in python.
+
+
+```python
+jsn = iris.to_json(orient = "records")
+
+print(
+  "Mean runtime:", 
+  round(1000 * timeit('pd.read_json(jsn)', globals = locals(), number = N) / N, 4), 
+  "milliseconds"
+)
+#> Mean runtime: 1.2629 milliseconds
+```
+
+Python is 3x slower than jsonlite in this case and 25x slower than RcppSimdJson. Which is very slow. While serializing is an important thing to be fast in, so is parsing the incoming json you are receiving. How nice it is to show only half the story! Use RcppSimdJson and embarrass pandas' json parsing. 
+
+### Integration with Tooling
+
+I have literally no idea about any of these except Launchdarkly because one of my close homies worked there for years. These are all paid services so I'm not sure how they work :)
+
+I would say to checkout Posit Connect for deploying R and python into production. But if your only use case is to deploy a single model, then yeah, I'd say that's overkill. 
+
+I wish more companies would create tooling for R and their services. The way to do this, is to lean into using R in production and demanding (not asking) providers to make wrappers for them. When you pay for a service, you have leverage. Use it. I think too many people fall over when what they need isn't there immediately. Be sure to be the squeeky wheel that makes change. 
+
+I also think that if you're in the position where you can make a wrapper for something, you should. I did this when using Databricks in my last role and provided them with a lot of feedback. Have they taken it? I'm not sure. I'm not there to harass them anymore. 
+
+## Workarounds
+
+These are good workarounds. I would suggest looking at [ndexr.io](https://ndexr.io/) as a way to scale these R based services as well. They utilize the NGINX approach described here. 
+
+## Addenda
+
+Clearly, this is where I care a lot. I am the author of [Valve](https://github.com/JosiahParry/valve/). Valve is exactly what the author was clamoring for in the beginning of the blog post. It is a web server that runs Plumber APIs in parallel written in Rust using Tokio, Axum, and Deadpool. Valve auto-scales on its own up to a maximum number of worker threads. So it's not always taking up space and running more compute than it needs. 
+
+Valve overview:
+
+- Concurrent webserver to auto-scale plumber APIs
+- written in Rust using Tokio, Axum, and Deadpool
+- spawns and kills plumber APIs based on demand
+- integration with {vetiver} of of the box
+
+First things first, I want to address "it’s not on CRAN." You're right. That's because it is a Rust crate. Crates don't go on CRAN. I've made an R package around it to lower the bar to entry. But it is a CLI tool at the core. 
+
+Obviously, it is new. It is untested. I wish I could tell everyone to use it, but I can't. I think anyone who used it would be floored by its performance and ease of use. It is SO simple. 
+
+I'll push it to crates.io and CRAN in the coming weeks. Nothing like h8rs to inspire.
+
+
