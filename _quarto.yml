@@ -13,6 +13,8 @@ website:
       - href: posts/index.qmd
         text: "posts"
       - href: projects.qmd
+      - href: index.xml
+        text: RSS
   twitter-card: true
   site-url: "https://josiahparry.com"
 

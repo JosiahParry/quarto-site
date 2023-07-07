@@ -12,6 +12,9 @@ listing:
     contents: 
       - "/posts*/!(index).*md"
       - "/posts/*/*.qmd"
+    feed:
+      categories:
+        - r
 ---
 
 ## Letters to a Layperson (myself)
