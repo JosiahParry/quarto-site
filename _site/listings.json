@@ -5,6 +5,7 @@
       "/posts/2023-07-06-r-is-still-fast.html",
       "/posts/2023-06-11-matrix-bug.html",
       "/posts/2023-04-13-counting-chars/index.html",
+      "/posts/2023-04-13-counting-chars/index.html",
       "/posts/2023-08-22-valve-for-production/2023-08-22-valve-for-production.html",
       "/posts/2023-03-01-rust-traits-for-r-programmers/index.html",
       "/posts/2023-03-01-learning-rust.html",
@@ -60,10 +61,10 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2023-08-22-valve-for-production/2023-08-22-valve-for-production.html",
       "/posts/2023-07-06-r-is-still-fast.html",
       "/posts/2023-06-11-matrix-bug.html",
       "/posts/2023-04-13-counting-chars/index.html",
-      "/posts/2023-08-22-valve-for-production/2023-08-22-valve-for-production.html",
       "/posts/2023-03-01-rust-traits-for-r-programmers/index.html",
       "/posts/2023-03-01-learning-rust.html",
       "/posts/2023-02-10-jhu/2023-02-10-JHU.html",

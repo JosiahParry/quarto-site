@@ -1,6 +1,6 @@
 ---
 title: "Valve: putting R in production"
-date: 2023-04-13
+date: 2023-08-22
 categories: [rust, r, production]
 ---
 
