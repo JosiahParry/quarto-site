@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.2.475">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="Josiah Parry">
 <meta name="dcterms.date" content="2023-03-02">
@@ -170,7 +170,12 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../projects.html" class="sidebar-item-text sidebar-link">projects &amp; contributions</a>
+  <a href="../../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.xml" class="sidebar-item-text sidebar-link">RSS</a>
   </div>
 </li>
     </ul>
@@ -545,9 +550,9 @@ attr(,"class")
 <p>Packages that want to be extensible can make it easy to do so by doing two fairly simple things. Low-level and critical functions should be exported as generic functions. High level functions that perform some useful functionality should be built upon those generics.</p>
 <p>An example is the <a href="https://github.com/JosiahParry/sdf"><code>sdf</code></a> package I’ve prototyped based on this idea. In this case, I have a spatial data frame class that can be implemented on any object that implements methods for the following functions:</p>
 <ul>
-<li><code>is_geometry()</code></li>
-<li><code>bounding_box()</code></li>
-<li><code>combine_geometry()</code></li>
+<li><code><a href="https://rdrr.io/pkg/sdf/man/generics.html">is_geometry()</a></code></li>
+<li><code><a href="https://rdrr.io/pkg/sdf/man/generics.html">bounding_box()</a></code></li>
+<li><code><a href="https://rdrr.io/pkg/sdf/man/generics.html">combine_geometry()</a></code></li>
 </ul>
 <section id="an-example" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="an-example">An example</h3>
 <p>The <code>sdf</code> class is a <code>tibble</code> with a geometry column and a bounding box attribute. The function <code>as_sdf()</code> creates an <code>sdf</code> object that tells us what type of geometry is used and the bounding box of it.</p>
@@ -623,7 +628,7 @@ Bounding box: xmin: 47680 ymin: 1703258 xmax: 1031401 ymax: 2677441
 [4] 52.60644, 68.45127  16.40016, 75.16829 </code></pre>
 </div>
 </div>
-<p>Now we can start defining our methods. <code>is_geometry()</code> should always return TRUE for our type. We can do this like so:</p>
+<p>Now we can start defining our methods. <code><a href="https://rdrr.io/pkg/sdf/man/generics.html">is_geometry()</a></code> should always return TRUE for our type. We can do this like so:</p>
 <div class="cell">
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">is_geometry.Point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"Point"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -741,7 +746,7 @@ Bounding box: xmin: 5.507 ymin: 5.52 xmax: 6.247 ymax: 6.183
 &lt;environment: namespace:sdf&gt;</code></pre>
 </div>
 </div>
-<p>This method uses the <code>combine_geometry()</code> generic function. <code>combine_geometry()</code> takes a vector of geometries (as determined by <code>is_geometry()</code>) and returns a single element. The summarise method does not care which method is used. It only cares that the output is consistent—in this case that a scalar value is outputted and that multiple of those scalars can be combined using <code><a href="https://rdrr.io/r/base/c.html">c()</a></code>.</p>
+<p>This method uses the <code><a href="https://rdrr.io/pkg/sdf/man/generics.html">combine_geometry()</a></code> generic function. <code><a href="https://rdrr.io/pkg/sdf/man/generics.html">combine_geometry()</a></code> takes a vector of geometries (as determined by <code><a href="https://rdrr.io/pkg/sdf/man/generics.html">is_geometry()</a></code>) and returns a single element. The summarise method does not care which method is used. It only cares that the output is consistent—in this case that a scalar value is outputted and that multiple of those scalars can be combined using <code><a href="https://rdrr.io/r/base/c.html">c()</a></code>.</p>
 </section><section id="another-example" class="level3"><h3 class="anchored" data-anchor-id="another-example">Another example</h3>
 <p><a href="https://github.com/JosiahParry/sdf#implementing-geos-generics">For a more detailed example check out the section in the README that implements an sdf class for geos geometry</a>. If you’re interested in the details I recommend looking at the source code it is very simple.</p>
 <p>First look at the <a href="https://github.com/JosiahParry/sdf/blob/main/R/generics.R">generic method definitions</a>. Then look at the <a href="https://github.com/JosiahParry/sdf/blob/main/R/sf-compat.R"><code>sf</code> compatibility methods</a>.</p>

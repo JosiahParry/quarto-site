@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.2.475">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="Josiah Parry">
 <meta name="dcterms.date" content="2023-01-19">
@@ -169,7 +169,12 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects &amp; contributions</a>
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.xml" class="sidebar-item-text sidebar-link">RSS</a>
   </div>
 </li>
     </ul>
@@ -221,7 +226,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <p>Using the backslash is so annoying because it’s also an escape character. In python I can write the following to hard code a file path.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="vs">r"nav\to\file\path.ext"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Whereas in R typically you would have to write:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span class="va">file_path</span> <span class="op">&lt;-</span> <span class="st">"nav\\to\\file\\path.ext"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">file_path</span> <span class="op">&lt;-</span> <span class="st">"nav\\to\\file\\path.ext"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Since <code>\</code> is an escape character you have to escape it first using itself. So, its annoying. And <code>file.path("nav", "to", "file", "path.ext", fsep = "\\")</code> is a wee bit cumbersome sometimes.</p>
 <section id="well-apparently-we-have-all-been-sleeping-on-raw-strings-in-r-since-version-4.0." class="level1"><h1>WELL APPARENTLY WE HAVE ALL BEEN SLEEPING ON RAW STRINGS IN R SINCE VERSION 4.0.</h1>
 </section><section id="its-version-4.2.2" class="level1 page-columns page-full"><h1>IT’s VERSION 4.2.2</h1>
@@ -256,7 +261,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <div class="page-columns page-full"><p></p><div class="no-row-height column-margin column-container"><span class="">It kinda looks like a crab</span></div></div>
 <p>Alright so back to the example</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"> <span class="st">r"{nav\to\file\path.ext}"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span> <span class="st">r"{nav\to\file\path.ext}"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "nav\\to\\file\\path.ext"</code></pre>
 </div>
@@ -264,8 +269,8 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <p>Hot damn. Thats nice.</p>
 <p>I freaked out at first though because R prints two backslashes. But if you cat the result they go away. So do not worry.</p>
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"> <span class="st">r"{nav\to\file\path.ext}"</span> |&gt; 
-  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="op">)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span> <span class="st">r"{nav\to\file\path.ext}"</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>nav\to\file\path.ext</code></pre>
 </div>

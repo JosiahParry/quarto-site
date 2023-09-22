@@ -1,51 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/index.html</loc>
-    <lastmod>2023-03-02T14:32:26.240Z</lastmod>
+    <loc>https://josiahparry.com/posts/2019-05-08-genius-learnr-tutorial.html</loc>
+    <lastmod>2023-09-22T07:08:12.085Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/index.html</loc>
-    <lastmod>2022-11-15T13:23:29.475Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/index.html</loc>
-    <lastmod>2023-07-07T11:58:51.928Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/projects/pkgs/h3o.html</loc>
-    <lastmod>2023-03-16T13:50:04.119Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/projects.html</loc>
-    <lastmod>2023-03-16T13:53:26.978Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/projects/pkgs/sysreqs.html</loc>
-    <lastmod>2023-03-16T13:48:46.063Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/about.html</loc>
-    <lastmod>2023-06-11T15:36:07.793Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</loc>
-    <lastmod>2023-03-16T13:53:30.791Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2023-04-13-counting-chars/index.html</loc>
-    <lastmod>2023-08-22T13:19:33.496Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2023-06-11-matrix-bug.html</loc>
-    <lastmod>2023-06-11T15:54:33.307Z</lastmod>
+    <loc>https://josiahparry.com/posts/2020-09-05-medium-data-and-production-api-pipeline.html</loc>
+    <lastmod>2023-09-22T07:08:12.443Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/posts/2023-07-06-r-is-still-fast.html</loc>
-    <lastmod>2023-07-06T14:28:35.771Z</lastmod>
+    <lastmod>2023-09-22T07:08:15.712Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2019-12-14-spss-haven.html</loc>
+    <lastmod>2023-09-22T07:08:16.183Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes.html</loc>
+    <lastmod>2023-09-22T07:08:16.699Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/posts/2023-08-22-valve-for-production/2023-08-22-valve-for-production.html</loc>
-    <lastmod>2023-08-22T13:19:17.498Z</lastmod>
+    <lastmod>2023-09-22T07:08:19.897Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/h3o.html</loc>
+    <lastmod>2023-09-22T07:08:22.538Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/sysreqs.html</loc>
+    <lastmod>2023-09-22T07:08:22.841Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/spdep.html</loc>
+    <lastmod>2023-09-22T07:08:23.153Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/genius.html</loc>
+    <lastmod>2023-09-22T07:08:23.456Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/sfdep.html</loc>
+    <lastmod>2023-09-22T07:08:23.749Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/writing/uitk.html</loc>
+    <lastmod>2023-09-22T07:08:24.047Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/writing/r4campaigns.html</loc>
+    <lastmod>2023-09-22T07:08:24.332Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/writing/mirr.html</loc>
+    <lastmod>2023-09-22T07:08:24.615Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects.html</loc>
+    <lastmod>2023-09-22T07:08:24.960Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/index.html</loc>
+    <lastmod>2023-09-22T07:10:27.054Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/about.html</loc>
+    <lastmod>2023-09-22T07:08:26.024Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2023-09-20-sdsl/index.html</loc>
+    <lastmod>2023-09-22T07:10:26.235Z</lastmod>
   </url>
 </urlset>

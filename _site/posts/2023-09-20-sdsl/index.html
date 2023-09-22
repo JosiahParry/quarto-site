@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.475">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2023-09-22">
+
+<title>Josiah Parry - Spatial Data Science Across Languages</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta name="twitter:title" content="Josiah Parry - Spatial Data Science Across Languages">
+<meta name="twitter:description" content="some key takeaways">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Spatial Data Science Across Languages</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Josiah Parry</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../about.html" class="sidebar-item-text sidebar-link">about</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.xml" class="sidebar-item-text sidebar-link">RSS</a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#arrow" id="toc-arrow" class="nav-link active" data-scroll-target="#arrow">Arrow</a>
+  <ul class="collapse">
+  <li><a href="#geoarrow" id="toc-geoarrow" class="nav-link" data-scroll-target="#geoarrow">GeoArrow</a></li>
+  <li><a href="#why-geoarrow-excites-me" id="toc-why-geoarrow-excites-me" class="nav-link" data-scroll-target="#why-geoarrow-excites-me">Why GeoArrow excites me</a></li>
+  </ul></li>
+  <li><a href="#spatial-support" id="toc-spatial-support" class="nav-link" data-scroll-target="#spatial-support">Spatial Support</a>
+  <ul class="collapse">
+  <li><a href="#attribute-geometry-relationships" id="toc-attribute-geometry-relationships" class="nav-link" data-scroll-target="#attribute-geometry-relationships">Attribute-Geometry Relationships</a></li>
+  <li><a href="#intensive-vs-extensive" id="toc-intensive-vs-extensive" class="nav-link" data-scroll-target="#intensive-vs-extensive">Intensive vs Extensive</a></li>
+  <li><a href="#domains" id="toc-domains" class="nav-link" data-scroll-target="#domains">Domains</a></li>
+  </ul></li>
+  <li><a href="#geodesic-first" id="toc-geodesic-first" class="nav-link" data-scroll-target="#geodesic-first">Geodesic first</a>
+  <ul class="collapse">
+  <li><a href="#the-full-polygon" id="toc-the-full-polygon" class="nav-link" data-scroll-target="#the-full-polygon">The “full polygon”</a></li>
+  </ul></li>
+  <li><a href="#spatial-weights-matrix-serialization" id="toc-spatial-weights-matrix-serialization" class="nav-link" data-scroll-target="#spatial-weights-matrix-serialization">Spatial Weights Matrix Serialization</a></li>
+  <li><a href="#closing" id="toc-closing" class="nav-link" data-scroll-target="#closing">Closing</a></li>
+  <li><a href="#links" id="toc-links" class="nav-link" data-scroll-target="#links">Additional links</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Spatial Data Science Across Languages</h1>
+<p class="subtitle lead">some key takeaways</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">r</div>
+    <div class="quarto-category">r-spatial</div>
+    <div class="quarto-category">spatial</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 22, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>I feel very fortunate to have been invited to the first Spatial Data Science Across Languages (SDSL) workshop at the University of Münster. I am even more fortunate that I have an employer who sees the value in an event such as this and be my patron for it.</p>
+<p>The event brought together package maintainers from Julia, Python, and R languages to just <em>discuss</em>. The event was loosely framed around a few broad discussion topics that were varied and drifted.</p>
+<p>In general, the theme of the workshop was “standards.” We need standards be able to ensure cohesion not only <em>within</em> languages, but across them. Users should be able to move between languages and be able to expect similar behavior, have similar terminology, and expect the same analysis results.</p>
+<section id="arrow" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="arrow">Arrow</h2>
+<p>We started everything off by discussing Arrow which set the theme of “standards.” Arrow gets conflated at many thing all at once—I do that. At the core Arrow is a memory format specification. It describes how data should be held in memory.</p>
+<p>R holds objects in memory one way, Python another, and Julia another as well. Arrow describes just one way that specific types of object can be held in memory. GeoArrow is an extension of Arrow that specifies the memory layout for geometry arrays.</p>
+<section id="geoarrow" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="geoarrow">GeoArrow</h3>
+<p>Specifications like well-known text (WKT) and well-known binary (WKB) are encodings of a <em>single</em> geometry. GeoArrow recognizes that we almost never work with scalar objects alone. GeoArrow is a memory layout for an array of geometries.</p>
+<p><img src="image.png" class="img-fluid"></p>
+<p>If each language can hold Arrow arrays in memory, they can be passed from one tool to another with 0 cost. Python can create an arrow array and R can pick it up if it knows where it exists.</p>
+<p>The current approach looks something like this. Each tool serializes its data in one way. In order for another tool to use it, the data needs to be copied (memory inefficient) and converted (computationally expensive) into the appropriate format.</p>
+<p><img src="image-2.png" class="img-fluid"></p>
+<p>The Arrow specification would allow data handoff between tools to be much more seamless and look like so:</p>
+<p><img src="image-1.png" class="img-fluid"></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Maybe we ought to start framing adoption of Arrow as an effort to be more “green.” If we spend less time computing we use less energy which is overall a net positive for the world.</p>
+</div></div><p>This is a massive productivity improvement. There’s no computation cost in converting between one format to another saving time, energy, and money.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>There’s a good chance that in order to adopt Arrow in <code>{sf}</code> there will be breaking changes. I am an advocate for breaking changes when they are for a good reason. Being on the leading edge is how to make a language succeed.</p>
+<p>I also think if we can move towards a “trait-driven” approach to spatial data frames, we can support both GeoArrow geometries as well as current <code>sfc</code> objects.</p>
+<p><a href="https://github.com/JosiahParry/sdf">Read my spatial data frame manifesto.</a></p>
+</div></div><p>The key thing though, is that in order for Arrow to be useful, <strong>it has to be adopted widely</strong>. If GeoPandas uses Arrow and <code>{sf}</code> does not, we have to go through the copy and convert process anyways.</p>
+</section>
+<section id="why-geoarrow-excites-me" class="level3">
+<h3 class="anchored" data-anchor-id="why-geoarrow-excites-me">Why GeoArrow excites me</h3>
+<p>The promise of Arrow and GeoArrow is that memory can be handed off between tools without any additional cost. This (in theory) lowers the bar for what is needed to hand off between tools and languages. Hopefully <a href="https://wesmckinney.com/blog/the-problem-with-the-data-science-language-wars/">ending the language wars</a></p>
+<p><a href="https://github.com/kylebarron">Kyle Barron</a> demonstrated really cool example use-case where he created GeoArrow arrays using <a href="https://github.com/geopolars/geopolars">GeoPolars</a>. That array was then written to a buffer and picked up by javascript. Since there was no serialization or deserialization it was unbelievably fast!</p>
+<p><img src="image-3.png" class="img-fluid"></p>
+<p>Additionally, we are seeing <a href="https://webassembly.org/">WebAssembly</a> proliferate in the data science community. <a href="https://webr.r-wasm.org/">WebR</a> provides R users with the ability to execute R in the browser. This is also possible in Python, Rust, Go, and I’m sure many others. Each language can be compiled to be used in the browser and hand off components between them.</p>
+<p>Client side computation will reduce the need for server side operations. If we can reduce the amount of hours that servers are constantly running by offloading lighter operations into the browser, we may be able to save money, energy, be more green, and create tools that do not necessarily require an active internet connection.</p>
+</section>
+</section>
+<section id="spatial-support" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="spatial-support">Spatial Support</h2>
+<p>We also discussed the more esoteric topic of <strong>spatial support</strong>. This was completely new to me. Support defines the relationship between an attribute to the geometry. There are two kinds:</p>
+<ul>
+<li><strong>point support</strong> - a constant values associated with every location in a geometry
+<ul>
+<li><em>example</em>: temperature measurement at a weather station</li>
+</ul></li>
+<li><strong>block support</strong> - a value derived from aggregating measures over space
+<ul>
+<li><em>example</em>: population count in a census tract</li>
+</ul></li>
+</ul>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Read <a href="https://r-spatial.org/book/01-hello.html#sec-support">chapter 1.6 of Spatial Data Science</a> (SDS) for more on this topic.</p>
+</div>
+</div>
+<p>When geometries are manipulated and the associated attributes come along for the ride, support assumptions are often violated resulting in inaccurate calculations or maps.</p>
+<section id="attribute-geometry-relationships" class="level3">
+<h3 class="anchored" data-anchor-id="attribute-geometry-relationships">Attribute-Geometry Relationships</h3>
+<p>SDS formalizes the relationship between attributes and geometry a bit further in something they call the <strong>Attribute-Geometry Relationship (AGR)</strong>. Attributes of spatial features can have one of 3 types of AGR:</p>
+<ul>
+<li>constant value (i.e.&nbsp;point support)</li>
+<li>aggregate value (i.e.&nbsp;block support)</li>
+<li>identity (i.e.&nbsp;attribute unique to a geometry)</li>
+</ul>
+<p>Knowing the relationships between geometries can be useful in tracking the assumptions of analyses. For example, taking the mean of an <em>aggregate</em> attribute such as median age, creates as assumptions of homogeneity in the aggregated areas and can contribute to the <a href="https://en.wikipedia.org/wiki/Modifiable_areal_unit_problem">modifiable areal unit problem (MAUP)</a>.</p>
+</section>
+<section id="intensive-vs-extensive" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="intensive-vs-extensive">Intensive vs Extensive</h3>
+<p>Spatial intensive vs extensive variables were also discussed in the context of spatial interpolation. I’m still quite unclear on how to conceptualize intensive and extensive variables. <a href="https://github.com/MobiTobi">Tobias G</a> pointed out that these terms come from physics and provided a useful non-geometry motivating example.</p>
+<blockquote class="blockquote">
+<p>“The price of an ingot of gold is an extensive property and its temperature would be intensive.”</p>
+</blockquote>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>The common example is that population is extensive and population density is intensive. This requires the assumption that population is <em>constant</em> across space. So the examples are more confusing than helpful. I have yet to come up with an example of a spatially intensive variable that makes sense.</p>
+<p>If you can think of one, please comment on below!</p>
+</div></div><p><strong>Extensive</strong> variables are one that are associated with the physical geometry itself. <strong>Intensive</strong> ones <em>do not</em> change when a geometry is modified.</p>
+<p>If an ingot of gold is split into half the price changes, each piece is now worth less than the whole. But, assuming the room temperature didn’t change, the temperature of each piece remained the same.</p>
+</section>
+<section id="domains" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="domains">Domains</h3>
+<p>These properties of attributes are quite important but are forgotten about. One of the ideas raised in discussions was adding attribute-geometry relationship and a flag like <code>is_intensive</code> to a field domain.</p>
+<p>A <a href="https://desktop.arcgis.com/en/arcmap/latest/manage-data/geodatabases/an-overview-of-attribute-domains.htm">Domain</a> is a concept that <em>I think</em> originated at Esri. It allows you to specify the field type, range of valid values, as well as policies that determine how fields behave when they are split or merged. <a href="https://github.com/OSGeo/gdal/releases/tag/v3.3.0">Field domains were added to GDAL in version 3.3</a>.</p>
+<p>Is there utility in adding <code>AGR</code> and (ex/in)tensive flags to a field domain?</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Arrow allows for embedded metadata at an array and table level. Perhaps there should be a GeoArrow table (data frame) format spec too? I’d like that. It would fit with my generic spatial data frame manifesto as well.</p>
+</div></div></section>
+</section>
+<section id="geodesic-first" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="geodesic-first">Geodesic first</h2>
+<p>A good amount of attention was paid to geodesic coordinate operations. The conversation was kicked off by this “motivating example.”</p>
+<p><img src="geopandas-geodesic.png" class="img-fluid"></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Really, I think this was just an excuse for Edzer to poke fun at the GeoPandas devs! 😵‍💫🤣</p>
+</div></div><p>The example shows an area calculation on a dataset that uses a geographic coordinate system (GCS). Area, though, is typically calculated under the assumption that coordinates are on a plane (rectangle). With GCS, the data is on a circle. So if we calculate the area of angles the result is <em>definitely wrong</em>.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>I think about it like calculating the area but cutting through the Earth like so: <img src="circle.png" class="img-fluid"></p>
+</div></div><p>The open source ecosystem is behind on support of geodetic calculations. Data more often than not is captured using GCS and users often fail to project their data. It would be nice if tools did this.</p>
+<p>R supports spherical geometries by using <a href="https://r-spatial.github.io/s2/">Google’s S2 library</a>. Python is presently building out support for S2. Some operations like buffering still aren’t made available by S2.</p>
+<section id="the-full-polygon" class="level3">
+<h3 class="anchored" data-anchor-id="the-full-polygon">The “full polygon”</h3>
+<p>One interesting point that was brought up is that in a GCS there is a concept of a <strong>full polygon</strong>. This is the polygon that covers the entire ellipsoid. There is no way to capture this using typical coordinates.</p>
+</section>
+</section>
+<section id="spatial-weights-matrix-serialization" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="spatial-weights-matrix-serialization">Spatial Weights Matrix Serialization</h2>
+<p>Probably the second most interesting topic to me was around how to store spatial weights matrixes. We didn’t really discuss the “how” of holding it memory. Though I think they can be held in memory as a ragged Arrow array of indices or IDs. What was quite interesting was the concept of <em>serializing</em> the spatial weights matrix.</p>
+<p><a href="https://martinfleischmann.net/">Martin</a> mentioned that in Pysal they had moved to serializing spatial weights as a parquet file which greatly improved their speed. In essence, spatial weights are stored in a 3 column table.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<table class="table">
+<caption>Spatial Weights Matrix</caption>
+<thead>
+<tr class="header">
+<th>i</th>
+<th>j</th>
+<th>wij</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>3</td>
+<td>0.5</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>2</td>
+<td>0.75</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>9</td>
+<td>0.3</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>7</td>
+<td>0.2</td>
+</tr>
+</tbody>
+</table>
+</div></div><p>It was noted that additional metadata can be associated at the table level or column level. This can be very handy to keep track of things like the method for identifying neighbors, the weighting mechanism used, storing flags to know if the focal feature is included and maybe even remove weights if there is a constant value.</p>
+<p>Additionally, since this is parquet, it can be handled and stored by a number of databases.</p>
+<p>One benefit of using arrow here, is that we can conceivably have a future where spatial weights matrices are interchangeable between spdep, pysal, geoda, and ArcGIS.</p>
+</section>
+<section id="closing" class="level2">
+<h2 class="anchored" data-anchor-id="closing">Closing</h2>
+<p>I’m about to hop on a flight back to the US now—10 hours without internet is going to be a test of monk-like fortitude. I have left my strongest feels for another time. Chatting with devs from other languages makes is clear how great CRAN is as a package storage and testing mechanism but yet how utterly abysmal it is as a developer. I will write another post soon on the topics of retirement and how I think we can make CRAN a better place for developers.</p>
+</section>
+<section id="links" class="level2">
+<h2 class="anchored" data-anchor-id="links">Additional links</h2>
+<p>I’ll add more here as I can (hopefully).</p>
+<ul>
+<li><a href="https://martinfleischmann.net/a-note-on-spatial-data-science-across-languages-vol.1/">Martin’s SDSL blog post</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

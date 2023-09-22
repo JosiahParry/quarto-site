@@ -1,38 +1,15 @@
 {
   "listingMap": {
     "posts/index.qmd": [
-      "posts",
-      "./posts",
-      "/posts",
-      "/",
       "./"
     ],
-    "index.qmd": [
-      "*.qmd",
-      "posts/*.qmd",
-      "posts/*.qmd|!posts/index.qmd",
-      "posts/*.qmd|(!!posts/index.qmd)",
-      "(posts/*.qmd)|(!!posts/index.qmd)",
-      "posts",
-      "!(posts/index.qmd",
-      "!(posts/index.qmd)",
-      "!(index|index)",
-      "**",
-      "/posts*/!(*.index).qmd",
-      "/posts*/!(index).qmd",
-      "/posts*/!(index).*md",
-      "/posts/*/!(index).*md",
-      "/posts/*/*.qmd"
-    ],
     "projects.qmd": [
-      "projects",
-      "/projects",
       "/projects/pkgs",
-      "/projects/*",
-      "/projects*",
-      "/projects/writings/*",
-      "/projects/writings",
       "/projects/writing"
+    ],
+    "index.qmd": [
+      "/posts*/!(index).*md",
+      "/posts/*/*.qmd"
     ]
   }
 }

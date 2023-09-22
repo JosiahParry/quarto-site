@@ -1,0 +1,45 @@
+---
+title: "Untitled"
+draft: true
+---
+
+## Potential Standardization Topics:
+
+-   storing of CRS in memory:
+    -   sf is strings
+    -   geopandas is a proj pointer
+    -   geoarrow requires projjson
+-   going to mostly be CRAN-complaints I guess
+-   R is the least developer friendly langauge there is
+-   python has a community driven package management approach in conda-forge
+    -   devs are responsible for building binaries for PyPI
+    -   this would be honestly a nice option for R users
+-   Julia can contribute to the build process in Github
+-   Both other langauges have visibility into testing and compilation through Github CI
+-   R is hindered by the restrictions that CRAN places on R package developers
+    -   most importantly: the requirement to vendor dependencies
+        -   sf is spoiled in that its widely used so CRAN will actually communicate with them to make the process better
+        -   CRAN provides binaries for them
+-   python devs have an approach of "we will tell you how things behave, its your responsibility to listen"
+    -   i like this. put all the control (and blame) in the hands of the user
+-   We talked about Roger's retirement
+    -   not stated out loud, but i think the quiet assumption was that what is being done is very generous if not overly generous. The time frame provided has been massive. The amount of work to help others is massive. In other ecosystems package will just be abandonded and thats not necessarily bad. But this amount of committment to the community is impressive.
+        -   i find it to be a really nice precedent to set.
+        -   i also think people will not listen without a little bit of pain themselves sometimes, so its okay to rip packages off of cran without them being fixed in advance. A fire under an ass is a great motivator
+-   What about retirement of CRAN staff? Who is going to replace them? What plans do they have to handle retirement? How do people ascend into CRAN? Right now its a niche clique.
+
+## Esri specific
+
+-   R, Python, and Julia do not know how to perform spherical buffers. I think this is something that the geoprocessing team already has solved
+-   arrow tables can be provided as input into a GP tool!!
+    -   interestingly OIDs must be i64
+    -   geomerty encodings are wkb, wkt, geojson, or EsriJSON
+        -   when GeoArrow spec 1.0.0 comes out we should consider supportin that structure
+            -   it would enable, in theory, R data as input to ArcPy if its an arrow table
+-   Geodesic buffering is not widely available in SDSL but been available in ArcGIS since 9.3
+    -   https://www.esri.com/news/arcuser/0111/geodesic.html
+
+https://twitter.com/medriscoll/status/1704563111653687502
+
+-   TODO: GitHub discussion about enumarating AGR interactions and which are "ok" and which are not? What are the assumptions that we're violating.
+    -   This obviously shouldn't error, but a warning, or way to report on the assumptions made or violated throughout geometric operations. This requires propagating attributes forward in analyses which might be easier for R devs than others

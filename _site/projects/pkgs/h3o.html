@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.2.475">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="dcterms.date" content="2023-03-16">
 <title>Josiah Parry - h3o for H3 indexing</title>
@@ -168,7 +168,12 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../projects.html" class="sidebar-item-text sidebar-link">projects &amp; contributions</a>
+  <a href="../../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.xml" class="sidebar-item-text sidebar-link">RSS</a>
   </div>
 </li>
     </ul>
@@ -237,7 +242,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.1; sf_use_s2() is TRUE</code></pre>
+<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
 </div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">h3o</span><span class="op">)</span></span>
 <span></span>
@@ -258,13 +263,13 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <span><span class="va">hexs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;H3[25]&gt;
- [1] 8426b45ffffffff 8426a05ffffffff 8426a5dffffffff 8426b4dffffffff
- [5] 8426b15ffffffff 842896dffffffff 8426b43ffffffff 8426a05ffffffff
- [9] 84279bbffffffff 8426843ffffffff 8426a15ffffffff 8426ae5ffffffff
-[13] 8426a63ffffffff 8426a3bffffffff 84278b5ffffffff 8426b11ffffffff
-[17] 8426a4bffffffff 842685bffffffff 8426b19ffffffff 8426a35ffffffff
-[21] 8426b15ffffffff 8426845ffffffff 8426b69ffffffff 84278b1ffffffff
-[25] 84278b5ffffffff</code></pre>
+ [1] 8426a69ffffffff 8426b3bffffffff 8426a57ffffffff 8426b45ffffffff
+ [5] 8426a09ffffffff 8426a15ffffffff 8426a3bffffffff 84279abffffffff
+ [9] 84278b7ffffffff 8426a6dffffffff 8426b29ffffffff 8426a41ffffffff
+[13] 8426b03ffffffff 8426a27ffffffff 8426a43ffffffff 8426849ffffffff
+[17] 8426949ffffffff 8426949ffffffff 8426ae1ffffffff 8426b33ffffffff
+[21] 8426b49ffffffff 8426b55ffffffff 8426ae1ffffffff 8426a0bffffffff
+[25] 8426b07ffffffff</code></pre>
 </div>
 </div>
 <p>The <code>H3</code> vectors can be easily visualized by converting to sf objects. The <code><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc()</a></code> method is defined for <code>H3</code> vectors. While you may be familair with <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf()</a></code> the <code>_sfc</code> variant is used for creating <em>columns</em> and should be used on a vector not a dataframe. This way you can use it in a dplyr pipe.</p>
@@ -275,24 +280,24 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <pre><code>Geometry set for 25 features 
 Geometry type: POLYGON
 Dimension:     XY
-Bounding box:  xmin: -110.8472 ymin: 40.83137 xmax: -103.6023 ymax: 44.86262
+Bounding box:  xmin: -110.9645 ymin: 41.19652 xmax: -103.8429 ymax: 45.20037
 Geodetic CRS:  WGS 84
 First 5 geometries:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>POLYGON ((-106.4372 43.90391, -106.1669 44.0391...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>POLYGON ((-108.9169 41.57597, -108.6564 41.7208...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>POLYGON ((-104.2496 43.00512, -103.9796 43.1365...</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>POLYGON ((-109.9082 43.59055, -109.6438 43.7344...</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-105.9715 42.89294, -105.7036 43.0287...</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-104.3536 43.6947, -104.0817 43.82518...</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-109.6918 43.96129, -109.426 44.10402...</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-108.7011 41.9535, -108.4393 42.09726...</code></pre>
+<pre><code>POLYGON ((-105.1656 43.29784, -104.8956 43.4310...</code></pre>
 </div>
 </div>
 <p>This can be plotted.</p>
@@ -315,22 +320,22 @@ First 5 geometries:</code></pre>
 <pre><code>Simple feature collection with 25 features and 1 field
 Geometry type: POINT
 Dimension:     XY
-Bounding box:  xmin: -110.4469 ymin: 41.09064 xmax: -104.1631 ymax: 44.70057
+Bounding box:  xmin: -110.8122 ymin: 41.34477 xmax: -104.076 ymax: 44.9885
 Geodetic CRS:  WGS 84
 # A tibble: 25 × 2
                geometry              h3
  *          &lt;POINT [°]&gt;            &lt;H3&gt;
- 1 (-110.1512 43.82525) 8426b45ffffffff
- 2 (-106.1227 43.14504) 8426a05ffffffff
- 3 (-104.2611 43.84146) 8426a5dffffffff
- 4  (-109.9657 44.0744) 8426b4dffffffff
- 5 (-108.7754 42.18515) 8426b15ffffffff
- 6 (-110.3885 44.12357) 842896dffffffff
- 7 (-109.2388 43.58793) 8426b43ffffffff
- 8 (-106.0339 42.94859) 8426a05ffffffff
- 9 (-107.3991 44.60339) 84279bbffffffff
-10 (-106.7301 41.27761) 8426843ffffffff
-# … with 15 more rows</code></pre>
+ 1  (-106.4329 44.2269) 8426a69ffffffff
+ 2  (-108.884 41.71222) 8426b3bffffffff
+ 3 (-104.5573 43.29705) 8426a57ffffffff
+ 4  (-110.137 43.82095) 8426b45ffffffff
+ 5 (-105.2453 43.45441) 8426a09ffffffff
+ 6 (-104.6144 42.59424) 8426a15ffffffff
+ 7 (-104.9215 42.31367) 8426a3bffffffff
+ 8  (-108.5317 44.9885) 84279abffffffff
+ 9 (-104.1934 44.22573) 84278b7ffffffff
+10 (-107.2504 44.14613) 8426a6dffffffff
+# ℹ 15 more rows</code></pre>
 </div>
 </div>
 <p>Afterwards, lets create a K = 3 disk around each grid cell, create a compact disk by compacting the cells, then unnest into a longer data frame, and update our geometries.</p>

@@ -259,5 +259,11 @@
   },
   "posts/2023-04-13-counting-chars/index.rmarkdown": {
     "index.html": "b2a95a32"
+  },
+  "posts/2023-09-20-sdsl/index.qmd": {
+    "index.html": "31169c0a"
+  },
+  "posts/2023-09-22-sdsl-p2/index.qmd": {
+    "index.html": "50a2f01a"
   }
 }
