@@ -15,6 +15,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2023-10-28-python-fns/index.html",
       "/posts/2023-09-20-sdsl/index.html",
       "/posts/2023-08-22-valve-for-production/2023-08-22-valve-for-production.html",
       "/posts/2023-07-06-r-is-still-fast.html",

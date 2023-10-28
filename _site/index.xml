@@ -10,7 +10,62 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.2.475</generator>
-<lastBuildDate>Thu, 21 Sep 2023 22:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 28 Oct 2023 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Export Python functions in R packages</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2023-10-28-python-fns/index.html</link>
+  <description><![CDATA[ <p>I was asked a really interesting question by <a href="https://github.com/benyamindsmith"><span class="citation" data-cites="benyamindsmith">@benyamindsmith</span></a> yesterday. The question was essentially:</p>
+<blockquote class="blockquote">
+<p><em>How can one export a python 🐍 function in an R package 📦?</em></p>
+</blockquote>
+<p>I proposed my solution as a very minimal R package called <a href="https://github.com/JosiahParry/pyfns"><code>{pyfns}</code></a>.</p>
+<p>It is an R package with one function: <code>hello_world()</code>.</p>
+<section id="how-it-works" class="level2"><h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>
+<p>The process is <em>fairly</em> simple.</p>
+<ul>
+<li>We create an environment inside of our package</li>
+<li>On package start-up we source python scripts using <code><a href="https://rstudio.github.io/reticulate/reference/source_python.html">reticulate::source_python()</a></code> into the new environment</li>
+<li>We create R wrapper functions that call the reticulated function.</li>
+</ul>
+<p>Example usage:</p>
+<div class="cell">
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;">pyfns</span><span class="fu" style="color: #4758AB;">::</span><span class="fu" style="color: #4758AB;">hello_world</span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Helloooo world"</code></pre>
+</div>
+</div>
+</section><section id="storing-python-scripts" class="level2"><h2 class="anchored" data-anchor-id="storing-python-scripts">Storing Python Scripts</h2>
+<p>Store python scripts inside of <code>inst/</code>. These files can be read using <code><a href="https://rdrr.io/r/base/system.file.html">system.file()</a></code>. In this example <code>inst/helloworld.py</code> contains</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="kw" style="color: #003B4F;">def</span> hello_world():</span>
+<span id="cb3-2">  <span class="cf" style="color: #003B4F;">return</span> <span class="st" style="color: #20794D;">"Helloooo world"</span></span></code></pre></div>
+</section><section id="creating-an-environment" class="level2"><h2 class="anchored" data-anchor-id="creating-an-environment">Creating an environment</h2>
+<p>Before we can source python scripts, we must create an environment to soure them into. This is done in <code>R/env.R</code> like so</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;">pyfn_env</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="fu" style="color: #4758AB;">rlang</span><span class="fu" style="color: #4758AB;">::</span><span class="fu" style="color: #4758AB;"><a href="https://rlang.r-lib.org/reference/env.html">env</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span></span></code></pre></div>
+</section><section id="sourcing-scripts" class="level2"><h2 class="anchored" data-anchor-id="sourcing-scripts">Sourcing scripts</h2>
+<p>Scripts are sourced in <code>R/zzz.R</code> in which there is an <code>.onLoad()</code> function call. This gets called only once when the package is loaded.</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;">.onLoad</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="kw" style="color: #003B4F;">function</span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;">libname</span>, <span class="va" style="color: #111111;">pkgname</span><span class="op" style="color: #5E5E5E;">)</span><span class="op" style="color: #5E5E5E;">{</span></span>
+<span>  <span class="fu" style="color: #4758AB;">reticulate</span><span class="fu" style="color: #4758AB;">::</span><span class="fu" style="color: #4758AB;"><a href="https://rstudio.github.io/reticulate/reference/source_python.html">source_python</a></span><span class="op" style="color: #5E5E5E;">(</span></span>
+<span>    <span class="fu" style="color: #4758AB;"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="st" style="color: #20794D;">"helloworld.py"</span>, package <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"pyfns"</span><span class="op" style="color: #5E5E5E;">)</span>,</span>
+<span>    envir <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">pyfn_env</span></span>
+<span>  <span class="op" style="color: #5E5E5E;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;">}</span></span></code></pre></div>
+<p>In this chunk we use <code><a href="https://rstudio.github.io/reticulate/reference/source_python.html">reticulate::source_python()</a></code> to bring the python function into scope. The function needs a path to the python script that we want to source. This is where <code><a href="https://rdrr.io/r/base/system.file.html">system.file()</a></code> comes into play. It can access files stored in <code>inst</code>. <em>Note that it does not include <code>inst</code></em>. And most importantly we set <code>envir = pyfn_env</code> which is the environment we created in <code>R/env.R</code></p>
+</section><section id="wrapper-functions" class="level2"><h2 class="anchored" data-anchor-id="wrapper-functions">Wrapper functions</h2>
+<p>Since the functions are being sourced into <code>pyfn_env</code> they can be called from the environment directly. In <code>R/env.R</code>, the R function <code>hello_world()</code> is just calling the <code>hello_world()</code> python function from the <code>pyfn_env</code>. If there were arguments we can pass them in using <code>...</code> in the outer function or recreating the same function arguments.</p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;">#'@export</span></span>
+<span><span class="va" style="color: #111111;">hello_world</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="kw" style="color: #003B4F;">function</span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">{</span></span>
+<span>  <span class="va" style="color: #111111;">pyfn_env</span><span class="op" style="color: #5E5E5E;">$</span><span class="fu" style="color: #4758AB;">hello_world</span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;">}</span></span></code></pre></div>
+
+
+</section> ]]></description>
+  <category>r</category>
+  <category>python</category>
+  <category>package-dev</category>
+  <guid>https://josiahparry.com/posts/2023-10-28-python-fns/index.html</guid>
+  <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Spatial Data Science Across Languages</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -194,7 +249,7 @@ Tip
   <category>r-spatial</category>
   <category>spatial</category>
   <guid>https://josiahparry.com/posts/2023-09-20-sdsl/index.html</guid>
-  <pubDate>Thu, 21 Sep 2023 22:00:00 GMT</pubDate>
+  <pubDate>Fri, 22 Sep 2023 04:00:00 GMT</pubDate>
   <media:content url="https://josiahparry.com/posts/2023-09-20-sdsl/image.png" medium="image" type="image/png" height="23" width="144"/>
 </item>
 <item>
@@ -400,7 +455,7 @@ Note
   <category>r</category>
   <category>production</category>
   <guid>https://josiahparry.com/posts/2023-08-22-valve-for-production/2023-08-22-valve-for-production.html</guid>
-  <pubDate>Mon, 21 Aug 2023 22:00:00 GMT</pubDate>
+  <pubDate>Tue, 22 Aug 2023 04:00:00 GMT</pubDate>
   <media:content url="https://josiahparry.com/posts/2023-08-22-valve-for-production/images/paste-1.png" medium="image" type="image/png" height="56" width="144"/>
 </item>
 <item>
@@ -576,7 +631,7 @@ less accurate nanosecond times to avoid potential integer overflows</code></pre>
   <category>r</category>
   <category>production</category>
   <guid>https://josiahparry.com/posts/2023-07-06-r-is-still-fast.html</guid>
-  <pubDate>Wed, 05 Jul 2023 22:00:00 GMT</pubDate>
+  <pubDate>Thu, 06 Jul 2023 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>What’s so special about arrays?</title>
@@ -712,7 +767,7 @@ ATTRIB:
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2023-06-11-matrix-bug.html</guid>
-  <pubDate>Sat, 10 Jun 2023 22:00:00 GMT</pubDate>
+  <pubDate>Sun, 11 Jun 2023 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Feeling rusty: counting characters</title>
@@ -1043,7 +1098,7 @@ disabled.</code></pre>
   <category>rust</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2023-04-13-counting-chars/index.html</guid>
-  <pubDate>Wed, 12 Apr 2023 22:00:00 GMT</pubDate>
+  <pubDate>Thu, 13 Apr 2023 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Rust traits for R users</title>
@@ -1572,7 +1627,7 @@ Bounding box: xmin: 5.507 ymin: 5.52 xmax: 6.247 ymax: 6.183
   <category>package-development</category>
   <category>tutorial</category>
   <guid>https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/index.html</guid>
-  <pubDate>Wed, 01 Mar 2023 23:00:00 GMT</pubDate>
+  <pubDate>Thu, 02 Mar 2023 05:00:00 GMT</pubDate>
   <media:content url="https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/feRris.svg" medium="image" type="image/svg+xml"/>
 </item>
 <item>
@@ -1603,7 +1658,7 @@ Bounding box: xmin: 5.507 ymin: 5.52 xmax: 6.247 ymax: 6.183
   <category>rust</category>
   <category>personal</category>
   <guid>https://josiahparry.com/posts/2023-03-01-learning-rust.html</guid>
-  <pubDate>Tue, 28 Feb 2023 23:00:00 GMT</pubDate>
+  <pubDate>Wed, 01 Mar 2023 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title></title>
@@ -1611,7 +1666,7 @@ Bounding box: xmin: 5.507 ymin: 5.52 xmax: 6.247 ymax: 6.183
   <link>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</link>
   <description><![CDATA[ undefined ]]></description>
   <guid>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</guid>
-  <pubDate>Thu, 09 Feb 2023 23:00:00 GMT</pubDate>
+  <pubDate>Fri, 10 Feb 2023 05:00:00 GMT</pubDate>
   <media:content url="https://static.wixstatic.com/media/4999e9_37b24b7ea1824977926f1937eac91725~mv2.png/v1/fit/w_800%2Ch_587%2Cal_c/file.png" medium="image" type="image/png"/>
 </item>
 <item>
@@ -1676,7 +1731,7 @@ Bounding box: xmin: 5.507 ymin: 5.52 xmax: 6.247 ymax: 6.183
 </section></section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2023-01-19-raw-strings-in-r.html</guid>
-  <pubDate>Wed, 18 Jan 2023 23:00:00 GMT</pubDate>
+  <pubDate>Thu, 19 Jan 2023 05:00:00 GMT</pubDate>
   <media:content url="https://media.giphy.com/media/3o7TKA3ypeMbOXSrp6/giphy.gif" medium="image" type="image/gif"/>
 </item>
 <item>
@@ -1725,7 +1780,7 @@ Coefficients:
   <category>R</category>
   <category>package-dev</category>
   <guid>https://josiahparry.com/posts/2023-01-17-create-formulae.html</guid>
-  <pubDate>Mon, 16 Jan 2023 23:00:00 GMT</pubDate>
+  <pubDate>Tue, 17 Jan 2023 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>YouTube Videos &amp; what not</title>
@@ -1756,7 +1811,7 @@ Coefficients:
 
  ]]></description>
   <guid>https://josiahparry.com/posts/2022-11-23-youtube-videos.html</guid>
-  <pubDate>Tue, 22 Nov 2022 23:00:00 GMT</pubDate>
+  <pubDate>Wed, 23 Nov 2022 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Fishnets and overlapping polygons</title>
@@ -1916,7 +1971,7 @@ Geodetic CRS:  WGS 84
   <category>spatial</category>
   <category>tutorial</category>
   <guid>https://josiahparry.com/posts/2022-11-17-overlapping-polys/post.html</guid>
-  <pubDate>Wed, 16 Nov 2022 23:00:00 GMT</pubDate>
+  <pubDate>Thu, 17 Nov 2022 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Complete spatial randomness</title>
@@ -2190,7 +2245,7 @@ Geodetic CRS:  WGS 84
   <category>rstats</category>
   <category>sfdep</category>
   <guid>https://josiahparry.com/posts/csr.html</guid>
-  <pubDate>Mon, 07 Nov 2022 23:00:00 GMT</pubDate>
+  <pubDate>Tue, 08 Nov 2022 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>spacetime representations aren’t good—yet</title>
@@ -2326,7 +2381,7 @@ Geodetic CRS:  WGS 84
   <category>rstats</category>
   <category>spacetime</category>
   <guid>https://josiahparry.com/posts/2022-10-03-spacetime-representations.html</guid>
-  <pubDate>Sun, 06 Nov 2022 23:00:00 GMT</pubDate>
+  <pubDate>Mon, 07 Nov 2022 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Make your R scripts Databricks notebooks</title>
@@ -2363,7 +2418,7 @@ print("I feel powerful.")</code></pre>
   <category>databricks</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2022-05-11-make-your-r-scripts-databricks-notebooks.html</guid>
-  <pubDate>Tue, 10 May 2022 22:00:00 GMT</pubDate>
+  <pubDate>Wed, 11 May 2022 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Exploratory Spatial Data Analysis in R</title>
@@ -2391,7 +2446,7 @@ print("I feel powerful.")</code></pre>
   <category>r-spatial</category>
   <category>talk</category>
   <guid>https://josiahparry.com/posts/2022-05-11-exploratory-spatial-data-analysis-in-r.html</guid>
-  <pubDate>Wed, 27 Apr 2022 22:00:00 GMT</pubDate>
+  <pubDate>Thu, 28 Apr 2022 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>My new IDE theme: xxEmoCandyLandxx</title>
@@ -2412,7 +2467,7 @@ print("I feel powerful.")</code></pre>
 
  ]]></description>
   <guid>https://josiahparry.com/posts/2022-04-06-my-new-ide-theme-xxemocandylandxx.html</guid>
-  <pubDate>Tue, 05 Apr 2022 22:00:00 GMT</pubDate>
+  <pubDate>Wed, 06 Apr 2022 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Actually identifying R package System Requirements</title>
@@ -2447,7 +2502,7 @@ print("I feel powerful.")</code></pre>
 
  ]]></description>
   <guid>https://josiahparry.com/posts/2022-04-05-an-open-system-requirements-database.html</guid>
-  <pubDate>Mon, 04 Apr 2022 22:00:00 GMT</pubDate>
+  <pubDate>Tue, 05 Apr 2022 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Installing Python on my M1 in under 10 minutes</title>
@@ -2530,54 +2585,7 @@ LJC_uni.p_sim</code></pre>
   <category>reticulate</category>
   <category>spatial</category>
   <guid>https://josiahparry.com/posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes.html</guid>
-  <pubDate>Fri, 11 Feb 2022 23:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The heck is a statistical moment??</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2022-02-12-the-heck-is-a-statistical-moment.html</link>
-  <description><![CDATA[ 
-
-
-
-<p>I wrote myself a short story to help me remember what the moments are.</p>
-<blockquote class="blockquote">
-<p>“The first moment I looked at the distribution I thought only of the average. The second, I thought of the variance. Soon after, I thought then of the skewness. Only then did I think about the kurtosis.”</p>
-</blockquote>
-<p>This all started when reading Luc Anselin’s <a href="https://dces.wisc.edu/wp-content/uploads/sites/128/2013/08/W14_Anselin2007.pdf">“Spatial Regression Analysis in R: A Workbook”</a>, I encountered the following:</p>
-<blockquote class="blockquote">
-<p>“Under the normal assumption for the null, the theoretical moments of Moran’s I only depend on the characteristics of the weights matrix.”</p>
-</blockquote>
-<p>The moments? The what? Under the normal assumption of my study habits I would skip over this word and continue to the next sentence. However, this was critical for understanding the formula for Moran’s I: <img src="https://latex.codecogs.com/png.latex?E%5BI%5D%20=%20%5Cfrac%7B-1%7D%7Bn%20-%201%7D">.</p>
-<p>Wikipedia was likely written by the same gatekeepers. I turned to the article on <a href="https://en.wikipedia.org/wiki/Method_of_moments_(statistics)">“Method of moments (statistics)”</a> which writes</p>
-<blockquote class="blockquote">
-<p>“Those expressions are then set equal to the sample moments. The number of such equations is the same as the number of parameters to be estimated. Those equations are then solved for the parameters of interest. The solutions are estimates of those parameters.”</p>
-</blockquote>
-<p>Naturally, I turned to twitter to vent.</p>
-<blockquote class="twitter-tweet blockquote">
-<p lang="en" dir="ltr">
-The use of the word "moment" in statistics is cruel.
-</p>
-— jos (<span class="citation" data-cites="JosiahParry">@JosiahParry</span>) <a href="https://twitter.com/JosiahParry/status/1452014741765906436?ref_src=twsrc%5Etfw">October 23, 2021</a>
-</blockquote>
-<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<p>Thanks to Nicole Radziwill for a very helpful <a href="https://www.usna.edu/Users/oceano/pguth/md_help/html/moment_stats_2.htm">link</a> from the US Naval Academy.</p>
-<p>The method of moments is no more than simple summary statistics from a distribution. There are four “moments”.</p>
-<ol type="1">
-<li>Mean</li>
-<li>Variance</li>
-<li>Skew</li>
-<li>Kurtosis</li>
-</ol>
-<p>Why would one use these words? To gatekeep, of course. Academia uses <a href="https://www.theatlantic.com/education/archive/2015/10/complex-academic-writing/412255/">needlessly complex language</a> quite often.</p>
-<p>Remember, friends. Use clear and concise language. Let’s remove “moments” from our statistical lexicon.</p>
-
-
-
- ]]></description>
-  <category>spatial</category>
-  <guid>https://josiahparry.com/posts/2022-02-12-the-heck-is-a-statistical-moment.html</guid>
-  <pubDate>Fri, 11 Feb 2022 23:00:00 GMT</pubDate>
+  <pubDate>Sat, 12 Feb 2022 05:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

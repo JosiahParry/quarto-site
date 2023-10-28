@@ -8,7 +8,7 @@
 
 <meta name="author" content="Josiah Parry">
 
-<title>Josiah Parry - Untitled</title>
+<title>Josiah Parry - SDSL P2 - on community driven development</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -71,8 +71,8 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta name="twitter:title" content="Josiah Parry - Untitled">
-<meta name="twitter:description" content="https://twitter.com/medriscoll/status/1704563111653687502">
+<meta name="twitter:title" content="Josiah Parry - SDSL P2 - on community driven development">
+<meta name="twitter:description" content="The starkest differences between the three language communities—R, Python, and Julia—was the way in which packages are tested and distributed. R">
 <meta name="twitter:creator" content="@josiahparry">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -83,7 +83,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Untitled</h1>
+      <h1 class="quarto-secondary-nav-title">SDSL P2 - on community driven development</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -137,7 +137,27 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#potential-standardization-topics" id="toc-potential-standardization-topics" class="nav-link active" data-scroll-target="#potential-standardization-topics">Potential Standardization Topics:</a></li>
+  <li><a href="#cran-overview" id="toc-cran-overview" class="nav-link active" data-scroll-target="#cran-overview">CRAN overview</a></li>
+  <li><a href="#how-the-others-do-it" id="toc-how-the-others-do-it" class="nav-link" data-scroll-target="#how-the-others-do-it">How the others do it</a>
+  <ul class="collapse">
+  <li><a href="#python" id="toc-python" class="nav-link" data-scroll-target="#python">Python</a></li>
+  <li><a href="#julia" id="toc-julia" class="nav-link" data-scroll-target="#julia">Julia</a></li>
+  <li><a href="#what-do-they-have-in-common" id="toc-what-do-they-have-in-common" class="nav-link" data-scroll-target="#what-do-they-have-in-common">What do they have in common?</a></li>
+  </ul></li>
+  <li><a href="#cran-pain-points" id="toc-cran-pain-points" class="nav-link" data-scroll-target="#cran-pain-points">CRAN pain points</a>
+  <ul class="collapse">
+  <li><a href="#tone" id="toc-tone" class="nav-link" data-scroll-target="#tone">Tone</a></li>
+  <li><a href="#system-dependencies" id="toc-system-dependencies" class="nav-link" data-scroll-target="#system-dependencies">System Dependencies</a></li>
+  </ul></li>
+  <li><a href="#if-you-dont-like-cran-dont-use-it" id="toc-if-you-dont-like-cran-dont-use-it" class="nav-link" data-scroll-target="#if-you-dont-like-cran-dont-use-it">If you don’t like CRAN don’t use it?</a></li>
+  <li><a href="#how-do-we-fix-it" id="toc-how-do-we-fix-it" class="nav-link" data-scroll-target="#how-do-we-fix-it">How do we fix it?</a>
+  <ul class="collapse">
+  <li><a href="#automate-it" id="toc-automate-it" class="nav-link" data-scroll-target="#automate-it">Automate it</a></li>
+  <li><a href="#improve-visibility" id="toc-improve-visibility" class="nav-link" data-scroll-target="#improve-visibility">Improve visibility</a></li>
+  <li><a href="#expand-crans-team" id="toc-expand-crans-team" class="nav-link" data-scroll-target="#expand-crans-team">Expand CRAN’s team</a></li>
+  </ul></li>
+  <li><a href="#on-retirement" id="toc-on-retirement" class="nav-link" data-scroll-target="#on-retirement">On retirement</a></li>
+  <li><a href="#potential-standardization-topics" id="toc-potential-standardization-topics" class="nav-link" data-scroll-target="#potential-standardization-topics">Potential Standardization Topics:</a></li>
   <li><a href="#esri-specific" id="toc-esri-specific" class="nav-link" data-scroll-target="#esri-specific">Esri specific</a></li>
   </ul>
 </nav>
@@ -150,7 +170,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Untitled</h1>
+<h1 class="title d-none d-lg-block">SDSL P2 - on community driven development</h1>
 </div>
 
 
@@ -171,24 +191,62 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 </header>
 
-<section id="potential-standardization-topics" class="level2">
-<h2 class="anchored" data-anchor-id="potential-standardization-topics">Potential Standardization Topics:</h2>
+<p>The starkest differences between the three language communities—R, Python, and Julia—was the way in which packages are tested and distributed. R</p>
 <ul>
-<li>storing of CRS in memory:
-<ul>
-<li>sf is strings</li>
-<li>geopandas is a proj pointer</li>
-<li>geoarrow requires projjson</li>
-</ul></li>
-<li>going to mostly be CRAN-complaints I guess</li>
 <li>R is the least developer friendly langauge there is</li>
-<li>python has a community driven package management approach in conda-forge
+</ul>
+<p>The culture of R prides itself in being backwards compatible so much so that much of base R’s syntax is still compatible with S (or is it S+?).</p>
+<p>There are two groups that impact R’s development: R-core and CRAN. R-core is the team responsible for building the R language itself. CRAN, the comprehensive R archive network is the package distribution network (you also can download R from them. What specifically, then, is CRAN? lol)</p>
 <ul>
-<li>devs are responsible for building binaries for PyPI</li>
+<li>I have gripes with R core but this is focused on package distribution and building</li>
+</ul>
+<section id="cran-overview" class="level2">
+<h2 class="anchored" data-anchor-id="cran-overview">CRAN overview</h2>
+<p>CRAN provides many niceties for the R community. - distribute packages - not only source, but binaries for windows and mac - current version of R, old versions, and the development version -</p>
+</section>
+<section id="how-the-others-do-it" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-others-do-it">How the others do it</h2>
+<ul>
+<li>Both other langauges have visibility into testing and compilation through Github CI</li>
+</ul>
+<section id="python" class="level3">
+<h3 class="anchored" data-anchor-id="python">Python</h3>
+<ul>
+<li>python has a community driven package management approach in conda-forge</li>
+<li>devs are responsible for building binaries for PyPI
+<ul>
 <li>this would be honestly a nice option for R users</li>
 </ul></li>
-<li>Julia can contribute to the build process in Github</li>
-<li>Both other langauges have visibility into testing and compilation through Github CI</li>
+</ul>
+</section>
+<section id="julia" class="level3">
+<h3 class="anchored" data-anchor-id="julia">Julia</h3>
+<p>yygrdasil</p>
+</section>
+<section id="what-do-they-have-in-common" class="level3">
+<h3 class="anchored" data-anchor-id="what-do-they-have-in-common">What do they have in common?</h3>
+<ul>
+<li>visibility visibility visibility</li>
+<li>the ability to contribute to the process
+<ul>
+<li>moreso for julia (its quite impressive frankly)</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="cran-pain-points" class="level2">
+<h2 class="anchored" data-anchor-id="cran-pain-points">CRAN pain points</h2>
+<section id="tone" class="level3">
+<h3 class="anchored" data-anchor-id="tone">Tone</h3>
+<ul>
+<li>be nice ffs. CRAN are volunteers, but so are all of the developers.</li>
+<li>isochrone incident</li>
+</ul>
+</section>
+<section id="system-dependencies" class="level3">
+<h3 class="anchored" data-anchor-id="system-dependencies">System Dependencies</h3>
+<ul>
+<li>sf is in a special situation. big package lots of people rely on it. their voice matters to CRAN</li>
 <li>R is hindered by the restrictions that CRAN places on R package developers
 <ul>
 <li>most importantly: the requirement to vendor dependencies
@@ -197,10 +255,62 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <li>CRAN provides binaries for them</li>
 </ul></li>
 </ul></li>
-<li>python devs have an approach of “we will tell you how things behave, its your responsibility to listen”
+<li>Other languages have to vendor them</li>
+</ul>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Vendoring is the inclusion of the dependency itself in the source code</p>
+</div>
+</div>
 <ul>
-<li>i like this. put all the control (and blame) in the hands of the user</li>
-</ul></li>
+<li>vendoring dependencies can be tough and awkward</li>
+<li>rpolars is hit hard by this problem. It becomes a very big package to install which far exceeds CRAN (tiny) limit of 5mb</li>
+<li>extendr community has struggled with this issue quite a bit.</li>
+<li>we’re extremeley limited in what we can build because of this requirement</li>
+<li>we’re disincentivized to innovate and incorporate other tools</li>
+<li>even <em>though</em> R is framed as an interface language the amount of interfacing we can do is limited not by the language but by arcane standards imposed by it?</li>
+</ul>
+</section>
+</section>
+<section id="if-you-dont-like-cran-dont-use-it" class="level2">
+<h2 class="anchored" data-anchor-id="if-you-dont-like-cran-dont-use-it">If you don’t like CRAN don’t use it?</h2>
+<p>Declaration Quote</p>
+<p>Are you not allowed to want the best for <em>everyone</em>? CRANs policies are not good for the growth of the language. They are bad for the community. VERY talented developers have switched languages or stopped building R packages because of CRAN. That is not good.</p>
+<p>Kara Woo’s quote that I liked</p>
+<p>I remember when the change-cran.org movement happened a few years ago. I was much more of a user than I am developer now. Holy shit does that change your perspective.</p>
+</section>
+<section id="how-do-we-fix-it" class="level2">
+<h2 class="anchored" data-anchor-id="how-do-we-fix-it">How do we fix it?</h2>
+<p>Much, if not all, of my frustration stems from the fact that CRAN does not provide thorough automated testing. We can test in github actions,</p>
+<p>for example i ran into a problem that was tested manually on a fedora linux machine. I have never used fedora, none of the GHA are on fedora. I built a fedora docker container from scratch and installed the dependencies in the way that I <em>thought</em> they might have been for the CRAN maintainer.</p>
+<p>If CRAN tests are not reproducible how are we to be able to prevent wasting their time and ours?</p>
+<p>CRAN needs to make all of their tests automated. They should provide infrastructure to test our packages our selves.</p>
+<p>The fact that <code>R CMD check</code> isn’t sufficient is ridiculous.</p>
+<section id="automate-it" class="level3">
+<h3 class="anchored" data-anchor-id="automate-it">Automate it</h3>
+</section>
+<section id="improve-visibility" class="level3">
+<h3 class="anchored" data-anchor-id="improve-visibility">Improve visibility</h3>
+</section>
+<section id="expand-crans-team" class="level3">
+<h3 class="anchored" data-anchor-id="expand-crans-team">Expand CRAN’s team</h3>
+<ul>
+<li>make it possible to expand the CRAN team beyond the clique</li>
+<li>Jeroen, for example,</li>
+</ul>
+</section>
+</section>
+<section id="on-retirement" class="level2">
+<h2 class="anchored" data-anchor-id="on-retirement">On retirement</h2>
+<ul>
 <li>We talked about Roger’s retirement
 <ul>
 <li>not stated out loud, but i think the quiet assumption was that what is being done is very generous if not overly generous. The time frame provided has been massive. The amount of work to help others is massive. In other ecosystems package will just be abandonded and thats not necessarily bad. But this amount of committment to the community is impressive.
@@ -210,6 +320,18 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </ul></li>
 </ul></li>
 <li>What about retirement of CRAN staff? Who is going to replace them? What plans do they have to handle retirement? How do people ascend into CRAN? Right now its a niche clique.</li>
+</ul>
+</section>
+<section id="potential-standardization-topics" class="level2">
+<h2 class="anchored" data-anchor-id="potential-standardization-topics">Potential Standardization Topics:</h2>
+<ul>
+<li>storing of CRS in memory:
+<ul>
+<li>sf is strings</li>
+<li>geopandas is a proj pointer</li>
+<li>geoarrow requires projjson</li>
+</ul></li>
+<li>Julia can contribute to the build process in Github</li>
 </ul>
 </section>
 <section id="esri-specific" class="level2">

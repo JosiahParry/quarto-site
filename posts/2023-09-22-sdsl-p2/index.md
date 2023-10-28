@@ -4,6 +4,8 @@ draft: true
 keep-md: true
 ---
 
+
+
 The starkest differences between the three language communities—R, Python, and Julia—was the way in which packages are tested and distributed. R
 
 -   R is the least developer friendly langauge there is
