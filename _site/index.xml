@@ -67,6 +67,74 @@
   <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Where am I in the sky?</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2023-10-28/index.html</link>
+  <description><![CDATA[ <p>When I was flying back from the Spatial Data Science Across Langauge event from Frankfurt to Atlanta the plane I was bored beyond measure. The plane had no wifi to connect to. I had already watched a movie and couldn’t be bothered by a podcast. I wanted to know where I was.</p>
+<p>When looking at the onboard “About this flight” information, they didn’t show a map even. The gave us our coordinates in degrees and minutes. Helpful right?</p>
+<p>Well, in an attempt to figure out where the hell I was I wrote some code. Here it is.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op" style="color: #5E5E5E;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;"><a href="https://r-quantities.github.io/units/">units</a></span><span class="op" style="color: #5E5E5E;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>udunits database from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/units/share/udunits/udunits2.xml</code></pre>
+</div>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;">#' Given degrees and minutes calculate the coordinate</span></span>
+<span><span class="co" style="color: #5E5E5E;">#' in degrees</span></span>
+<span><span class="va" style="color: #111111;">as_degree</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="kw" style="color: #003B4F;">function</span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;">degrees</span>, <span class="va" style="color: #111111;">minutes</span><span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">{</span></span>
+<span>  <span class="va" style="color: #111111;">d</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="fu" style="color: #4758AB;"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;">degrees</span>, <span class="st" style="color: #20794D;">"arc_degrees"</span><span class="op" style="color: #5E5E5E;">)</span></span>
+<span>  <span class="va" style="color: #111111;">m</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="fu" style="color: #4758AB;"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;">minutes</span>, <span class="st" style="color: #20794D;">"arc_minutes"</span><span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">|&gt;</span> </span>
+<span>    <span class="fu" style="color: #4758AB;"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="st" style="color: #20794D;">"arc_degrees"</span><span class="op" style="color: #5E5E5E;">)</span></span>
+<span>  <span class="va" style="color: #111111;">d</span> <span class="op" style="color: #5E5E5E;">+</span> <span class="va" style="color: #111111;">m</span></span>
+<span><span class="op" style="color: #5E5E5E;">}</span></span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;"># get the country shapes</span></span>
+<span><span class="va" style="color: #111111;">x</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="fu" style="color: #4758AB;">rnaturalearthdata</span><span class="fu" style="color: #4758AB;">::</span><span class="va" style="color: #111111;"><a href="https://rdrr.io/pkg/rnaturalearthdata/man/countries.html">countries50</a></span> <span class="op" style="color: #5E5E5E;">|&gt;</span>  <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span> </span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;"># filter to North America</span></span>
+<span><span class="va" style="color: #111111;">usa</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="va" style="color: #111111;">x</span> <span class="op" style="color: #5E5E5E;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;">dplyr</span><span class="fu" style="color: #4758AB;">::</span><span class="fu" style="color: #4758AB;"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;">continent</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"North America"</span>, </span>
+<span>                <span class="va" style="color: #111111;">subregion</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"Northern America"</span><span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span> </span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;"># Create a bounding box to crop myself to </span></span>
+<span><span class="va" style="color: #111111;">crp</span> <span class="op" style="color: #5E5E5E;">&lt;-</span> <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="fu" style="color: #4758AB;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;">(</span>xmin <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">128</span>, xmax <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">0</span>, ymin <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">18</span>, ymax <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">61</span><span class="op" style="color: #5E5E5E;">)</span><span class="op" style="color: #5E5E5E;">)</span></span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;"># plot N. America</span></span>
+<span><span class="va" style="color: #111111;">usa</span> <span class="op" style="color: #5E5E5E;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="st" style="color: #20794D;">"POLYGON"</span><span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_filter</a></span><span class="op" style="color: #5E5E5E;">(</span></span>
+<span>    <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;">crp</span><span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">|&gt;</span> </span>
+<span>      <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op" style="color: #5E5E5E;">(</span>crs <span class="op" style="color: #5E5E5E;">=</span> <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="va" style="color: #111111;">usa</span><span class="op" style="color: #5E5E5E;">)</span><span class="op" style="color: #5E5E5E;">)</span></span>
+<span>    <span class="op" style="color: #5E5E5E;">)</span> <span class="op" style="color: #5E5E5E;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;"># add planes location.</span></span>
+<span><span class="fu" style="color: #4758AB;"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op" style="color: #5E5E5E;">(</span></span>
+<span>  <span class="fu" style="color: #4758AB;"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="fu" style="color: #4758AB;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;">(</span><span class="op" style="color: #5E5E5E;">-</span><span class="fu" style="color: #4758AB;">as_degree</span><span class="op" style="color: #5E5E5E;">(</span><span class="fl" style="color: #AD0000;">61</span>, <span class="fl" style="color: #AD0000;">19</span><span class="op" style="color: #5E5E5E;">)</span>, <span class="fu" style="color: #4758AB;">as_degree</span><span class="op" style="color: #5E5E5E;">(</span><span class="fl" style="color: #AD0000;">57</span>, <span class="fl" style="color: #AD0000;">46</span><span class="op" style="color: #5E5E5E;">)</span><span class="op" style="color: #5E5E5E;">)</span><span class="op" style="color: #5E5E5E;">)</span>,</span>
+<span>  add <span class="op" style="color: #5E5E5E;">=</span> <span class="cn" style="color: #8f5902;">TRUE</span>,</span>
+<span>  col <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"red"</span>,</span>
+<span>  pch <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">16</span></span>
+<span><span class="op" style="color: #5E5E5E;">)</span></span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="https://josiahparry.com/posts/2023-10-28/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <category>r</category>
+  <category>spatial</category>
+  <guid>https://josiahparry.com/posts/2023-10-28/index.html</guid>
+  <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Spatial Data Science Across Languages</title>
   <dc:creator>Josiah Parry</dc:creator>
   <link>https://josiahparry.com/posts/2023-09-20-sdsl/index.html</link>
@@ -2503,89 +2571,6 @@ print("I feel powerful.")</code></pre>
  ]]></description>
   <guid>https://josiahparry.com/posts/2022-04-05-an-open-system-requirements-database.html</guid>
   <pubDate>Tue, 05 Apr 2022 04:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Installing Python on my M1 in under 10 minutes</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes.html</link>
-  <description><![CDATA[ 
-
-
-
-<p>Installing python has never been an easy task for me. I remember back in 2016 I wanted to learn how to use pyspark and thus python, I couldn’t figure out how to install python so I gave up. In graduate school I couldn’t install python so I used a docker container my professor created and never changed a thing. When working at RStudio I used the Jupyter Lab instance in RStudio Workbench when I couldn’t install it locally.</p>
-<p>Now, I want to compare pysal results to some functionality I’ve written in R. To do that, I need a python installation. I’ve heard extra horror stories about installing Python on the new Mac M1 chip—which I have.</p>
-<div class="page-columns page-full"><p>Prior to installing, I took to twitter for suggestions. I received the phenomenal tweet below encouraging me to install with <a href="https://rstudio.github.io/reticulate/"><code>{reticulate}</code></a><sup>1</sup> which was absolutely phenomenal advice.</p><div class="no-row-height column-margin column-container"><li id="fn1"><p><sup>1</sup>&nbsp;is a package that lets you call python from R.</p></li></div></div>
-<blockquote class="twitter-tweet blockquote">
-<p lang="es" dir="ltr">
-reticulate::install_miniconda() 😉
-</p>
-— Kevin Ushey (<span class="citation" data-cites="kevin_ushey">@kevin_ushey</span>) <a href="https://twitter.com/kevin_ushey/status/1491188923292581888?ref_src=twsrc%5Etfw">February 8, 2022</a>
-</blockquote>
-<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<section id="installing-python" class="level2">
-<h2 class="anchored" data-anchor-id="installing-python">Installing Python</h2>
-<p>The steps to install python, at least for me, was <em>very</em> simple.</p>
-<ol type="1">
-<li>Install reticulate</li>
-<li>Install miniconda</li>
-</ol>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;">install.packages</span>(<span class="st" style="color: #20794D;">"reticulate"</span>)</span>
-<span id="cb1-2">reticulate<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">install_miniconda</span>()</span></code></pre></div>
-<p>That’s it. That’s all it took.</p>
-</section>
-<section id="creating-my-first-conda-environment" class="level2">
-<h2 class="anchored" data-anchor-id="creating-my-first-conda-environment">Creating my first conda environment</h2>
-<p>After installing python, I restarted R, and began building my first conda environment. I created a conda environment called <code>geo</code> for my geospatial work. I installed <code>libpysal</code>, <code>geopandas</code>, and <code>esda</code>. These installed every other dependency I needed–e.g.&nbsp;<code>pandas</code>, and <code>numpy</code>.</p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">reticulate<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">conda_create</span>(<span class="st" style="color: #20794D;">"geo"</span>)</span>
-<span id="cb2-2">reticulate<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">use_condaenv</span>(<span class="st" style="color: #20794D;">"geo"</span>)</span>
-<span id="cb2-3">reticulate<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">conda_install</span>(<span class="st" style="color: #20794D;">"geo"</span>, <span class="fu" style="color: #4758AB;">c</span>(<span class="st" style="color: #20794D;">"libpysal"</span>, <span class="st" style="color: #20794D;">"geopandas"</span>, <span class="st" style="color: #20794D;">"esda"</span>))</span></code></pre></div>
-</section>
-<section id="using-my-conda-environment" class="level2">
-<h2 class="anchored" data-anchor-id="using-my-conda-environment">Using my conda environment</h2>
-<p>To begin using my new conda environment, I opened up a fresh R session and a fresh R Markdown document. In my first code chunk I told reticulate which conda environment to use. Then my following code chunks were python which opened up the python repl. Make sure that you start your code chunk with <code>```{python}</code></p>
-<div class="highlight">
-<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">reticulate</span><span class="nf">::</span><span class="nf"><a href="https://rstudio.github.io/reticulate/reference/use_python.html">use_condaenv</a></span><span class="o">(</span><span class="s">"geo"</span><span class="o">)</span></code></pre>
-</div>
-<p>In the following example I utilize <code>esda</code> to calculate a local join count.</p>
-<div class="highlight">
-<pre class="chroma"><code class="language-r" data-lang="r">import libpysal
-import geopandas as gpd
-from esda.join_counts_local import Join_Counts_Local
-
-fp = libpysal.examples.root + "/guerry/" + "Guerry.shp" 
-
-guerry_ds = gpd.read_file(fp)
-guerry_ds['SELECTED'] = 0
-guerry_ds.loc[(guerry_ds['Donatns'] &gt; 10997), 'SELECTED'] = 1
-
-w = libpysal.weights.Queen.from_dataframe(guerry_ds)
-
-LJC_uni = Join_Counts_Local(connectivity=w).fit(guerry_ds['SELECTED'])
-
-LJC_uni.p_sim</code></pre>
-</div>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;">## array([  nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,</span></span>
-<span id="cb3-2"><span class="co" style="color: #5E5E5E;">##          nan,   nan,   nan, 0.435,   nan, 0.025, 0.025,   nan, 0.328,</span></span>
-<span id="cb3-3"><span class="co" style="color: #5E5E5E;">##          nan,   nan,   nan,   nan,   nan,   nan, 0.342,   nan, 0.334,</span></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;">##          nan,   nan,   nan,   nan,   nan,   nan, 0.329,   nan,   nan,</span></span>
-<span id="cb3-5"><span class="co" style="color: #5E5E5E;">##          nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,</span></span>
-<span id="cb3-6"><span class="co" style="color: #5E5E5E;">##          nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan, 0.481,</span></span>
-<span id="cb3-7"><span class="co" style="color: #5E5E5E;">##          nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,</span></span>
-<span id="cb3-8"><span class="co" style="color: #5E5E5E;">##          nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,   nan,</span></span>
-<span id="cb3-9"><span class="co" style="color: #5E5E5E;">##          nan,   nan, 0.02 ,   nan,   nan,   nan,   nan,   nan, 0.125,</span></span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;">##          nan, 0.043,   nan,   nan])</span></span></code></pre></div>
-
-
-</section>
-
-
- ]]></description>
-  <category>python</category>
-  <category>r</category>
-  <category>reticulate</category>
-  <category>spatial</category>
-  <guid>https://josiahparry.com/posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes.html</guid>
-  <pubDate>Sat, 12 Feb 2022 05:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

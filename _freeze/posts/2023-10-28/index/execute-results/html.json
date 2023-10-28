@@ -1,0 +1,16 @@
+{
+  "hash": "7f1ec4cc280d7c1a3b52bdfd8da38f62",
+  "result": {
+    "markdown": "---\ntitle: \"Where am I in the sky?\"\ndate: 2023-10-28\nkeep-md: true\ncategories: [r, spatial]\n---\n\n\nWhen I was flying back from the Spatial Data Science Across Langauge event from\nFrankfurt to Atlanta the plane I was bored beyond measure. The plane had no \nwifi to connect to. I had already watched a movie and couldn't be bothered by\na podcast. I wanted to know where I was. \n\nWhen looking at the onboard \"About this flight\" information, they didn't show\na map even. The gave us our coordinates in degrees and minutes. Helpful right? \n\nWell, in an attempt to figure out where the hell I was I wrote some code. Here\nit is.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(sf)\n```\n\n::: {.cell-output .cell-output-stderr}\n```\nLinking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE\n```\n:::\n\n```{.r .cell-code}\nlibrary(units)\n```\n\n::: {.cell-output .cell-output-stderr}\n```\nudunits database from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/units/share/udunits/udunits2.xml\n```\n:::\n\n```{.r .cell-code}\n#' Given degrees and minutes calculate the coordinate\n#' in degrees\nas_degree <- function(degrees, minutes) {\n  d <- set_units(degrees, \"arc_degrees\")\n  m <- set_units(minutes, \"arc_minutes\") |> \n    set_units(\"arc_degrees\")\n  d + m\n}\n\n# get the country shapes\nx <- rnaturalearthdata::countries50 |>  st_as_sf() \n\n# filter to North America\nusa <- x |> \n  dplyr::filter(continent == \"North America\", \n                subregion == \"Northern America\") |> \n  st_geometry() \n\n# Create a bounding box to crop myself to \ncrp <- st_bbox(c(xmin = -128, xmax = 0, ymin = 18, ymax = 61))\n\n# plot N. America\nusa |> \n  st_cast(\"POLYGON\") |> \n  st_as_sf() |> \n  st_filter(\n    st_as_sfc(crp) |> \n      st_as_sf(crs = st_crs(usa))\n    ) |>\n  plot()\n\n\n# add planes location.\nplot(\n  st_point(c(-as_degree(61, 19), as_degree(57, 46))),\n  add = TRUE,\n  col = \"red\",\n  pch = 16\n)\n```\n\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
