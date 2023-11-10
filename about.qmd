@@ -1,6 +1,7 @@
 ---
 title: "about"
 about:
+  #template: trestles
   template: solana
   links:
     - icon: github
@@ -21,6 +22,11 @@ about:
 
 comments: false
 ---
+
+
+
+
+
 
 - __employment__: Senior Product Engineer @ Esri
 - **education**:

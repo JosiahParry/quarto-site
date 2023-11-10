@@ -271,5 +271,20 @@
   },
   "posts/2023-10-28/index.qmd": {
     "index.html": "74ea327d"
+  },
+  "posts/2023-11-10-enums-in-r/index.qmd": {
+    "index.html": "6100c771"
+  },
+  "posts/2023-09-20-sdsl/index.md": {
+    "index.html": "5ca39641"
+  },
+  "posts/2023-10-28/index.md": {
+    "index.html": "4b92729f"
+  },
+  "posts/2023-10-28-python-fns/index.md": {
+    "index.html": "bed71dd3"
+  },
+  "posts/2023-09-22-sdsl-p2/index.md": {
+    "index.html": "a9e3b479"
   }
 }

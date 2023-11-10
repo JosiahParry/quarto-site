@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.475">
+<meta name="generator" content="quarto-1.4.489">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -19,7 +19,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -47,7 +47,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -57,7 +63,8 @@ ul.task-list li input[type="checkbox"] {
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script>
@@ -73,7 +80,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <link rel="stylesheet" href="../styles.css">
 <meta name="twitter:title" content="Josiah Parry - Excel in pRod">
-<meta name="twitter:description" content="I recently had a conversation that touched on using plumber to automate the parsing of Excel documents for administering data science assets. This brings up some very interesting points:">
+<meta name="twitter:description" content="">
 <meta name="twitter:creator" content="@josiahparry">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -82,11 +89,18 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Excel in pRod</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      Josiah Parry
+      </li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav>
@@ -94,42 +108,47 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Josiah Parry</a> 
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">home</a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">home</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../about.html" class="sidebar-item-text sidebar-link">about</a>
+  <a href="../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">about</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">posts</a>
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">posts</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../projects.html" class="sidebar-item-text sidebar-link">projects</a>
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">projects</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.xml" class="sidebar-item-text sidebar-link">RSS</a>
+  <a href="../index.xml" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RSS</span></a>
   </div>
 </li>
     </ul>
@@ -148,6 +167,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
   </ul>
 </nav>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
@@ -156,7 +176,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Excel in pRod</h1>
+<h1 class="title">Excel in pRod</h1>
 </div>
 
 
@@ -181,7 +201,9 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
   </div>
   
 
+
 </header>
+
 
 <section id="or-how-to-incorporate-excel-into-a-production-api-using-plumber-or-a-micro-excel-micro-service." class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="or-how-to-incorporate-excel-into-a-production-api-using-plumber-or-a-micro-excel-micro-service.">or <em>how to incorporate excel into a production API using plumber</em> or, <em>a micro-excel-micro-service</em>.</h2>
@@ -194,15 +216,15 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <p>Note that this is no time to 💩 on Excel. It serves very real business purposes and unfortunately not everyone can learn to program 😕. Here’s a fun one for the h8rs: almost every presidential election campaign’s data program is based on the back of Google Sheets.</p>
 </blockquote>
 <p>In this post I set out to explore if and how one can incorporate Excel into productionized code. Please see the <a href="https://github.com/JosiahParry/plumber-excel">GitHub repository</a> for the code used here.</p>
-<div class="page-columns page-full"><p>What does it mean to productionize code—aka put it in prod<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>? There is no one definition of what this mean and each and every organization will operationalize it differently.</p><div class="no-row-height column-margin column-container"><li id="fn1"><p><sup>1</sup>&nbsp;<a href="https://putrinprod.com/" class="uri">https://putrinprod.com/</a></p></li></div></div>
-<blockquote class="blockquote">
+<p>What does it mean to productionize code—aka put it in prod<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>? There is no one definition of what this mean and each and every organization will operationalize it differently.</p>
+<div class="no-row-height column-margin column-container"><li id="fn1"><p><sup>1</sup>&nbsp;<a href="https://putrinprod.com/" class="uri">https://putrinprod.com/</a></p></li></div><blockquote class="blockquote">
 <p>An <em>operationalized definition</em>, at least in the social science perspective, is how a thing is defined so as to have a shared understanding of said thing.</p>
 </blockquote>
-<div class="page-columns page-full"><p>Greg Wilson has defined it as “code that <em>isn’t</em> going to make the operations team cry” <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> (emphasis his). This is my favorite definition because it is whimsical, sardonic, honest, and acknowledges that the code will have to leave the data science inner circle.</p><div class="no-row-height column-margin column-container"><li id="fn2"><p><sup>2</sup>&nbsp;Please see <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005412"><em>Ten simple rules for making research software more robust</em></a> (Taschuk, and Wilson, 2017).</p></li></div></div>
-<p>As I understand it, the current data science discourse emphasizes the use of RESTful APIs as the best, or at least the dominant, way of <em>productionizing</em> code.</p>
+<p>Greg Wilson has defined it as “code that <em>isn’t</em> going to make the operations team cry” <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> (emphasis his). This is my favorite definition because it is whimsical, sardonic, honest, and acknowledges that the code will have to leave the data science inner circle.</p>
+<div class="no-row-height column-margin column-container"><li id="fn2"><p><sup>2</sup>&nbsp;Please see <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005412"><em>Ten simple rules for making research software more robust</em></a> (Taschuk, and Wilson, 2017).</p></li></div><p>As I understand it, the current data science discourse emphasizes the use of RESTful APIs as the best, or at least the dominant, way of <em>productionizing</em> code.</p>
 <p>An API is an application programming interface. When I was first learning what APIs were my uncle told me to think of them as “machines talking to other machines.” That’s not so far off!</p>
-<div class="page-columns page-full"><p>A RESTful API is a special kind of API that does <em><strong>re</strong>presentational <strong>s</strong>tate <strong>t</strong>ransfer</em>. Frankly, I do not know what that really means. As I understand it, REST is actually an opinionated way of architecting APIs. RESTful APIs use HTTP requests which makes them very easy to access. RESTful APIs are key in developing micro-services and micro-services are at the core of putting code in prod<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. Within the python ecosystem Flask is one of the leading libraries for making micro-services. Within the R space a package called <code>plumber</code> is taking on that role.</p><div class="no-row-height column-margin column-container"><li id="fn3"><p><sup>3</sup>&nbsp;<a href="https://medium.com/@ericjwhuang/restful-api-vs-microservice-eea903ac3e73" class="uri">https://medium.com/@ericjwhuang/restful-api-vs-microservice-eea903ac3e73</a></p></li></div></div>
-<p>We can envisage a hypothetical scenario in which we receive Excel files via some data collection process. Once that Excel file is received it is used to kick off some other process—e.g.&nbsp;report writing or data processing. Often people may create Shiny applications to provide a UI for uploading and data input. This is really great when we want to develop a user-centric interface. But what about when we want to automate the process or at least make the processing available to other tools? This is when we can turn to plumber as a way to create a micro-service to handle this.</p>
+<p>A RESTful API is a special kind of API that does <em><strong>re</strong>presentational <strong>s</strong>tate <strong>t</strong>ransfer</em>. Frankly, I do not know what that really means. As I understand it, REST is actually an opinionated way of architecting APIs. RESTful APIs use HTTP requests which makes them very easy to access. RESTful APIs are key in developing micro-services and micro-services are at the core of putting code in prod<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. Within the python ecosystem Flask is one of the leading libraries for making micro-services. Within the R space a package called <code>plumber</code> is taking on that role.</p>
+<div class="no-row-height column-margin column-container"><li id="fn3"><p><sup>3</sup>&nbsp;<a href="https://medium.com/@ericjwhuang/restful-api-vs-microservice-eea903ac3e73" class="uri">https://medium.com/@ericjwhuang/restful-api-vs-microservice-eea903ac3e73</a></p></li></div><p>We can envisage a hypothetical scenario in which we receive Excel files via some data collection process. Once that Excel file is received it is used to kick off some other process—e.g.&nbsp;report writing or data processing. Often people may create Shiny applications to provide a UI for uploading and data input. This is really great when we want to develop a user-centric interface. But what about when we want to automate the process or at least make the processing available to other tools? This is when we can turn to plumber as a way to create a micro-service to handle this.</p>
 <div class="highlight">
 <div id="htmlwidget-77f7966dca011158b958" class="nomnoml html-widget" style="width:700px;height:415.296px;">
 
@@ -222,8 +244,8 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <li>OPTION</li>
 </ul>
 <p>Frankly, I do not remember what <code>HEAD</code>, <code>PATCH</code>, and <code>OPTIONS</code> do—if you don’t use it you lose it, right? For super simple APIs all we need to know are <code>GET</code> and <code>POST</code> requests—catch me never <code>DELETE</code>ing anything, I can’t be trusted.</p>
-<div class="page-columns page-full"><p><code>GET</code> is used to <em>get</em> data from a resource. You can pass key value pairs as parameters into the <code>GET</code> request. “<code>GET</code> requests are only used to request data (not modify).”<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> You should never, ever, ever, ever, ever, <strong>ever</strong> send sensitive information through a <code>GET</code> request.</p><div class="no-row-height column-margin column-container"><li id="fn4"><p><sup>4</sup>&nbsp;<a href="https://www.w3schools.com/tags/ref_httpmethods.asp" class="uri">https://www.w3schools.com/tags/ref_httpmethods.asp</a></p></li></div></div>
-<div class="page-columns page-full"><p>That brings us to the <code>POST</code> method. <code>POST</code> methods are used to send data to a server for the purpose of creating, modifying, or updating resources<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. When you have a lot of parameters to send, or if they’re sensitive, or if you need to send a file via API use <code>POST</code>.</p><div class="no-row-height column-margin column-container"><li id="fn5"><p><sup>5</sup>&nbsp;<a href="https://www.w3schools.com/tags/ref_httpmethods.asp" class="uri">https://www.w3schools.com/tags/ref_httpmethods.asp</a></p></li></div></div>
+<p><code>GET</code> is used to <em>get</em> data from a resource. You can pass key value pairs as parameters into the <code>GET</code> request. “<code>GET</code> requests are only used to request data (not modify).”<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> You should never, ever, ever, ever, ever, <strong>ever</strong> send sensitive information through a <code>GET</code> request.</p>
+<div class="no-row-height column-margin column-container"><li id="fn4"><p><sup>4</sup>&nbsp;<a href="https://www.w3schools.com/tags/ref_httpmethods.asp" class="uri">https://www.w3schools.com/tags/ref_httpmethods.asp</a></p></li><li id="fn5"><p><sup>5</sup>&nbsp;<a href="https://www.w3schools.com/tags/ref_httpmethods.asp" class="uri">https://www.w3schools.com/tags/ref_httpmethods.asp</a></p></li></div><p>That brings us to the <code>POST</code> method. <code>POST</code> methods are used to send data to a server for the purpose of creating, modifying, or updating resources<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. When you have a lot of parameters to send, or if they’re sensitive, or if you need to send a file via API use <code>POST</code>.</p>
 <p>In approaching this API design I had three questions.</p>
 <ol type="1">
 <li>How do you even send a file via HTTP request?</li>
@@ -244,8 +266,8 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </section>
 <section id="building-the-first-endpoint" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="building-the-first-endpoint">Building the first endpoint</h2>
-<div class="page-columns page-full"><p>Now we get <em>how</em> the file will be sent. But the tough part is actually building the plumber API endpoint which will receive it. There is a fair amount of discourse on how files should be uploaded via plumber<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. Fortunately, <a href="https://github.com/krlmlr"><span class="citation" data-cites="krlmlr">@krlmlr</span></a> pointed out <a href="https://rdrr.io/pkg/mime/man/parse_multipart.html"><code>mime::parse_multipart()</code></a> which can be used for handling files sent in requests<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p><div class="no-row-height column-margin column-container"><li id="fn6"><p><sup>6</sup>&nbsp;<a href="https://github.com/rstudio/plumber/issues/75" class="uri">https://github.com/rstudio/plumber/issues/75</a></p></li><li id="fn7"><p><sup>7</sup>&nbsp;<a href="https://github.com/rstudio/plumber/issues/75" class="uri">https://github.com/rstudio/plumber/issues/75</a></p></li></div></div>
-<blockquote class="blockquote">
+<p>Now we get <em>how</em> the file will be sent. But the tough part is actually building the plumber API endpoint which will receive it. There is a fair amount of discourse on how files should be uploaded via plumber<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. Fortunately, <a href="https://github.com/krlmlr"><span class="citation" data-cites="krlmlr">@krlmlr</span></a> pointed out <a href="https://rdrr.io/pkg/mime/man/parse_multipart.html"><code>mime::parse_multipart()</code></a> which can be used for handling files sent in requests<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
+<div class="no-row-height column-margin column-container"><li id="fn6"><p><sup>6</sup>&nbsp;<a href="https://github.com/rstudio/plumber/issues/75" class="uri">https://github.com/rstudio/plumber/issues/75</a></p></li><li id="fn7"><p><sup>7</sup>&nbsp;<a href="https://github.com/rstudio/plumber/issues/75" class="uri">https://github.com/rstudio/plumber/issues/75</a></p></li></div><blockquote class="blockquote">
 <p>Note: MIME is a standard way of sending files through the internet. I know nothing about MIME types and greatly appreciate the work that Yihui Xie, Jeffrey Horner, and Bian Beilei have done with the <a href="https://github.com/yihui/mime"><code>{mime}</code></a> package for abstracting all of this away.</p>
 </blockquote>
 <p><code>parse_multipart()</code> will take the incoming request and return a named list. Most importantly for us the returned object contains our POSTed file to a temporary location. Within the resultant list is a path to to the temporary file. In our plumber function definition, we parse the request, and pull out the <code>datapath</code>. That saved path is then fed to <a href="https://readxl.tidyverse.org/reference/read_excel.html"><code>readxl::read_excel()</code></a> which returns a tibble!</p>
@@ -425,9 +447,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -463,10 +499,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -476,8 +511,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -492,6 +536,241 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -534,6 +813,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
 </script>
 </div> <!-- /content -->
+
 
 
 

@@ -1,0 +1,88 @@
+---
+title: "Export Python functions in R packages"
+keep-md: true
+date: 2023-10-28
+categories: [r, python, package-dev]
+---
+
+
+
+
+
+I was asked a really interesting question by [@benyamindsmith](https://github.com/benyamindsmith) yesterday. The question was essentially: 
+
+> _How can one export a python 🐍 function in an R package 📦?_
+
+I proposed my solution as a very minimal R package called [`{pyfns}`](https://github.com/JosiahParry/pyfns).
+
+It is an R package with one function: `hello_world()`. 
+
+## How it works 
+
+The process is _fairly_ simple. 
+
+- We create an environment inside of our package
+- On package start-up we source python scripts using `reticulate::source_python()` into the new environment
+- We create R wrapper functions that call the reticulated function.
+
+Example usage:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+pyfns::hello_world()
+```
+
+::: {.cell-output .cell-output-stdout}
+```
+[1] "Helloooo world"
+```
+:::
+:::
+
+
+## Storing Python Scripts
+
+Store python scripts inside of `inst/`. These files can be read using 
+`system.file()`. In this example `inst/helloworld.py` contains 
+
+```py
+def hello_world():
+  return "Helloooo world"
+```
+
+## Creating an environment
+
+Before we can source python scripts, we must create an environment to soure them into. This is done in `R/env.R` like so
+
+```r
+pyfn_env <- rlang::env()
+```
+
+## Sourcing scripts
+
+Scripts are sourced in `R/zzz.R` in which there is an `.onLoad()` function call. This gets called only once when the package is loaded. 
+
+```r
+.onLoad <- function(libname, pkgname){
+  reticulate::source_python(
+    system.file("helloworld.py", package = "pyfns"),
+    envir = pyfn_env
+  )
+}
+```
+
+In this chunk we use `reticulate::source_python()` to bring the python function into scope. The function needs a path to the python script that we want to source. This is where `system.file()` comes into play. It can access files stored in `inst`. _Note that it does not include `inst`_. And most importantly we set `envir = pyfn_env` which is the environment we created in `R/env.R`
+
+## Wrapper functions 
+
+Since the functions are being sourced into `pyfn_env` they can be called from the environment directly. In `R/env.R`, the R function `hello_world()` is just calling the `hello_world()` python function from the `pyfn_env`. If there were arguments we can pass them in using `...` in the outer function or recreating the same function arguments.
+
+```r
+#'@export
+hello_world <- function() {
+  pyfn_env$hello_world()
+}
+```
+
