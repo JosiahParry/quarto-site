@@ -173,7 +173,14 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
    
   <ul>
 <li>
-<a href="#enums-in-rust" id="toc-enums-in-rust" class="nav-link active" data-scroll-target="#enums-in-rust">Enums in Rust</a>
+<a href="#enums-in-r" id="toc-enums-in-r" class="nav-link active" data-scroll-target="#enums-in-r">Enums in R</a>
+  <ul class="collapse">
+<li><a href="#a-real-world-example" id="toc-a-real-world-example" class="nav-link" data-scroll-target="#a-real-world-example">A real world example</a></li>
+  </ul>
+</li>
+  <li><a href="#enums-in-rust" id="toc-enums-in-rust" class="nav-link" data-scroll-target="#enums-in-rust">Enums in Rust</a></li>
+  <li>
+<a href="#making-an-s7-enum-object-in-r" id="toc-making-an-s7-enum-object-in-r" class="nav-link" data-scroll-target="#making-an-s7-enum-object-in-r">Making an S7 enum object in R</a>
   <ul class="collapse">
 <li><a href="#design-of-an-enum" id="toc-design-of-an-enum" class="nav-link" data-scroll-target="#design-of-an-enum">Design of an Enum</a></li>
   <li><a href="#using-an-abstract-class" id="toc-using-an-abstract-class" class="nav-link" data-scroll-target="#using-an-abstract-class">Using an abstract class</a></li>
@@ -229,7 +236,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>I will refer to enumerations as enums from here on.</p>
-</div></div><p>## Enums in R</p>
+</div></div><section id="enums-in-r" class="level2"><h2 class="anchored" data-anchor-id="enums-in-r">Enums in R</h2>
 <p>A good example is the <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code> function from the base package <code>stats</code>.</p>
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/args.html">args</a></span><span class="op">(</span><span class="va">cor</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -242,7 +249,7 @@ NULL</code></pre>
 <p>The possible values for <code>method</code> are <code>"pearson"</code>, <code>"kendall"</code>, or <code>"spearman"</code> but all values are listed inside of the function definition.</p>
 <p>Inside of the function, though, <code>match.arg(method)</code> is used to ensure that the provided value to the <code>method</code> argument is one of the provided values.</p>
 <p>Hadley makes the argument that we should prefer an enumeration to a boolean flag such as <code>TRUE</code> or <code>FALSE</code>. I agree!</p>
-<p>### A real world example</p>
+<section id="a-real-world-example" class="level3"><h3 class="anchored" data-anchor-id="a-real-world-example">A real world example</h3>
 <p>A post on mastodon makes a point that the function <code><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html">sf::st_make_grid()</a></code> has an argument <code>square = TRUE</code> where when set to <code>FALSE</code> hexagons are returned.</p>
 <iframe src="https://mastodon.social/@eliocamp/111387155503851033/embed" width="100%" height="300px" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms">
 </iframe>
@@ -252,10 +259,12 @@ NULL</code></pre>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html">match.arg</a></span><span class="op">(</span><span class="va">grid_shape</span><span class="op">)</span></span>
 <span>  <span class="co"># ... rest of function </span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="enums-in-rust" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="enums-in-rust">Enums in Rust</h2>
+</section></section><section id="enums-in-rust" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="enums-in-rust">Enums in Rust</h2>
 <p>When I first started using rust enums made no sense to me. In Rust, enums are a first class citizen that are treated as their own <em>thing</em>.</p>
-<p>::: aside I’m not really sure what to call <em>things</em> in Rust. Are they all objects? :::</p>
-<p>We make them by defining the name of the enum and the <strong><em>variants</em></strong> they may take on.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>I’m not really sure what to call <em>things</em> in Rust. Are they all objects?</p>
+</div></div><p>We make them by defining the name of the enum and the <strong><em>variants</em></strong> they may take on.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> GridShape <span class="op">{</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  Square<span class="op">,</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  Hexagon</span>
@@ -263,10 +272,10 @@ NULL</code></pre>
 <p>Now you can use this enum <code>GridShape</code> to specify one of two types: <code>Square</code> or <code>Hexagon</code>. Syntactically, this is written <code>GridShape::Square</code> and <code>GridShape::Hexagon</code>.</p>
 <p>Enums are very nice because we can match on the variants and do different things based on them. For example we can have a function like so:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> which_shape(x<span class="op">:</span> GridShape) <span class="op">{</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">match</span> x <span class="op">{</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">GridShape::</span>Square <span class="op">=&gt;</span> <span class="pp">println!</span>(<span class="st">"We have a square!"</span>)<span class="op">,</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="pp">GridShape::</span>Hexagon <span class="op">=&gt;</span> <span class="pp">println!</span>(<span class="st">"Hexagons are the bestagons"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">match</span> x <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">GridShape::</span>Square <span class="op">=&gt;</span> <span class="pp">println!</span>(<span class="st">"We have a square!"</span>)<span class="op">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">GridShape::</span>Hexagon <span class="op">=&gt;</span> <span class="pp">println!</span>(<span class="st">"Hexagons are the bestagons"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>It takes an argument <code>x</code> which is a <code>GridShape</code> enum. We <a href="https://doc.rust-lang.org/book/ch06-02-match.html">match</a> on the possible variants and then <em>do something</em>.</p>
 
@@ -289,7 +298,7 @@ NULL</code></pre>
 </div>
 </div>
 </div>
-<p>## Making an S7 enum object in R</p>
+</section><section id="making-an-s7-enum-object-in-r" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="making-an-s7-enum-object-in-r">Making an S7 enum object in R</h2>
 <p>I think R would benefit from having a <em>“real”</em> enum type object. Having a character vector of valid variants and checking against them using <code><a href="https://rdrr.io/r/base/match.arg.html">match.arg()</a></code> or <code><a href="https://rlang.r-lib.org/reference/arg_match.html">rlang::arg_match()</a></code> is great but I think we can go further.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">

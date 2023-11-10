@@ -6,8 +6,9 @@ categories: [r, package-dev, rust]
 ---
 
 
-  
-Hadley Wickham has recently dropped a new draft section of his book [Tidy Design Principles](https://design.tidyverse.org/) on [enumerations and their use in R](https://design.tidyverse.org/boolean-strategies.html).
+
+Hadley Wickham has recently dropped a new draft section of his book [Tidy Design 
+Principles](https://design.tidyverse.org/) on [enumerations and their use in R](https://design.tidyverse.org/boolean-strategies.html).
 
 
 
@@ -18,10 +19,10 @@ where an argument takes a scalar value but all possible values are listed out.
 ::: aside
 I will refer to enumerations as enums from here on.
 :::
-  
-  ## Enums in R 
-  
-  A good example is the `cor()` function from the base package `stats`. 
+
+## Enums in R 
+
+A good example is the `cor()` function from the base package `stats`. 
 
 
 ::: {.cell}
@@ -51,15 +52,15 @@ the provided value to the `method` argument is one of the provided values.
 
 Hadley makes the argument that we should prefer an enumeration to a boolean flag
 such as `TRUE` or `FALSE`. I agree! 
-  
-  ### A real world example
-  
-  A post on mastodon makes a point that the function `sf::st_make_grid()` has an
+
+### A real world example
+
+A post on mastodon makes a point that the function `sf::st_make_grid()` has an
 argument `square = TRUE` where when set to `FALSE` hexagons are returned. 
 
 <iframe src="https://mastodon.social/@eliocamp/111387155503851033/embed" width="100%" height="300px" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
-  
-  In this case, it's very clear that an enum would be better! For example we can
+
+In this case, it's very clear that an enum would be better! For example we can
 improve the signature like so:
 
 ```r
@@ -77,9 +78,9 @@ first class citizen that are treated as their own _thing_.
 
 ::: aside
 I'm not really sure what to call _things_ in Rust. Are they all objects?
-  :::
-  
-  We make them by defining the name of the enum and the **_variants_** they may 
+:::
+
+We make them by defining the name of the enum and the **_variants_** they may 
 take on. 
 
 ```rust
@@ -95,13 +96,13 @@ or `Hexagon`. Syntactically, this is written `GridShape::Square` and
 
 Enums are very nice because we can match on the variants and do different
 things based on them. For example we can have a function like so:
-  
-  ```rust
+
+```rust
 fn which_shape(x: GridShape) {
-  match x {
-    GridShape::Square => println!("We have a square!"),
-    GridShape::Hexagon => println!("Hexagons are the bestagons")
-  }
+    match x {
+        GridShape::Square => println!("We have a square!"),
+        GridShape::Hexagon => println!("Hexagons are the bestagons")
+    }
 }
 ```
 
@@ -114,8 +115,8 @@ be written out. These are called **match arms**. The left side lists the variant
 where as the right portion (after `=>`) indicates what will be executed if the 
 left side is matched (essentially if the condition is true).
 :::
-  
-  With this function we can pass in specific variants and get different behavior.
+
+With this function we can pass in specific variants and get different behavior.
 
 :::{.panel-tabset}
 
@@ -133,18 +134,18 @@ which_shape(GridShape::Square)
 #> We have a square!
 ```
 :::
-  
-  ## Making an S7 enum object in R
-  
-  I think R would benefit from having a _"real"_ enum type object. Having a character vector of valid variants and checking against them using 
+
+## Making an S7 enum object in R
+
+I think R would benefit from having a _"real"_ enum type object. Having a character vector of valid variants and checking against them using 
 `match.arg()` or `rlang::arg_match()` is great but I think we can go further.
 
 ::: aside
 Since learning Rust, I think having more strictness can make our code much
 better and more robust. I think adding enums would be a good step towards that
 :::
-  
-  I've prototyped an `Enum` type in R using the new `S7` object system that
+
+I've prototyped an `Enum` type in R using the new `S7` object system that
 might point us towards what an enum object in the future might look like for 
 R users. 
 

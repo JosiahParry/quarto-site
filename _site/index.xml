@@ -20,7 +20,7 @@
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>I will refer to enumerations as enums from here on.</p>
-</div></div><p>## Enums in R</p>
+</div></div><section id="enums-in-r" class="level2"><h2 class="anchored" data-anchor-id="enums-in-r">Enums in R</h2>
 <p>A good example is the <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code> function from the base package <code>stats</code>.</p>
 <div class="cell">
 <div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
@@ -41,7 +41,7 @@ NULL</code></pre>
 <p>The possible values for <code>method</code> are <code>"pearson"</code>, <code>"kendall"</code>, or <code>"spearman"</code> but all values are listed inside of the function definition.</p>
 <p>Inside of the function, though, <code>match.arg(method)</code> is used to ensure that the provided value to the <code>method</code> argument is one of the provided values.</p>
 <p>Hadley makes the argument that we should prefer an enumeration to a boolean flag such as <code>TRUE</code> or <code>FALSE</code>. I agree!</p>
-<p>### A real world example</p>
+<section id="a-real-world-example" class="level3"><h3 class="anchored" data-anchor-id="a-real-world-example">A real world example</h3>
 <p>A post on mastodon makes a point that the function <code><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html">sf::st_make_grid()</a></code> has an argument <code>square = TRUE</code> where when set to <code>FALSE</code> hexagons are returned.</p>
 <iframe src="https://mastodon.social/@eliocamp/111387155503851033/embed" width="100%" height="300px" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms">
 </iframe>
@@ -95,10 +95,12 @@ font-style: inherit;"># ... rest of function </span></span>
 <span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">}</span></span></code></pre></div>
-<section id="enums-in-rust" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="enums-in-rust">Enums in Rust</h2>
+</section></section><section id="enums-in-rust" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="enums-in-rust">Enums in Rust</h2>
 <p>When I first started using rust enums made no sense to me. In Rust, enums are a first class citizen that are treated as their own <em>thing</em>.</p>
-<p>::: aside I’m not really sure what to call <em>things</em> in Rust. Are they all objects? :::</p>
-<p>We make them by defining the name of the enum and the <strong><em>variants</em></strong> they may take on.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>I’m not really sure what to call <em>things</em> in Rust. Are they all objects?</p>
+</div></div><p>We make them by defining the name of the enum and the <strong><em>variants</em></strong> they may take on.</p>
 <div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb4-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">enum</span> GridShape <span class="op" style="color: #5E5E5E;
@@ -120,12 +122,12 @@ background-color: null;
 font-style: inherit;">:</span> GridShape) <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
-<span id="cb5-2"><span class="cf" style="color: #003B4F;
+<span id="cb5-2">    <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">match</span> x <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
-<span id="cb5-3">  <span class="pp" style="color: #AD0000;
+<span id="cb5-3">        <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">GridShape::</span>Square <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -136,7 +138,7 @@ background-color: null;
 font-style: inherit;">"We have a square!"</span>)<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span></span>
-<span id="cb5-4">  <span class="pp" style="color: #AD0000;
+<span id="cb5-4">        <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">GridShape::</span>Hexagon <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -145,7 +147,7 @@ background-color: null;
 font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Hexagons are the bestagons"</span>)</span>
-<span id="cb5-5"><span class="op" style="color: #5E5E5E;
+<span id="cb5-5">    <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">}</span></span>
 <span id="cb5-6"><span class="op" style="color: #5E5E5E;
@@ -200,7 +202,7 @@ font-style: inherit;">#&gt; We have a square!</span></span></code></pre></div>
 </div>
 </div>
 </div>
-<p>## Making an S7 enum object in R</p>
+</section><section id="making-an-s7-enum-object-in-r" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="making-an-s7-enum-object-in-r">Making an S7 enum object in R</h2>
 <p>I think R would benefit from having a <em>“real”</em> enum type object. Having a character vector of valid variants and checking against them using <code><a href="https://rdrr.io/r/base/match.arg.html">match.arg()</a></code> or <code><a href="https://rlang.r-lib.org/reference/arg_match.html">rlang::arg_match()</a></code> is great but I think we can go further.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
