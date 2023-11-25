@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.489">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2018-11-28">
+
+<title>Josiah Parry - [Not so] generic functions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - [Not so] generic functions">
+<meta name="twitter:description" content="A simple explanation because I struggled to understand any documentation">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      Josiah Parry
+      </li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">about</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">posts</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">projects</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.xml" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RSS</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-jargon" id="toc-the-jargon" class="nav-link active" data-scroll-target="#the-jargon">The Jargon</a></li>
+  <li><a href="#the-generic-method" id="toc-the-generic-method" class="nav-link" data-scroll-target="#the-generic-method">The Generic Method</a></li>
+  <li><a href="#the-default-method" id="toc-the-default-method" class="nav-link" data-scroll-target="#the-default-method">The Default Method</a></li>
+  <li><a href="#sf-method" id="toc-sf-method" class="nav-link" data-scroll-target="#sf-method"><code>sf</code> method</a></li>
+  <li><a href="#tbl_graph-method" id="toc-tbl_graph-method" class="nav-link" data-scroll-target="#tbl_graph-method"><code>tbl_graph</code> method</a></li>
+  <li><a href="#review-tldr" id="toc-review-tldr" class="nav-link" data-scroll-target="#review-tldr">Review (tl;dr)</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">[Not so] generic functions</h1>
+<p class="subtitle lead">A simple explanation because I struggled to understand any documentation</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">tutorial</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 28, 2018</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Lately I have been doing more of my spatial analysis work in R with the help of the <code>sf</code> package. One shapefile I was working with had some horrendously named columns, and naturally, I tried to clean them using the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function from the <code>janitor</code> package. But lo, an egregious error occurred. To this end, I officially filed my complaint as an <a href="https://github.com/sfirke/janitor/pull/249">issue</a>. The solution presented was to <em>simply</em> create a method for <code>sf</code> objects.</p>
+<p>Yeah, methods, how tough can those be? Apparently the process isn’t at all difficult. But figuring out the process? That was difficult. This post will explain how I went about the process for converting the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function into a <em>generic</em> (I’ll explain this in a second), and creating a <em>method</em> for <code>sf</code> and <code>tbl_graph</code> objects.</p>
+<section id="the-jargon" class="level3">
+<h3 class="anchored" data-anchor-id="the-jargon">The Jargon</h3>
+<p>Okay, I want to address the jargon. What the hell is a <em>generic</em> function, and what is a <em>method</em>? But first, I want to give a quick tl;dr on what a function is. I define as function as bit of code that takes an input, changes it in some way, and produces an output. Even simpler, a function takes an input and creates an output.</p>
+<section id="generic-functions" class="level4">
+<h4 class="anchored" data-anchor-id="generic-functions">Generic Functions</h4>
+<p>Now, what is a <strong><em>generic</em></strong> function? My favorite definition that I’ve seen so far comes from <em>LispWorks Ltd</em> (their website is a historic landmark, I recommend you give it a look for a reminder of what the internet used to be). They define a <a href="http://clhs.lisp.se/Body/07_fa.htm">generic function</a> as</p>
+<blockquote class="blockquote">
+<p>a function whose behavior depends on the classes or identities of the arguments supplied to it.</p>
+</blockquote>
+<p>This means that we have to create a function that looks at the class of an object and perform an operation based on the object class. That means if there is <code>"numeric"</code> or <code>"list"</code> object, they will be treated differently. These are called <code>methods</code>. Note: you can find the class of an object by using the <a href="https://rdrr.io/r/base/class.html"><code>class()</code></a> function on any object.</p>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<p>To steal from <em>LispWorks Ltd</em> again, a <a href="http://clhs.lisp.se/Body/26_glo_m.htm#method">method</a> is</p>
+<blockquote class="blockquote">
+<p>part of a generic function which provides information about how that generic function should behave [for] certain classes.</p>
+</blockquote>
+<p>This means that a method is part of a generic function and has to be defined separately. Imagine we have a generic function called <code>f</code> with methods for <code>list</code> and <code>numeric</code> objects. The way that we would denote these methods is by putting a period after the function name and indicating the type of object the function is to be used on. These would look like <code>f.list</code> and <code>f.numeric</code> respectively.</p>
+<p>But to save time you can always create a <code>default</code> method which will be dispatched (used) on any object that it hasn’t been explicitly told how to operate on (by a specific method).</p>
+<p>Now that the intuition of what generic functions and methods R, we can begin the work of actually creating them. This tutorial will walk through the steps I took in changing the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> from a standard function into a generic function with methods for <code>sf</code> objects and <code>tbl_graph</code> objects from the <a href="https://github.com/r-spatial/sf"><code>sf</code></a> and <a href="https://github.com/thomasp85/tidygraph"><code>tidygraph</code></a> packages respectively.</p>
+<p>A brief overview of the process:</p>
+<ol type="1">
+<li>Define the generic function</li>
+<li>Create a default method</li>
+<li>Create additional methods</li>
+</ol>
+<p>A quick note: The code that follows is not identical to that of the package. I will be changing it up to make it simpler to read and understand what is happening.</p>
+</section>
+</section>
+<section id="the-generic-method" class="level3">
+<h3 class="anchored" data-anchor-id="the-generic-method">The Generic Method</h3>
+<p>The first step, as described above, is to create a generic function. Generic functions are made by creating a new function with the body containing only a call to the <a href="https://rdrr.io/r/base/UseMethod.html"><code>UseMethod()</code></a> function. The only argument to this is the name of your generic function—this should be the same as the name of the function you are making. This tells R that you are creating a generic function. Additionally, you should add any arguments that will be necessary for your function. Here, there are two arguments: <code>dat</code> and <code>case</code>. These indicate the data to be cleaned and the preferred style for them to be cleaned according to.</p>
+<p>I am not setting any default values for <code>dat</code> to make it required, whereas I am setting <code>case</code> to <code>"snake"</code>.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">clean_names</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">dat</span>, <span class="nv">case</span> <span class="o">=</span> <span class="s">"snake"</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kr"><a href="https://rdrr.io/r/base/UseMethod.html">UseMethod</a></span><span class="o">(</span><span class="s">"clean_names"</span><span class="o">)</span>
+<span class="o">}</span></code></pre>
+</div>
+<p>Now we have created a generic function. But this function doesn’t know how to run on any given object types. In other words, there are no methods associated with it. To illustrate this try using the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function we just defined on objects of different types.</p>
+<pre><code>clean_names(1) # numeric 
+clean_names("test") # character 
+clean_names(TRUE) # logical </code></pre>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c">#&gt; [1] "no applicable method for 'clean_names' applied to an object of class \"c('double', 'numeric')\""</span></code></pre>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c">#&gt; [1] "no applicable method for 'clean_names' applied to an object of class \"character\""</span></code></pre>
+</div>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c">#&gt; [1] "no applicable method for 'clean_names' applied to an object of class \"logical\""</span></code></pre>
+</div>
+<p>The output of these calls say <code>no applicable method for 'x' applied to an object of [class]</code>. In order to prevent this from happening, we can create a default method. A default method will always be used if the function doesn’t have a method for the provided object type.</p>
+</section>
+<section id="the-default-method" class="level3">
+<h3 class="anchored" data-anchor-id="the-default-method">The Default Method</h3>
+<p>Remember that methods are indicated by writing <code>function.method</code>. It is also important to note that the <code>method</code> should indicate an object class. To figure out what class an object is you can use the <a href="https://rdrr.io/r/base/class.html"><code>class()</code></a> function. For example <code>class(1)</code> tells you that the number <code>1</code> is “numeric”.</p>
+<p>In this next step I want to create a default method that will be used on every object that there isn’t a method explicitly for. To do this I will create a function called <code>clean_names.default</code>.</p>
+<p>As background, the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function takes a data frame and changes column headers to fit a given style. <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> in the <a href="https://github.com/sfirke/janitor">development version</a> is based on the function <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a> which takes a character vector and makes each value match a given style (the default is snake, and you should only use snake case because everything else is wrong * sarcasm * ).</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://github.com/sfirke/janitor">janitor</a></span><span class="o">)</span></code></pre>
+</div>
+<p>Now let’s see how this function works. For this we will use the ugliest character vector I have ever seen from the <a href="https://github.com/sfirke/janitor/blob/master/tests/testthat/test-clean-names.R">tests</a> for <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> (h/t <span class="citation" data-cites="sfirke">@sfirke</span> for making this).</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">ugly_names</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="o">(</span>
+  <span class="s">"sp ace"</span>, <span class="s">"repeated"</span>, <span class="s">"a**^@"</span>, <span class="s">"%"</span>, <span class="s">"*"</span>, <span class="s">"!"</span>,
+  <span class="s">"d(!)9"</span>, <span class="s">"REPEATED"</span>, <span class="s">"can\"'t"</span>, <span class="s">"hi_`there`"</span>, <span class="s">"  leading spaces"</span>,
+  <span class="s">"€"</span>, <span class="s">"ação"</span>, <span class="s">"Farœ"</span>, <span class="s">"a b c d e f"</span>, <span class="s">"testCamelCase"</span>, <span class="s">"!leadingpunct"</span>,
+  <span class="s">"average # of days"</span>, <span class="s">"jan2009sales"</span>, <span class="s">"jan 2009 sales"</span>
+<span class="o">)</span>
+
+<span class="nv">ugly_names</span>
+<span class="c">#&gt;  [1] "sp ace"            "repeated"          "a**^@"             "%"                </span>
+<span class="c">#&gt;  [5] "*"                 "!"                 "d(!)9"             "REPEATED"         </span>
+<span class="c">#&gt;  [9] "can\"'t"           "hi_`there`"        "  leading spaces"  "€"                </span>
+<span class="c">#&gt; [13] "ação"              "Farœ"              "a b c d e f"       "testCamelCase"    </span>
+<span class="c">#&gt; [17] "!leadingpunct"     "average # of days" "jan2009sales"      "jan 2009 sales"</span></code></pre>
+</div>
+<p>Now to see how this function works:</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html">make_clean_names</a></span><span class="o">(</span><span class="nv">ugly_names</span><span class="o">)</span>
+<span class="c">#&gt;  [1] "sp_ace"                 "repeated"               "a"                     </span>
+<span class="c">#&gt;  [4] "percent"                "x"                      "x_2"                   </span>
+<span class="c">#&gt;  [7] "d_9"                    "repeated_2"             "cant"                  </span>
+<span class="c">#&gt; [10] "hi_there"               "leading_spaces"         "x_3"                   </span>
+<span class="c">#&gt; [13] "acao"                   "faroe"                  "a_b_c_d_e_f"           </span>
+<span class="c">#&gt; [16] "test_camel_case"        "leadingpunct"           "average_number_of_days"</span>
+<span class="c">#&gt; [19] "jan2009sales"           "jan_2009_sales"</span></code></pre>
+</div>
+<p>Très magnifique!</p>
+<p>The body of the default method will take column names from a dataframe, clean them, and reassign them. Before we can do this, a dataframe is needed!</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># create a data frame with 20 columns</span>
+<span class="nv">test_df</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="o">(</span><span class="nf"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="o">(</span><span class="m">100</span>, <span class="m">20</span><span class="o">)</span>, ncol <span class="o">=</span> <span class="m">20</span><span class="o">)</span><span class="o">)</span>
+
+<span class="c"># makes the column names the `ugly_names` vector</span>
+<span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nv">test_df</span><span class="o">)</span> <span class="o">&lt;-</span> <span class="nv">ugly_names</span>
+
+<span class="c"># print the data frame.</span>
+<span class="nv">test_df</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tibble: 1 × 20</span></span>
+<span class="c">#&gt;   `sp ace` repeated `a**^@`   `%`   `*`   `!` `d(!)9` REPEATED `can"'t` hi_\th…¹   lea…²</span>
+<span class="c">#&gt;      <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span>       78       18      99    28    26    38      43       73       51       33      23</span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 9 more variables: `€` &lt;int&gt;, ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;, and abbreviated variable names</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   ¹​`hi_\`there\``, ²​`  leading spaces`</span></span>
+<span class="c">#&gt; <span style="color: #555555;"># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>The process for writing this function is:</p>
+<ul>
+<li>take a dataframe</li>
+<li>take the old column names and clean them</li>
+<li>reassign the column names as the new clean names</li>
+<li>return the object</li>
+</ul>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">clean_names.default</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">dat</span>, <span class="nv">case</span> <span class="o">=</span> <span class="s">"snake"</span><span class="o">)</span> <span class="o">{</span> 
+  <span class="c"># retrieve the old names</span>
+  <span class="nv">old_names</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nv">dat</span><span class="o">)</span>
+  <span class="c"># clean the old names</span>
+  <span class="nv">new_names</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html">make_clean_names</a></span><span class="o">(</span><span class="nv">old_names</span>, case <span class="o">=</span> <span class="nv">case</span><span class="o">)</span>
+  <span class="c"># assign the column names as the clean names vector</span>
+  <span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nv">dat</span><span class="o">)</span> <span class="o">&lt;-</span> <span class="nv">new_names</span>
+  <span class="c"># return the data</span>
+  <span class="kr"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="o">(</span><span class="nv">dat</span><span class="o">)</span>
+  <span class="o">}</span></code></pre>
+</div>
+<p>Now that the default method has been defined. Try running the function on our test dataframe!</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="o">(</span><span class="nv">test_df</span><span class="o">)</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tibble: 1 × 20</span></span>
+<span class="c">#&gt;   sp_ace repeated     a percent     x   x_2   d_9 repeated_2  cant hi_th…¹ leadi…²   x_3</span>
+<span class="c">#&gt;    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>      <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span>     78       18    99      28    26    38    43         73    51      33      23    27</span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 8 more variables: acao &lt;int&gt;, faroe &lt;int&gt;, a_b_c_d_e_f &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   test_camel_case &lt;int&gt;, leadingpunct &lt;int&gt;, average_number_of_days &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   jan2009sales &lt;int&gt;, jan_2009_sales &lt;int&gt;, and abbreviated variable names ¹​hi_there,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   ²​leading_spaces</span></span>
+<span class="c">#&gt; <span style="color: #555555;"># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>Oh, my gorsh. Look at that! We can try replicating this with a named vector to see how the default method dispatched on unknown objects!</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="c"># create a vector with 20 elements</span>
+<span class="nv">test_vect</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="o">(</span><span class="m">1</span><span class="o">:</span><span class="m">20</span><span class="o">)</span>
+
+<span class="c"># name each element with the ugly_names vector </span>
+<span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nv">test_vect</span><span class="o">)</span> <span class="o">&lt;-</span> <span class="nv">ugly_names</span>
+
+<span class="c"># try cleaning!</span>
+<span class="nf"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="o">(</span><span class="nv">test_vect</span><span class="o">)</span>
+<span class="c">#&gt;                 sp_ace               repeated                      a </span>
+<span class="c">#&gt;                      1                      2                      3 </span>
+<span class="c">#&gt;                percent                      x                    x_2 </span>
+<span class="c">#&gt;                      4                      5                      6 </span>
+<span class="c">#&gt;                    d_9             repeated_2                   cant </span>
+<span class="c">#&gt;                      7                      8                      9 </span>
+<span class="c">#&gt;               hi_there         leading_spaces                    x_3 </span>
+<span class="c">#&gt;                     10                     11                     12 </span>
+<span class="c">#&gt;                   acao                  faroe            a_b_c_d_e_f </span>
+<span class="c">#&gt;                     13                     14                     15 </span>
+<span class="c">#&gt;        test_camel_case           leadingpunct average_number_of_days </span>
+<span class="c">#&gt;                     16                     17                     18 </span>
+<span class="c">#&gt;           jan2009sales         jan_2009_sales </span>
+<span class="c">#&gt;                     19                     20</span></code></pre>
+</div>
+<p>It looks like this default function works super well with named objects! Now, we will broach the problem I started with, <code>sf</code> objects.</p>
+</section>
+<section id="sf-method" class="level3">
+<h3 class="anchored" data-anchor-id="sf-method"><code>sf</code> method</h3>
+<p>This section will go over the process for creating the <code>sf</code> method. If you have not ever used the <code>sf</code> package, I suggest you give it a try! It makes dataframe objects with spatial data associated with it. This allows you to perform many of the functions from the <code>tidyverse</code> to spatial data.</p>
+<p>Before getting into it, I want to create a test object to work with. I will take the <code>test_df</code> column, create longitude and latitude columns, and then convert it into an <code>sf</code> object. The details of <code>sf</code> objects is out of the scope of this post.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="o">)</span>
+
+<span class="nv">test_sf</span> <span class="o">&lt;-</span> <span class="nv">test_df</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="c"># create xy columns</span>
+  <span class="nf"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="o">(</span>long <span class="o">=</span> <span class="o">-</span><span class="m">80</span>, 
+         lat <span class="o">=</span> <span class="m">40</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="c"># convert to sf object </span>
+  <span class="nf"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="o">(</span>coords <span class="o">=</span> <span class="nf"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="o">(</span><span class="s">"long"</span>, <span class="s">"lat"</span><span class="o">)</span><span class="o">)</span>
+
+<span class="c"># converting geometry column name to poor style</span>
+<span class="nf"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="o">(</span><span class="nv">test_sf</span><span class="o">)</span><span class="o">[</span><span class="m">21</span><span class="o">]</span> <span class="o">&lt;-</span> <span class="s">"Geometry"</span>
+
+<span class="c"># telling sf which column is now the geometry</span>
+<span class="nf"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="o">(</span><span class="nv">test_sf</span><span class="o">)</span> <span class="o">&lt;-</span> <span class="s">"Geometry"</span>
+
+<span class="nv">test_sf</span>
+<span class="c">#&gt; Simple feature collection with 1 feature and 20 fields</span>
+<span class="c">#&gt; Geometry type: POINT</span>
+<span class="c">#&gt; Dimension:     XY</span>
+<span class="c">#&gt; Bounding box:  xmin: -80 ymin: 40 xmax: -80 ymax: 40</span>
+<span class="c">#&gt; CRS:           NA</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tibble: 1 × 21</span></span>
+<span class="c">#&gt;   `sp ace` repeated `a**^@`   `%`   `*`   `!` `d(!)9` REPEATED `can"'t` hi_\th…¹   lea…²</span>
+<span class="c">#&gt;      <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span>       78       18      99    28    26    38      43       73       51       33      23</span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 10 more variables: `€` &lt;int&gt;, ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;, Geometry &lt;POINT&gt;, and abbreviated</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   variable names ¹​`hi_\`there\``, ²​`  leading spaces`</span></span>
+<span class="c">#&gt; <span style="color: #555555;"># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>The <code>sf</code> object has been created. But now how does our default method of the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function work on this object? There is only one way to know, try it.</p>
+<pre><code>clean_names(test_sf)
+
+Error in st_geometry.sf(x) : attr(obj, "sf_column") does not point to a geometry column. Did you rename it, without setting st_geometry(obj) &lt;- "newname"?</code></pre>
+<p>Notice how it fails. <code>sf</code> noticed that I changed the name of the geometry column without explicitly telling it I did so. Since the geometry column is <em>almost</em> always the last column of an sf object, we can use the <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a> function on every column but the last one! To do this we will use the <a href="https://dplyr.tidyverse.org/reference/select_all.html"><code>rename_at()</code></a> function from <code>dplyr</code>. This function allows you rename columns based on their name or position, and a function that renames it (in this case, <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a>).</p>
+<p>For this example dataset, say I wanted to clean the first column. How would I do that? Note that the first column is called <code>sp ace</code>. How this works can be seen in a simple example. In the below function call we are using the <a href="https://dplyr.tidyverse.org/reference/select_all.html"><code>rename_at()</code></a> function (for more, go <a href="https://dplyr.tidyverse.org/reference/select.html">here</a>), selecting the first column name, and renaming it using the <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a> function.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://dplyr.tidyverse.org/reference/select_all.html">rename_at</a></span><span class="o">(</span><span class="nv">test_df</span>, .vars <span class="o">=</span> <span class="nf"><a href="https://ggplot2.tidyverse.org/reference/vars.html">vars</a></span><span class="o">(</span><span class="m">1</span><span class="o">)</span>, .funs <span class="o">=</span> <span class="nv">make_clean_names</span><span class="o">)</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tibble: 1 × 20</span></span>
+<span class="c">#&gt;   sp_ace repea…¹ `a**^@`   `%`   `*`   `!` `d(!)9` REPEA…² can"'…³ hi_\t…⁴   lea…⁵   `€`</span>
+<span class="c">#&gt;    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span>     78      18      99    28    26    38      43      73      51      33      23    27</span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 8 more variables: ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;, and abbreviated variable names</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   ¹​repeated, ²​REPEATED, ³​`can"'t`, ⁴​`hi_\`there\``, ⁵​`  leading spaces`</span></span>
+<span class="c">#&gt; <span style="color: #555555;"># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>Notice how only the first column has been cleaned. It went from <code>sp ace</code> to <code>sp_ace</code>. The goal is to replicate this for all columns <em>except</em> the last one.</p>
+<p>To write the sf method, the above line of code can be adapted to select columns 1 through the number of columns <em>minus</em> 1 (so geometry isn’t selected). In order to make this work, we need to identify the second to last column—this will be supplied as the ending value of our selected variables.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">clean_names.sf</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">dat</span>, <span class="nv">case</span> <span class="o">=</span> <span class="s">"snake"</span><span class="o">)</span> <span class="o">{</span>
+  <span class="c"># identify last column that is not geometry</span>
+  <span class="nv">last_col_to_clean</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="o">(</span><span class="nv">dat</span><span class="o">)</span> <span class="o">-</span> <span class="m">1</span>
+  <span class="c"># create a new dat object</span>
+  <span class="nv">dat</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://dplyr.tidyverse.org/reference/select_all.html">rename_at</a></span><span class="o">(</span><span class="nv">dat</span>, 
+                   <span class="c"># rename the first up until the second to last</span>
+                   .vars <span class="o">=</span> <span class="nf"><a href="https://ggplot2.tidyverse.org/reference/vars.html">vars</a></span><span class="o">(</span><span class="m">1</span><span class="o">:</span><span class="nv">last_col_to_clean</span><span class="o">)</span>, 
+                   <span class="c"># clean using the make_clean_names</span>
+                   .funs <span class="o">=</span> <span class="nv">make_clean_names</span><span class="o">)</span>
+  <span class="kr"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="o">(</span><span class="nv">dat</span><span class="o">)</span>
+<span class="o">}</span></code></pre>
+</div>
+<p>Voilà! Our first non-default method has been created. This means that when an <code>sf</code> object is supplied to our generic function <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> it looks at the class of the object—<code>class(sf_object)</code>—notices it’s an <code>sf</code> object, then dispatches (uses) the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names.sf()</code></a> method instead of the default.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="o">(</span><span class="nv">test_sf</span><span class="o">)</span>
+<span class="c">#&gt; Simple feature collection with 1 feature and 20 fields</span>
+<span class="c">#&gt; Geometry type: POINT</span>
+<span class="c">#&gt; Dimension:     XY</span>
+<span class="c">#&gt; Bounding box:  xmin: -80 ymin: 40 xmax: -80 ymax: 40</span>
+<span class="c">#&gt; CRS:           NA</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tibble: 1 × 21</span></span>
+<span class="c">#&gt;   sp_ace repeated     a percent     x   x_2   d_9 repeated_2  cant hi_th…¹ leadi…²   x_3</span>
+<span class="c">#&gt;    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>      <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span>     78       18    99      28    26    38    43         73    51      33      23    27</span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 9 more variables: acao &lt;int&gt;, faroe &lt;int&gt;, a_b_c_d_e_f &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   test_camel_case &lt;int&gt;, leadingpunct &lt;int&gt;, average_number_of_days &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   jan2009sales &lt;int&gt;, jan_2009_sales &lt;int&gt;, Geometry &lt;POINT&gt;, and abbreviated</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   variable names ¹​hi_there, ²​leading_spaces</span></span>
+<span class="c">#&gt; <span style="color: #555555;"># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>Here we see that it worked exactly as we hoped. Every column but the last has been altered. This allows <code>sf</code> to name it’s geometry columns whatever it would like without disrupting it.</p>
+<p>Shortly after this addition was added to the package I became aware of another type of object that had problems using <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a>. This is the <code>tbl_graph</code> object from the <code>tidygraph</code> package from Thomas Lin Pederson.</p>
+</section>
+<section id="tbl_graph-method" class="level3">
+<h3 class="anchored" data-anchor-id="tbl_graph-method"><code>tbl_graph</code> method</h3>
+<p>In issue <a href="https://github.com/sfirke/janitor/issues/252">#252</a> <a href="https://github.com/gvdr"><span class="citation" data-cites="gvdr">@gvdr</span></a> noted that calling <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> on a <code>tbl_graph</code> doesn’t execute. Thankfully <a href="https://github.com/Tazinho"><span class="citation" data-cites="Tazinho">@Tazinho</span></a> noted that you could easily clean the column headers by using the <a href="https://dplyr.tidyverse.org/reference/select_all.html"><code>rename_all()</code></a> function from <code>dplyr</code>.</p>
+<p>Here the solution was even easier than above. As a reminder, in order to make the <code>tbl_graph</code> method, we need to specify the name of the generic followed by the object class.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nv">clean_names.tbl_graph</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="o">(</span><span class="nv">dat</span>, <span class="nv">case</span> <span class="o">=</span> <span class="s">"snake"</span><span class="o">)</span> <span class="o">{</span> 
+  <span class="c"># rename all columns</span>
+  <span class="nv">dat</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://dplyr.tidyverse.org/reference/select_all.html">rename_all</a></span><span class="o">(</span><span class="nv">dat</span>, <span class="nv">make_clean_names</span><span class="o">)</span>
+  <span class="kr"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="o">(</span><span class="nv">dat</span><span class="o">)</span>
+  <span class="o">}</span></code></pre>
+</div>
+<p>In order to test the function, we will need a graph to test it on. This example draws on the example used in the issue.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="kr"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="o">(</span><span class="nv"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="o">)</span>
+<span class="c"># create test graph to test clean_names</span>
+<span class="nv">test_graph</span> <span class="o">&lt;-</span> <span class="nf"><a href="https://tidygraph.data-imaginist.com/reference/sampling_games.html">play_erdos_renyi</a></span><span class="o">(</span><span class="m">0</span>, <span class="m">0.5</span><span class="o">)</span> <span class="o"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="c"># attach test_df as columns </span>
+  <span class="nf"><a href="https://tidygraph.data-imaginist.com/reference/bind_graphs.html">bind_nodes</a></span><span class="o">(</span><span class="nv">test_df</span><span class="o">)</span>
+
+<span class="nv">test_graph</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tbl_graph: 1 nodes and 0 edges</span></span>
+<span class="c"><span style="color: #555555;">#&gt; #</span></span>
+<span class="c"><span style="color: #555555;">#&gt; # A rooted tree</span></span>
+<span class="c"><span style="color: #555555;">#&gt; #</span></span>
+<span class="c"><span style="color: #555555;">#&gt; # Node Data: 1 × 20 (active)</span></span>
+<span class="c">#&gt;   sp ace… repeat… `a**^@`   `%`   `*`   `!` `d(!)9` REPEAT… can"'t… hi_\th…   lead…</span>
+<span class="c">#&gt;     <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span>      78      18      99    28    26    38      43      73      51      33      23</span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 9 more variables: `€` &lt;int&gt;, ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#</span></span>
+<span class="c"><span style="color: #555555;">#&gt; # Edge Data: 0 × 2</span></span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 2 variables: from &lt;int&gt;, to &lt;int&gt;</span></span></code></pre>
+</div>
+<p>Here we see that there is a graph with only 1 node and 0 edges (relations) with bad column headers (for more, visit the <a href="https://github.com/thomasp85/tidygraph/">GitHub page</a>). Now we can test this as well.</p>
+<div class="highlight">
+<pre class="chroma"><code class="language-r" data-lang="r"><span class="nf"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="o">(</span><span class="nv">test_graph</span><span class="o">)</span>
+<span class="c">#&gt; <span style="color: #555555;"># A tbl_graph: 1 nodes and 0 edges</span></span>
+<span class="c"><span style="color: #555555;">#&gt; #</span></span>
+<span class="c"><span style="color: #555555;">#&gt; # A rooted tree</span></span>
+<span class="c"><span style="color: #555555;">#&gt; #</span></span>
+<span class="c"><span style="color: #555555;">#&gt; # Node Data: 1 × 20 (active)</span></span>
+<span class="c">#&gt;   sp_ace repeat…     a percent     x   x_2   d_9 repeat…  cant hi_the… leadin…   x_3</span>
+<span class="c">#&gt;    <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">1</span>     78      18    99      28    26    38    43      73    51      33      23    27</span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 8 more variables: acao &lt;int&gt;, faroe &lt;int&gt;, a_b_c_d_e_f &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   test_camel_case &lt;int&gt;, leadingpunct &lt;int&gt;, average_number_of_days &lt;int&gt;,</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#   jan2009sales &lt;int&gt;, jan_2009_sales &lt;int&gt;</span></span>
+<span class="c">#&gt; <span style="color: #555555;">#</span></span>
+<span class="c"><span style="color: #555555;">#&gt; # Edge Data: 0 × 2</span></span>
+<span class="c">#&gt; <span style="color: #555555;"># … with 2 variables: from &lt;int&gt;, to &lt;int&gt;</span></span></code></pre>
+</div>
+<p>It worked as anticipated!</p>
+</section>
+<section id="review-tldr" class="level3">
+<h3 class="anchored" data-anchor-id="review-tldr">Review (tl;dr)</h3>
+<p>In the preceding sections we learned what generic functions and methods are. How to create a generic function, a default method, and methods for objects of different classes.</p>
+<ul>
+<li><strong>generic function</strong>: “A generic function is a function whose behavior depends on the classes or identities of the arguments supplied to it”</li>
+<li><strong>generic function method</strong>: “part of a generic function and which provides information about how that generic function should behave [for] certain classes”</li>
+</ul>
+<p>The process to create a function with a method is to:</p>
+<ol type="1">
+<li>Create a generic function with:
+<ul>
+<li><code>f_x &lt;- function() { UseMethod("f_x") }</code></li>
+</ul></li>
+<li>Define the default method with:
+<ul>
+<li><code>f_x.default &lt;- function() { do something }</code></li>
+</ul></li>
+<li>Define object class specific methods with:
+<ul>
+<li><code>f_x.class &lt;- function() { do something else}</code></li>
+</ul></li>
+</ol>
+<section id="notes" class="level4">
+<h4 class="anchored" data-anchor-id="notes">Notes</h4>
+<p>If you have not yet encountered the <code>janitor</code> package it will help you tremendously with various data cleaning processes. Clearly, <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> is my favorite function as it helps me enforce my preferred style (and the only). If you are not aware of <em>“proper”</em> R style, I suggest you read the <a href="http://adv-r.had.co.nz/Style.html">style guide</a> in <a href="http://adv-r.had.co.nz/">Advanced R</a>.</p>
+<p>While on the subject of <em>Advanced R</em>, I suggest you read the “Creating new methods and generics” <a href="http://adv-r.had.co.nz/OO-essentials.html">section</a> of it. I struggled comprehending it at first because I didn’t even know what a method was. However, if after reading this you feel like you want more, that’s the place to go.</p>
+<p>I’d like to thank <a href="https://github.com/sfirke"><span class="citation" data-cites="sfirke">@sfirke</span></a> for being exceptionally helpful in guiding my contributions to the <code>janitor</code> package.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
