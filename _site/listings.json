@@ -1,5 +1,18 @@
 [
   {
+    "listing": "/projects.html",
+    "items": [
+      "/projects/pkgs/sysreqs.html",
+      "/projects/pkgs/genius.html",
+      "/projects/pkgs/h3o.html",
+      "/projects/pkgs/sfdep.html",
+      "/projects/pkgs/spdep.html",
+      "/projects/writing/r4campaigns.html",
+      "/projects/writing/uitk.html",
+      "/projects/writing/mirr.html"
+    ]
+  },
+  {
     "listing": "/posts/index.html",
     "items": [
       "/posts/2023-11-24-dfusionrdr/index.html",
@@ -64,19 +77,6 @@
       "/posts/2018-10-27-read_multiple_csv.html",
       "/posts/2018-04-14-the-easyway-first.html",
       "/posts/2018-01-27-introducing-geniusr.html"
-    ]
-  },
-  {
-    "listing": "/projects.html",
-    "items": [
-      "/projects/pkgs/sysreqs.html",
-      "/projects/pkgs/genius.html",
-      "/projects/pkgs/h3o.html",
-      "/projects/pkgs/sfdep.html",
-      "/projects/pkgs/spdep.html",
-      "/projects/writing/r4campaigns.html",
-      "/projects/writing/uitk.html",
-      "/projects/writing/mirr.html"
     ]
   },
   {

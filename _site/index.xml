@@ -10,7 +10,919 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Fri, 10 Nov 2023 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 25 Nov 2023 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>arrow-extendr: extending R with Arrow and Rust</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2023-11-24-dfusionrdr/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="goal" class="level2">
+<h2 class="anchored" data-anchor-id="goal">Goal</h2>
+<p>For this tutorial we’re going to create a very simple Rust-based R package using <code>extendr</code> and <code>arrow-extendr</code>. The package will use the new and very powerful <code>DataFusion</code> crate to create a csv reader.</p>
+<p>We’ll learn a little bit about how <code>extendr</code>, Rust, and <code>arrow-extendr</code> works throughout the process.</p>
+</section>
+<section id="create-a-new-r-package" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="create-a-new-r-package">Create a new R package</h2>
+<p>We will use <code>{usethis}</code> to create a new R package called <code>dfusionrdr</code> (prnounced d-fusion reader).</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>The following section is the standard process for creating a new Rust based R package. It’s a pretty simple process once you get used to it!</p>
+</div></div><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">usethis<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_package</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dfusionrdr"</span>)</span></code></pre></div>
+<p>This will open a new R project with the scaffolding of an R package. From here, we need to make the R package into an extendr R package. To do so we use<code>rextendr::use_extendr()</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>use_extendr()</code> creates the directory <code>src/</code> a rust crate in <code>src/rust/</code> as wll as a few <code>Makevars</code> files in <code>src/</code> that are used to define how to compile the Rust library. Rust is a compiled language unlike R and Python which are interpreted. Meaning that instead of being able to run code line by line, we have to run it all at once.</p>
+<p>Compiled code can be turned into something called a static library. R can call functions and objects from these libraries using the <code>.Call()</code> function. You do not need to worry about this function. It’s just for context. :)</p>
+</div>
+</div>
+</div>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">rextendr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_extendr</span>()</span></code></pre></div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Before running this, make sure you have a compatible Rust installation by running <code>rextendr::rust_sitrep()</code>. If you do not, it will tell you need to do. If you’re on windows, you’re likely missing a target.</p>
+</div></div></section>
+<section id="building-your-package" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="building-your-package">Building your package</h2>
+<p>Once you’ve initialized extendr in your package, we can check to see if everything worked by running the <code>hello_world()</code> function that is included. To do so, we can build our package, then document it.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I use the RStudio shortcut to build my package which is <code>cmd + shift + b</code> or if on Windows it’s (probably) <code>ctrl + shift + b</code>. If neither of those work for you, run <code>devtools::build()</code>.</p>
+</div>
+</div>
+<p>To make R functions from Rust available into R, we run <code>rextendr::document()</code>.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><code>rextendr::document()</code> will also compile your R package for you if need be. Personally, I prefer to build it then document it. For some reason—and it may just be me—I find that compilation from the console can freeze? The cargo file lock is wonky and I probably mess it up a bunch.</p>
+</div></div><p>Run <code>devtools::load_all()</code> to bring the documented functions into scope and run the function!</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">devtools<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">load_all</span>()</span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">hello_world</span>()</span>
+<span id="cb3-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; [1] "Hello world!"</span></span></code></pre></div>
+<p>We’ve now ran Rust code directly from R. Pretty simple Rust, but Rust nonetheless.</p>
+</section>
+<section id="adding-rust-dependencies" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="adding-rust-dependencies">Adding Rust dependencies</h2>
+<p>Much like how we like to use R packages to make our lives easier, we can use Rust crates (libraries) to make do crafty things. To do so, we will open up our Rust crate in our preferred editor. I prefer VS Code.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>If you haven’t configured VS Code to use with Rust, there are like a million different ways to configure it. But at minimum, install the <code>rust-analyzer</code>, <code>BetterTOML</code>, and <code>CodeLLDB</code> extensions (I think CodeLLDB comes with the rust-analyzer though?)</p>
+</div></div><p>Open <code>src/rust/</code> in VS Code. Then we will add 3 additional dependencies. These are</p>
+<ul>
+<li><code>datafusion</code>
+<ul>
+<li>a powerful Arrow-based <code>DataFrame</code> library (like Polars but different)</li>
+</ul></li>
+<li><code>tokio</code>
+<ul>
+<li>which will give us the ability to run code lazily and asynchronously which is required by <code>datafusion</code></li>
+</ul></li>
+<li><code>arrow_extendr</code>
+<ul>
+<li>this is a crate I built that lets us send Arrow data from Rust to R and back</li>
+</ul></li>
+</ul>
+<p>In the terminal run the following</p>
+<pre class="shell"><code>cargo add datafusion
+cargo add tokio
+cargo add arrow_extendr --git https://github.com/JosiahParry/arrow-extendr</code></pre>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><code>arrow-extendr</code> is not published on crates.io yet so we need to pass the git flag to tell Rust where to find the library.</p>
+</div></div><div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is my preferred way of adding dependencies. If you open up <code>Cargo.toml</code> you’ll now see these libraries added under the <code>[Dependencies]</code> heading.</p>
+</div>
+</div>
+<section id="making-r-work-with-datafusion" class="level3">
+<h3 class="anchored" data-anchor-id="making-r-work-with-datafusion">Making R work with DataFusion</h3>
+<p><code>DataFusion</code> requires one additional C library that we need to use we need to add it to our <code>Makevars</code>. This is not something you typically have to do, but DataFusion requires it from us.</p>
+<p>Open <code>Makevars</code> and <code>Makevars.win</code>. One the line that starts with <code>PKG_LIBS</code> add <code>-llzma</code> to the end.</p>
+<p>Again, this is not a common thing you have to do. This is specifically for our use case.</p>
+</section>
+</section>
+<section id="building-our-csv-reader" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="building-our-csv-reader">Building our CSV Reader</h2>
+<p>Open <code>src/lib.rs</code>. This is where your R package is defined. For larger packages you may want to break it up into multiple smaller files. But our use case is relatively small (and frankly, not that simple, lol!).</p>
+<p>Let’s first start by removing our hello_world example from our code. Delete the hello world function (lines 3-8) and remove it from the module declaration under <code>mod dfusionrdr</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In order to make our Rust functions available to R, we need to include them in our <code>extendr_module!</code> macro call. Under <code>mod dfusionrdr</code> we can add additional functions there. Those incldued in there will be made available to R. If the have <code>/// @export</code> roxygen tag, then they will be exported in the R package as well.</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">extendr_module!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mod</span> dfusionrdr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+</div>
+<p>Let’s create the scaffolding for our first function <code>read_csv_dfusion()</code></p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb6-1"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">#[</span>extendr<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb6-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/// @export </span></span>
+<span id="cb6-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>)  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-4">  <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">rprintln!</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"We will read the csv file at: `{csv_path}`"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<ol type="1">
+<li>The <code>#[extendr]</code> macro indicates that this function will be made available to R.</li>
+<li>We add <code>/// @export</code> to indicate that our function will be exported to R. We can add roxygen2 documentation to our functions by prefixing with <code>///</code> which a documentation comment wheras <code>//</code> is a normal comment.</li>
+</ol>
+</div></div><p>This function prints a message indicating we will read a CSV at the path provided. It takes one argument <code>csv_path</code> which is an <code>&amp;str</code>. A <code>&amp;str</code> in Rust is a like a scalar character in R e.g.&nbsp;<code>"my-file.csv"</code></p>
+<p>Next we need to make sure the function is available to R in the module.</p>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb7-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">extendr_module!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb7-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mod</span> dfusionrdr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion;</span>
+<span id="cb7-4">}</span></code></pre></div>
+<p>From RStudio, let’s build, document, and load again.</p>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">devtools<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">build</span>()    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 1. </span></span>
+<span id="cb8-2">rextendr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">document</span>() <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 2. </span></span>
+<span id="cb8-3">devtools<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">load_all</span>() <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 3.</span></span></code></pre></div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<ol type="1">
+<li>Only run if you haven’t built with <code>cmd + shift + b</code></li>
+<li>This brings functions into the <code>NAMESPACE</code> and updates arguments and outputs</li>
+<li>Loads everything from your package into memory</li>
+</ol>
+</div></div><section id="import-dependencies" class="level3">
+<h3 class="anchored" data-anchor-id="import-dependencies">Import dependencies</h3>
+<p>In order to use DataFusion to read dependencies we need to import it. A lot of Rust libraries have something called a <code>prelude</code>. The <code>prelude</code> is a special module that contains common structs, traits, enums, etc that are very useful for the crate. Notice that the top of your <code>lib.rs</code> includes <code>use extendr_api::prelude::*;</code> this brings all of the Rust based R objects into scope such as <code>Robj</code>, <code>Doubles</code>, <code>Integers</code> etc.</p>
+<p>DataFusion also has a useful <code>prelude</code> that we want to bring into scope. We will add <code>use datafusion::prelude::*;</code> to the top of our file (much like adding <code>library()</code>). This brings important objects into scope for us. We will also need <code>tokio::runtime::Runtime</code> as well.</p>
+<p>The first 3 lines of your <code>lib.rs</code> should look like this:</p>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb9-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">extendr_api::prelude::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*;</span></span>
+<span id="cb9-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">datafusion::prelude::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*;</span></span>
+<span id="cb9-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tokio::runtime::</span>Runtime<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div>
+</section>
+<section id="context-and-runtime" class="level3">
+<h3 class="anchored" data-anchor-id="context-and-runtime">Context and Runtime</h3>
+<p><code>DataFusion</code> requires something called a <a href="https://docs.rs/datafusion/latest/datafusion/execution/context/struct.SessionContext.html"><code>SessionContext</code></a>. The session context</p>
+<blockquote class="blockquote">
+<p>“maintains the state of the connection between a user and an instance of the DataFusion engine.”</p>
+</blockquote>
+<p>We need to instantiate this struct inside of our function.</p>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb10-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb10-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb10-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>We now have a <code>ctx</code> object which we can use to read our csv. It has a method called <code>read_csv()</code>. It requires the path of a csv to read as well as a struct called <code>CsvReadOptions</code> which determines how it will be read into memory. We will pass <code>csv_path</code> to the first argument and create a default options struct with the <code>new()</code> method.</p>
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb11-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb11-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb11-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>read_csv(</span>
+<span id="cb11-4">        csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb11-5">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()</span>
+<span id="cb11-6">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb11-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>This will compile with a bunch of warnings about unused variables. But, more importantly, the <code>csv</code> variable we created is special. If you have your Rust analyzer configured you should see that it is of type <code>impl Future&lt;Output = Result &lt;..., ...&gt;&gt;</code>. That right there is problematic!</p>
+<p>When you see <code>impl Future&lt;...&gt;</code> that tells us it is an asynchronous result that needs to be polled and executed. <code>async</code> functions are lazy. They don’t do anything until you ask it to. The way to do this is by calling the <code>.await</code> attribute. We can then <code>unwrap()</code> the results and store it into another variable.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>It’s typically a pretty bad idea to use <code>.unwrap()</code> since the program will “panic!” if it does not get a result that it expected. But it’s a pretty handy way to get working code without error handling. I typically handle errors after I’ve gotten the bulk of what I want working.</p>
+</div>
+</div>
+</div>
+<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb12-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb12-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb12-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>read_csv(</span>
+<span id="cb12-4">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sdf"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb12-5">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()</span>
+<span id="cb12-6">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb12-7"></span>
+<span id="cb12-8">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv_result <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> csv<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">await</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb12-9"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>If we run <code>cargo check</code> in our terminal we will get the message:</p>
+<pre><code>error[E0728]: `await` is only allowed inside `async` functions and blocks</code></pre>
+<p>One way to get this to work would be to add <code>async fn</code> instead of <code>fn</code> but that isn’t supported by <code>extendr</code> since R is single threaded and doesn’t support <code>async</code>. So how do we get around this?</p>
+</section>
+<section id="async-with-extendr-and-tokio" class="level3">
+<h3 class="anchored" data-anchor-id="async-with-extendr-and-tokio"><code>async</code> with <code>extendr</code> and <code>tokio</code></h3>
+<p>In order to run async functions we need to execute it in a runtime. <a href="https://tokio.rs/"><code>tokio</code></a> provides this for us with the <code>Runtime</code> struct. It lets us run <code>impl Future&lt;...&gt;</code> in a non async function!</p>
+<p>We’ll modify our function definition to</p>
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb14-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb14-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> rt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Runtime::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb14-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb14-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>read_csv(</span>
+<span id="cb14-5">        csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb14-6">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()</span>
+<span id="cb14-7">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb14-8"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>With the <code>Runtime</code> object <code>rt</code> we can call the <code>block_on()</code> method which takes a <code>Future</code> and runs it until it has completed. This means that we don’t get to use async functionality—e.g.&nbsp;executing 2 or more things at the same time—but we still get to take the result!</p>
+<p>Let’s read the csv into an object called <code>df</code> using the <code>block_on()</code> method.</p>
+<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb15-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb15-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> rt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Runtime::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>read_csv(</span>
+<span id="cb15-5">        csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb15-6">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()</span>
+<span id="cb15-7">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-8"></span>
+<span id="cb15-9">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(csv)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-10"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>The analyzer shows that this is a <code>DataFrame</code>. Awesome! Now, how can we get this into memory?</p>
+</section>
+<section id="sending-dataframes-to-r-with-arrow-extendr" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="sending-dataframes-to-r-with-arrow-extendr">Sending <code>DataFrame</code>s to R with arrow-extendr</h3>
+<p>This is where arrow-extendr comes into play. arrow-extendr provides a couple of traits which allow us to convert a number of arrow-rs types into an <code>Robj</code>.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>See my post on <a href="https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/">Rust traits for R users</a></p>
+</div></div><div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An <code>Robj</code> is <code>extendr</code>’s catch all for any type of object that can be returned to R</p>
+</div>
+</div>
+<p>The <code>IntoArrowRobj</code> trait can convert a <code>Vec&lt;RecordBatch&gt;</code> into an <code>Robj</code>. The <a href="https://arrow.apache.org/docs/r/reference/RecordBatch-class.html">R documentation</a> for a <code>RecordBatch</code> says</p>
+<blockquote class="blockquote">
+<p>“A record batch is a collection of equal-length arrays matching a particular Schema. It is a table-like data structure that is semantically a sequence of fields, each a contiguous Arrow Array.”</p>
+</blockquote>
+<p>Based on that, a <code>Vec&lt;RecordBatch&gt;</code> is a collection of chunks of a table-like data structures.</p>
+<p><code>DataFrame</code>s have a method <code>.collect()</code> which creates a <code>Vec&lt;RecordBatch&gt;</code>.</p>
+<p>Let’s modify our function to turn the DataFrame into a <code>Vec&lt;RecordBatch&gt;</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>All things with DataFusion are done async so we need to wrap them in <code>rt.block_on()</code>.</p>
+</div>
+</div>
+<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb16-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb16-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> rt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Runtime::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb16-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb16-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>read_csv(</span>
+<span id="cb16-5">        csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb16-6">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()</span>
+<span id="cb16-7">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb16-8"></span>
+<span id="cb16-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// create a dataframe from the csv</span></span>
+<span id="cb16-10">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(csv)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb16-11"></span>
+<span id="cb16-12">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// collect the results into record batches</span></span>
+<span id="cb16-13">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(df<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>collect())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb16-14"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>With this, we can send the results to R with the <code>into_arrow_robj()</code> method! First we need to add <code>use arrow_extendr::to::IntoArrowRobj;</code> to the top of our script to bring the trait into scope.</p>
+<p>Then in our function we need to specify the return type as <code>Robj</code> (see the first line of the definition <code>-&gt; Robj</code>) and then turn <code>res</code> into an <code>Robj</code></p>
+<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb17-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> Robj <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb17-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> rt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Runtime::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>read_csv(</span>
+<span id="cb17-5">        csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb17-6">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()</span>
+<span id="cb17-7">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-8"></span>
+<span id="cb17-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// create a dataframe from the csv</span></span>
+<span id="cb17-10">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(csv)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-11"></span>
+<span id="cb17-12">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// collect the results into record batches</span></span>
+<span id="cb17-13">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(df<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>collect())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-14"></span>
+<span id="cb17-15">    res<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>into_arrow_robj()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()</span>
+<span id="cb17-16"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</section>
+<section id="handling-arrow-rs-from-r" class="level3">
+<h3 class="anchored" data-anchor-id="handling-arrow-rs-from-r">Handling arrow-rs from R</h3>
+<p>Let’s rebuild and document our function again.</p>
+<p>I’ve added a csv of <a href="https://allisonhorst.github.io/palmerpenguins/"><code>{palmerpenguins}</code></a> to the <code>inst/</code> folder of our package for testing. Let’ try reading this in.</p>
+<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">res <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv_dfusion</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inst/penguins.csv"</span>)</span>
+<span id="cb18-2">res</span>
+<span id="cb18-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; &lt;nanoarrow_array_stream struct&lt;rowid: int64, species: string, island: string, bill_length_mm: string, bill_depth_mm: string, flipper_length_mm: string, body_mass_g: string, sex: string, year: int64&gt;&gt;</span></span>
+<span id="cb18-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;  $ get_schema:function ()  </span></span>
+<span id="cb18-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;  $ get_next  :function (schema = x$get_schema(), validate = TRUE)  </span></span>
+<span id="cb18-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;  $ release   :function ()  </span></span></code></pre></div>
+<p>Now, this doesn’t look very familiar to most R users. This is an object from the <a href="https://arrow.apache.org/nanoarrow/0.3.0/r/index.html"><code>{nanoarrow}</code></a> R package called <code>"nanoarrow_array_stream"</code>. This is how data is received from Rust in R. We can process batches from this “stream” using the method <code>get_next()</code>. But there’s a handy <code>as.data.frame()</code> method for it.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is a good time to note that you should add <code>nanoarrow</code> as a dependency of your package explicitly with <code>usethis::use_package("nanoarrow")</code>.</p>
+</div>
+</div>
+<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1">res <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv_dfusion</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inst/penguins.csv"</span>)</span>
+<span id="cb19-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.data.frame</span>(res) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb19-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>()</span>
+<span id="cb19-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;   rowid species    island bill_length_mm bill_depth_mm flipper_length_mm</span></span>
+<span id="cb19-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 1     1  Adelie Torgersen           39.1          18.7               181</span></span>
+<span id="cb19-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 2     2  Adelie Torgersen           39.5          17.4               186</span></span>
+<span id="cb19-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 3     3  Adelie Torgersen           40.3            18               195</span></span>
+<span id="cb19-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 4     4  Adelie Torgersen             NA            NA                NA</span></span>
+<span id="cb19-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 5     5  Adelie Torgersen           36.7          19.3               193</span></span>
+<span id="cb19-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 6     6  Adelie Torgersen           39.3          20.6               190</span></span>
+<span id="cb19-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;   body_mass_g    sex year</span></span>
+<span id="cb19-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 1        3750   male 2007</span></span>
+<span id="cb19-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 2        3800 female 2007</span></span>
+<span id="cb19-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 3        3250 female 2007</span></span>
+<span id="cb19-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 4          NA     NA 2007</span></span>
+<span id="cb19-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 5        3450 female 2007</span></span>
+<span id="cb19-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 6        3650   male 2007</span></span></code></pre></div>
+<p>Boom! We’ve written ourselves a reader! Let’s do a simple bench mark comparing it to <code>readr</code>.</p>
+<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dfusionrdr)</span>
+<span id="cb20-2">bench<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mark</span>(</span>
+<span id="cb20-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">datafusion =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.data.frame</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv_dfusion</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inst/penguins.csv"</span>)),</span>
+<span id="cb20-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">readr =</span> readr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inst/penguins.csv"</span>),</span>
+<span id="cb20-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">check =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb20-6">)</span>
+<span id="cb20-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; # A tibble: 2 × 6</span></span>
+<span id="cb20-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;   expression      min   median `itr/sec` mem_alloc `gc/sec`</span></span>
+<span id="cb20-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;</span></span>
+<span id="cb20-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 1 datafusion  922.3µs   1.04ms     915.     1.07MB      0  </span></span>
+<span id="cb20-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 2 readr        14.6ms  15.31ms      65.6    13.2MB     80.8</span></span></code></pre></div>
+<p>Insanely fast!</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>rust</category>
+  <category>pkg-dev</category>
+  <category>extendr</category>
+  <category>arrow</category>
+  <guid>https://josiahparry.com/posts/2023-11-24-dfusionrdr/</guid>
+  <pubDate>Sat, 25 Nov 2023 05:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Enums in R: towards type safe R</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -6046,301 +6958,7 @@ font-style: inherit;">summarise.sdf</span></span></code></pre></div>
   <title></title>
   <dc:creator>Josiah Parry</dc:creator>
   <link>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</link>
-  <description><![CDATA[ <section id="jhu-talk-slides" class="level1"><h1>JHU talk (slides)</h1>
-<div class="notes">
-<p>Hey everyone, my name is Josiah. Thank you all for having me. And thank you René for inviting me here to chat with you all. It excites me to see so many people being exposed to GIS and spatial analysis. I’m going to use my time to tell you all about my experience from undergraduate, graduate school, and where I am today. Then I’ll talk briefly about the spatial analysis</p>
-</div>
-<section id="objectives" class="level2"><h2 class="anchored" data-anchor-id="objectives">objectives</h2>
-<ul>
-<li>tell you my story</li>
-<li>maybe inspire you to program</li>
-<li>a brief lesson on spatial analysis</li>
-<li>anything you want this is your time</li>
-</ul>
-<div class="notes">
-<p>I hope that you take away from this that your degree and the classes that you take do not dictate what field you have to go in. That your personal interests and studies are just as important, and if not sometimes more important, than what you learn in the classroom. Meaning, that while college classes are a wonderful introduction to subjects and fields nothing can compare with impassioned self-directed studying.</p>
-<p>I want you to want to learn to program. I don’t want you to begrudgingly learn to program, I want you to want to program. Being even conversational in a programming langauge can pay compounding dividends.</p>
-<p>i also want to discuss one brief but very important topic in spatial analysis.</p>
-<p>and really this time is yours so you can tell me what you want from me and i can do my best to provide</p>
-</div>
-</section></section><section id="a-bit-about-myself" class="level1 page-columns page-full"><h1>A bit about myself</h1>
-<p>or, why should you actually listen to me</p>
-<div class="notes">
-<p>i typically avoid biographical slides in my talks but as I have free reign today. I want to tell you a bit about myself. My goal in doing so is to illustrate that it doesn’t really matter what your background is, spatial analysis is important and applicable to literally everyone and every domain</p>
-</div>
-<section id="its-a-me" class="level2"><h2 class="anchored" data-anchor-id="its-a-me">It’s a me</h2>
-<ul>
-<li>MS in Urban Informatics, Northeastern</li>
-<li>Sr.&nbsp;Product Engineer @ Esri
-<ul>
-<li>Spatial Statistics</li>
-</ul>
-</li>
-<li>Previously @ RStudio (now Posit)</li>
-<li>Programming in R since 2014</li>
-</ul>
-<div class="notes">
-<p>So who am I and how am I qualified to tell you anything? I can tell you who I am but I don’t know if I’m qualified for anything!</p>
-<p>I graduated with a degree in Urban informatics from NEU in April 2020. It was a really bad time but yet also very good time to finish a degree</p>
-<p>I work at a company called Esri, we make the software known as ArcGIS. I work as a Sr.&nbsp;Product Engineer on the spatial statistics team. That means that I and a group of about 10 other people think deeply about what tools the “-ists” need to have at their disposal and how to make them intuitive, interpretable, and easy to use. By “ists” I mean the analysts, epidemiologists, biologists, criminologists, and what not.</p>
-<p>Before that I worked at a company formerly called RStudio which is where I met René. I worked with government customers ensuring they could use RStudio professional products and bridge open source tools and enterprise products</p>
-</div>
-</section><section id="humble-beginnings" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="humble-beginnings">humble beginnings</h2>
-<div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p><img src="https://static.wixstatic.com/media/4999e9_37b24b7ea1824977926f1937eac91725~mv2.png/v1/fit/w_800%2Ch_587%2Cal_c/file.png" class="img-fluid figure-img"></p>
-<figcaption class="margin-caption">Plymouth State</figcaption></figure>
-</div>
-<div class="notes">
-<p>Unlike many of you here I was not, and still am not, very academically inclined. I went to a small school in Northern New Hampshire called Plymouth State University (PSU).</p>
-</div>
-</section></section><section id="psu-is-nationally-recognized" class="level1"><h1>PSU is nationally recognized</h1>
-<p>but not in the way that most people want to be</p>
-<div class="notes">
-<p>While unknown to many, Plymouth State is actually a nationally recognized school.</p>
-</div>
-</section><section id="section" class="level1"><h1></h1>
-<blockquote class="blockquote">
-<p>“…this New Hampshire institution of higher learning is back. Four things students dig are skiing, skiing, studying and [partying] on the lake.</p>
-</blockquote>
-<div class="caption">
-<p>Playboy, 2010</p>
-</div>
-<div class="notes">
-<p>recognized by playboy that is… this quote from playboy 2010 sort of gets to the heart of where I went to school. PSU wasn’t a really academic place. And people who go there aren’t typically ones who find themselves going to graduate school</p>
-<p>So the fact I work in <em>spatial stats</em> of all things is wild.</p>
-</div>
-</section><section id="finding-geography" class="level1"><h1>finding geography</h1>
-<p>from <em>anthropology</em> &amp; <em>sociology</em> to GIS</p>
-<div class="notes">
-<p>In college I actually initially studied anthropology and sociology. My interest had been in culture and social behavior. I loved getting in the weeds with social theories like symbolic interactionism, functionalism, conflict theory and all that. I eventually took an introduction to geography which is where I had first heard Tobler’s first law of geography</p>
-</div>
-</section><section id="tobler-changed-my-perspective" class="level1"><h1>Tobler changed my perspective</h1>
-</section><section id="section-1" class="level1"><h1></h1>
-<blockquote class="blockquote">
-<p>“everything is related to everything else, but near things are more related than distant things.”</p>
-</blockquote>
-<div class="caption">
-<p>Waldo Tobler</p>
-</div>
-</section><section id="humanity-is-inherently-spatial" class="level1"><h1>Humanity is inherently spatial</h1>
-<p>everything we do happens <em>somewhere</em></p>
-<div class="notes">
-<p>I began to start thinking about social phenomenon from a larger perspective. Where space actually matters. I began thinking about where things happen. Social contexts should not only be framed around income, education, and parenting, but should include geographic measures such as neighborhood and other measures of proximity.</p>
-</div>
-</section><section id="section-2" class="level1 page-columns page-full"><h1></h1>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2015-geography-presentation.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>circa 2014</p>
-</div></div></section><section id="i-become-a-gis-pro" class="level1 page-columns page-full"><h1>I become a GIS <em>pro</em>
-</h1>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/gini-coef.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>circa 2015</p>
-</div></div><section id="stats-interest-became-an-r-interest" class="level2"><h2 class="anchored" data-anchor-id="stats-interest-became-an-r-interest">stats interest became an R interest</h2>
-<ul>
-<li>wanted to do more advanced stats</li>
-<li>learned 1:1 with my professor</li>
-<li>finding data meant cleaning data</li>
-<li>explored new packages and exposed to new domains
-<ul>
-<li>natural language</li>
-<li>software engineering</li>
-<li>etc</li>
-</ul>
-</li>
-</ul></section><section id="the-next-few-years" class="level2"><h2 class="anchored" data-anchor-id="the-next-few-years">The next few years</h2>
-<ul>
-<li>spend all my free time learning R</li>
-<li>I intern at DataCamp making R courses</li>
-<li>Research using interactive GIS</li>
-<li>Decide grad school was the right thing for me
-<ul>
-<li>promptly rejected from all but one school</li>
-</ul>
-</li>
-</ul></section><section id="northeastern" class="level2"><h2 class="anchored" data-anchor-id="northeastern">Northeastern</h2>
-<p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCIPAiAFpP11NpTvKw1DKXJQA2XPuuBCmuIh85qfCDE3qTxxZvqicGZs1L6TtW9zrhKgE&amp;usqp=CAU.png" class="img-fluid"></p>
-<div class="notes">
-<p>at northeastern is when I really dove into spatial analysis my understanding and utility of it really began when i was a research assistant at the boston area research initiative</p>
-<p>we looked at indicators of social disorder using administrative data.</p>
-<p>a lot of what we looked at were neighbor hood differences but very simple differences using fixed effects in regressions</p>
-</div>
-</section><section id="advanced-spatial-analysis" class="level2"><h2 class="anchored" data-anchor-id="advanced-spatial-analysis">Advanced Spatial Analysis</h2>
-<p><img src="https://geoffboeing.com/wp-content/uploads/2018/07/city-street-orientations-world-osmnx-930x1024.png" class="img-fluid"></p>
-</section><section id="advanced-spatial-analysis-1" class="level2"><h2 class="anchored" data-anchor-id="advanced-spatial-analysis-1">Advanced Spatial Analysis</h2>
-<ul>
-<li>one of my last courses in grad school</li>
-<li>learned about spatial autocorrelation</li>
-<li>spatial regression</li>
-<li>basics of networks analysis</li>
-</ul>
-<div class="notes">
-<p>i learned just enough to know where to look. Everything I learned in my graduate program was just enough to know where to look for more if i wanted to</p>
-</div>
-</section><section id="a-pandemic-rages" class="level2"><h2 class="anchored" data-anchor-id="a-pandemic-rages">a pandemic rages</h2>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/sfdep.png" class="img-fluid"></p>
-</section></section><section id="going-beyond-maps" class="level1"><h1>Going beyond maps</h1>
-<p>neighborhoods, autocorrelation, and tooling</p>
-<div class="notes">
-<p>in graduate school is when i was exposed to spatial analysis outside of the context of map-making. though my real learning didn’t happen until a year or so after leaving graduate school</p>
-<p>if there is one idea in spatial analysis i want to leave you with it’s the idea of the neighborhood and how we actually measure it.</p>
-<p>So, at this point if anyone has any questions i’m happy to answer them otherwise. I’m going to discuss the very fundamental concept neighborhoods, neighbors and the spatial lag</p>
-</div>
-</section><section id="neighborhood" class="level1"><h1>Neighborhood</h1>
-<p>fundamental concept of analysis ## In urban studies</p>
-<ul>
-<li>the neighborhood fundamental to sociology
-<ul>
-<li>Chicago school (Park &amp; Burgess)</li>
-</ul>
-</li>
-<li>used to understand differences inside of the city</li>
-<li>too much nuance</li>
-</ul>
-<section id="in-spatial-analysis" class="level2"><h2 class="anchored" data-anchor-id="in-spatial-analysis">In spatial analysis</h2>
-<ul>
-<li>are phenomena spatially dependent?
-<ul>
-<li>do similar values occur near each other</li>
-</ul>
-</li>
-<li>start focal with a location <img src="https://latex.codecogs.com/png.latex?i">
-</li>
-<li>it’s neighbors are <img src="https://latex.codecogs.com/png.latex?j">
-</li>
-<li>
-<img src="https://latex.codecogs.com/png.latex?X_i"> is compared to <img src="https://latex.codecogs.com/png.latex?X_j">
-<ul>
-<li>
-<em>not</em> to <img src="https://latex.codecogs.com/png.latex?X">
-</li>
-</ul>
-</li>
-</ul></section></section><section id="how-do-we-define-the-neighbors" class="level1"><h1>how do we define the neighbors?</h1>
-<p>it depends….</p>
-<div class="notes">
-<p>it really depends on if what you’re studying are points or polygons and i’m most comfortable with polygons for spatial analysis it also makes the ideas much simpler to follow</p>
-</div>
-<section id="contiguities" class="level2"><h2 class="anchored" data-anchor-id="contiguities">contiguities</h2>
-<p>how do you choose what the neighbors are for a location?</p>
-<div class="cell">
-
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-2-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="rook-contiguity" class="level2"><h2 class="anchored" data-anchor-id="rook-contiguity">Rook Contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-3-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="rook-contiguity-1" class="level2"><h2 class="anchored" data-anchor-id="rook-contiguity-1">Rook Contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-4-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="queen-contiguity" class="level2"><h2 class="anchored" data-anchor-id="queen-contiguity">Queen contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-5-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="queen-contiguity-1" class="level2"><h2 class="anchored" data-anchor-id="queen-contiguity-1">Queen contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-6-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="neighbors-in-practice" class="level2"><h2 class="anchored" data-anchor-id="neighbors-in-practice">Neighbors in practice</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-7-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section></section><section id="evaluating-the-neighborhood" class="level1"><h1>Evaluating the neighborhood</h1>
-<p>how does <img src="https://latex.codecogs.com/png.latex?i"> compare to <img src="https://latex.codecogs.com/png.latex?j"></p>
-</section><section id="the-spatial-lag" class="level1"><h1>the <em>spatial lag</em>
-</h1>
-<p>the neighborhood value</p>
-<section id="understanding-the-lag" class="level2"><h2 class="anchored" data-anchor-id="understanding-the-lag">Understanding the lag</h2>
-<ul>
-<li>“expected value” of the neighborhood</li>
-<li>it is the average value of the neighborhood (excluding <img src="https://latex.codecogs.com/png.latex?i">)</li>
-<li>summarizes values of <img src="https://latex.codecogs.com/png.latex?x"> for an observation <img src="https://latex.codecogs.com/png.latex?i">’s neighborhood</li>
-</ul></section><section id="observed-values" class="level2"><h2 class="anchored" data-anchor-id="observed-values">Observed values</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-8-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="neighborhood-values-at-i" class="level2"><h2 class="anchored" data-anchor-id="neighborhood-values-at-i">Neighborhood values at <img src="https://latex.codecogs.com/png.latex?i">
-</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-9-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-<div class="caption">
-<p>the lag is a neighborhood smoother</p>
-</div>
-</section><section id="observed-vs-neighborhood" class="level2"><h2 class="anchored" data-anchor-id="observed-vs-neighborhood">Observed vs neighborhood</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-10-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-<div class="caption">
-<p>where locations deviate from their neighbors</p>
-</div>
-</section><section id="spatial-lag-is-the-basis-of" class="level2"><h2 class="anchored" data-anchor-id="spatial-lag-is-the-basis-of">Spatial Lag is the basis of:</h2>
-<ul>
-<li>spatial clustering (autocorrelation)</li>
-<li>hot spot detection (clustering)</li>
-<li>spatial regression
-<ul>
-<li>(inference / neighborhood spill over effects)</li>
-</ul>
-</li>
-<li>spatio-temporal hot spot analysis</li>
-</ul></section><section id="example" class="level2"><h2 class="anchored" data-anchor-id="example">Example</h2>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/guns-cluster.png" class="img-fluid"></p>
-</section><section id="example-1" class="level2"><h2 class="anchored" data-anchor-id="example-1">Example</h2>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/ehsa.png" class="img-fluid"></p>
-</section><section id="tools-in-the-r-ecosystem" class="level2"><h2 class="anchored" data-anchor-id="tools-in-the-r-ecosystem">Tools in the R ecosystem</h2>
-<ul>
-<li>
-<code>sf</code> - spatial vector data</li>
-<li>
-<code>spdep</code> - spatial statistics</li>
-<li>
-<code>sfdep</code> - a tidy interface to spdep</li>
-<li>
-<code>rgeoda</code> - R interface to GeoDa</li>
-</ul></section><section id="tools-in-python-ecosystem" class="level2"><h2 class="anchored" data-anchor-id="tools-in-python-ecosystem">Tools in Python ecosystem</h2>
-<ul>
-<li>
-<code>geopandas</code> - <code>sf</code> equivalent</li>
-<li>
-<code>pysal</code> a very robust set of spatial statistics toools</li>
-<li>
-<code>shapely</code> for geometries</li>
-</ul></section><section id="what-do-you-want-to-do-next" class="level2"><h2 class="anchored" data-anchor-id="what-do-you-want-to-do-next">What do you want to do next?</h2>
-<ul>
-<li>i can answer questions</li>
-<li>i can demo code</li>
-<li>i can talk through the spatial lag in more detail</li>
-<li>we can discuss hot spot analysis</li>
-<li>anything you want :)</li>
-</ul>
-
-
-</section></section> ]]></description>
+  <description><![CDATA[ undefined ]]></description>
   <guid>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</guid>
   <pubDate>Fri, 10 Feb 2023 05:00:00 GMT</pubDate>
 </item>
@@ -9258,28 +9876,6 @@ print("I feel powerful.")</code></pre>
   <category>talk</category>
   <guid>https://josiahparry.com/posts/2022-05-11-exploratory-spatial-data-analysis-in-r.html</guid>
   <pubDate>Thu, 28 Apr 2022 04:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>My new IDE theme: xxEmoCandyLandxx</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2022-04-06-my-new-ide-theme-xxemocandylandxx.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>In general, I’m not a fan of “Dark Themes.” I find that they have too much contrast and hurt my eyes a bit. However, at night time when the lights are dim, my good ole trusty XCode theme becomes too much and a dark-er theme would be helpful.</p>
-<p>I’ve found that “Material” is nice, but again a bit too dark. I previously had a theme “Keeping Warm” (inspired by the <a href="https://open.spotify.com/track/6kh3x7kpGCUVMBlgz3o17a?si=bf68d782ca46483a">song of the same name</a>) that was a dim maroon based theme. When I returned my machine to RStudio I forgot to save the theme for myself! So for the past four months I’ve been needing something to suit my needs.</p>
-<p>Over the past two weeks or so I’ve worked on developing my own theme. I asked my partner what to call it and she quickly came up with “Emo Candy Land”—genius. Naturally, I renamed it <code>xxEmoCandyLandxx</code>. It was made with a fork of <a href="https://github.com/gadenbuie/rsthemes"><code>{rsthemes}</code></a>. I felt very strongly that I’d like my functions to be both italicized and bolded which are not supported today. Though it would be a rather straightforward change I’d think.</p>
-<p><img src="https://josiahparry.com/posts/emo-candy-land.png" style="width:100.0%"></p>
-<p>You can find the theme in a Github Gist <a href="https://gist.github.com/JosiahParry/082f417c01a87c3a35674bc6fb830f2d#file-emo-candy-land-rstheme">here</a>.</p>
-<p>Follow <a href="https://www.rstudio.com/blog/rstudio-ide-custom-theme-support/">these instructions</a> to install the new theme.</p>
-
-
-
- ]]></description>
-  <guid>https://josiahparry.com/posts/2022-04-06-my-new-ide-theme-xxemocandylandxx.html</guid>
-  <pubDate>Wed, 06 Apr 2022 04:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

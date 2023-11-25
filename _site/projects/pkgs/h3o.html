@@ -256,13 +256,13 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <span><span class="va">hexs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;H3[25]&gt;
- [1] 8428965ffffffff 84279b3ffffffff 8426b07ffffffff 8426a0bffffffff
- [5] 8426861ffffffff 8427999ffffffff 8426b07ffffffff 8426b45ffffffff
- [9] 8426a45ffffffff 842896dffffffff 84279a7ffffffff 8426b05ffffffff
-[13] 8428963ffffffff 8426a37ffffffff 8428965ffffffff 8426b5dffffffff
-[17] 84278bdffffffff 8426b37ffffffff 8426aedffffffff 8428963ffffffff
-[21] 842686bffffffff 8426b4bffffffff 8426a21ffffffff 8426b01ffffffff
-[25] 8426b19ffffffff</code></pre>
+ [1] 8428967ffffffff 8426b39ffffffff 8426a63ffffffff 8426b07ffffffff
+ [5] 8426a39ffffffff 8426b63ffffffff 8426b0bffffffff 8426b41ffffffff
+ [9] 842799bffffffff 8426b37ffffffff 8426b69ffffffff 842686bffffffff
+[13] 8426a23ffffffff 8426b27ffffffff 8426a33ffffffff 8426b37ffffffff
+[17] 8427995ffffffff 8426ae1ffffffff 8426b41ffffffff 8426b19ffffffff
+[21] 8427987ffffffff 8426a3dffffffff 8426869ffffffff 8426a4bffffffff
+[25] 84278b5ffffffff</code></pre>
 </div>
 </div>
 <p>The <code>H3</code> vectors can be easily visualized by converting to sf objects. The <code><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc()</a></code> method is defined for <code>H3</code> vectors. While you may be familair with <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf()</a></code> the <code>_sfc</code> variant is used for creating <em>columns</em> and should be used on a vector not a dataframe. This way you can use it in a dplyr pipe.</p>
@@ -273,24 +273,24 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <pre><code>Geometry set for 25 features 
 Geometry type: POLYGON
 Dimension:     XY
-Bounding box:  xmin: -111.3692 ymin: 40.92904 xmax: -103.9451 ymax: 45.39309
+Bounding box:  xmin: -111.3223 ymin: 40.98183 xmax: -104.0128 ymax: 45.25314
 Geodetic CRS:  WGS 84
 First 5 geometries:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-110.0544 44.27004, -109.7884 44.4130...</code></pre>
+<pre><code>POLYGON ((-110.4193 44.57636, -110.1531 44.7197...</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-107.5966 43.81128, -107.328 43.94941...</code></pre>
+<pre><code>POLYGON ((-109.2683 41.89614, -109.0075 42.0412...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>POLYGON ((-106.3176 43.2172, -106.0491 43.35331...</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>POLYGON ((-109.6219 42.21408, -109.3608 42.3595...</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-104.8236 42.97064, -104.5542 43.1035...</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>POLYGON ((-108.2209 40.92904, -107.9611 41.0732...</code></pre>
+<pre><code>POLYGON ((-105.2868 42.23801, -105.0199 42.3733...</code></pre>
 </div>
 </div>
 <p>This can be plotted.</p>
@@ -313,21 +313,21 @@ First 5 geometries:</code></pre>
 <pre><code>Simple feature collection with 25 features and 1 field
 Geometry type: POINT
 Dimension:     XY
-Bounding box:  xmin: -111.0513 ymin: 41.06984 xmax: -104.1015 ymax: 44.9823
+Bounding box:  xmin: -111.0541 ymin: 41.15866 xmax: -104.2527 ymax: 44.95915
 Geodetic CRS:  WGS 84
 # A tibble: 25 × 2
                geometry              h3
  *          &lt;POINT [°]&gt;            &lt;H3&gt;
- 1 (-110.1877 44.44031) 8428965ffffffff
- 2 (-107.6884 43.92492) 84279b3ffffffff
- 3 (-109.9335 42.48766) 8426b07ffffffff
- 4  (-104.607 43.28044) 8426a0bffffffff
- 5 (-108.3843 41.06984) 8426861ffffffff
- 6  (-106.3236 44.9823) 8427999ffffffff
- 7 (-109.4325 42.36607) 8426b07ffffffff
- 8 (-109.7946 43.75016) 8426b45ffffffff
- 9   (-105.5976 44.114) 8426a45ffffffff
-10  (-110.2683 44.2698) 842896dffffffff
+ 1 (-110.5547 44.90545) 8428967ffffffff
+ 2 (-109.1383 42.13601) 8426b39ffffffff
+ 3 (-106.4981 43.56823) 8426a63ffffffff
+ 4 (-109.6964 42.39072) 8426b07ffffffff
+ 5   (-105.276 42.5727) 8426a39ffffffff
+ 6 (-110.1881 43.04803) 8426b63ffffffff
+ 7 (-108.7864 42.90369) 8426b0bffffffff
+ 8 (-109.6165 43.81228) 8426b41ffffffff
+ 9 (-105.9806 44.87154) 842799bffffffff
+10  (-109.811 41.48857) 8426b37ffffffff
 # ℹ 15 more rows</code></pre>
 </div>
 </div>
