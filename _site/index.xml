@@ -20,6 +20,7 @@
 
 
 
+<p>Want to skip to the end with the source code? <em>Click here</em>.</p>
 <section id="goal" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="goal">Goal</h2>
 <p>For this tutorial we’re going to create a very simple Rust-based R package using <a href="https://extendr.github.io/"><code>extendr</code></a> and <a href="https://josiahparry.github.io/arrow-extendr/arrow_extendr/index.html"><code>arrow-extendr</code></a>. The package will use the new and very powerful <a href="https://arrow.apache.org/datafusion/"><strong><code>DataFusion</code></strong></a> crate to create a csv reader.</p>
@@ -916,8 +917,8 @@ font-style: inherit;">#&gt; 2 readr        14.6ms  15.31ms      65.6    13.2MB  
 <hr>
 </section>
 </section>
-<section id="addendum" class="level2">
-<h2 class="anchored" data-anchor-id="addendum">Addendum</h2>
+<section id="source-code" class="level2">
+<h2 class="anchored" data-anchor-id="source-code">Addendum</h2>
 <p>The source code for the entire package is below. It also includes a function <code>read_sql_csv_dfusion()</code> which takes a SQL statement and reads it into memory if you want to explore that. For example:</p>
 <div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">query <span class="ot" style="color: #003B4F;
 background-color: null;
@@ -946,8 +947,8 @@ font-style: inherit;">#&gt; 2 152    Adelie</span></span>
 <span id="cb21-9"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#&gt; 3 124    Gentoo</span></span></code></pre></div>
-<section id="source-code" class="level3">
-<h3 class="anchored" data-anchor-id="source-code">Source code:</h3>
+<section id="source-code-1" class="level3">
+<h3 class="anchored" data-anchor-id="source-code-1">Source code:</h3>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>lib.rs</strong></pre>

@@ -5,6 +5,8 @@ date: 2023-11-25
 categories: ["rust", "pkg-dev", "extendr", "arrow"]
 ---
 
+Want to skip to the end with the source code? [_Click here_](#source-code).
+
 ## Goal
 
 For this tutorial we're going to create a very simple Rust-based R package using [`extendr`](https://extendr.github.io/) and [`arrow-extendr`](https://josiahparry.github.io/arrow-extendr/arrow_extendr/index.html). The package will use the new and very powerful [**`DataFusion`**](https://arrow.apache.org/datafusion/) crate to create a csv reader.
@@ -401,7 +403,7 @@ Insanely fast!
 
 ------------
 
-## Addendum 
+## Addendum {#source-code}
 
 The source code for the entire package is below. It also includes a function `read_sql_csv_dfusion()` which takes a SQL statement and reads it into memory if you want to explore that. For example:
 
