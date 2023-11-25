@@ -1,6 +1,6 @@
 ---
-title: "arrow-extendr: extending R with Arrow and Rust"
-subtitle: "Building a DataFusion CSV reader"
+title: "Building a DataFusion CSV reader with arrow-extendr"
+subtitle: "extending R with Arrow and Rust"
 date: 2023-11-25
 categories: ["rust", "pkg-dev", "extendr", "arrow"]
 ---

@@ -1,99 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://josiahparry.com/index.html</loc>
+    <lastmod>2023-11-10T21:40:34.958Z</lastmod>
+  </url>
+  <url>
     <loc>https://josiahparry.com/projects.html</loc>
     <lastmod>2023-11-10T21:40:35.050Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/projects/writing/mirr.html</loc>
+    <loc>https://josiahparry.com/about.html</loc>
+    <lastmod>2023-11-10T21:47:26.483Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/writing/uitk.html</loc>
+    <lastmod>2023-11-10T21:40:35.051Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/sysreqs.html</loc>
     <lastmod>2023-11-10T21:40:35.050Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/projects/pkgs/genius.html</loc>
-    <lastmod>2023-11-10T21:40:35.050Z</lastmod>
+    <loc>https://josiahparry.com/posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes.html</loc>
+    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/2023-11-10-enums-in-r/index.html</loc>
-    <lastmod>2023-11-10T21:29:29.544Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2023-07-06-r-is-still-fast.html</loc>
-    <lastmod>2023-11-10T21:40:34.983Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2019-08-04-my-parts.html</loc>
+    <loc>https://josiahparry.com/posts/2019-05-08-genius-learnr-tutorial.html</loc>
     <lastmod>2023-11-10T21:40:34.960Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/2018-10-27-read_multiple_csv.html</loc>
-    <lastmod>2023-11-10T21:40:34.959Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2021-04-28-user-apr-27-2021.html</loc>
-    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2019-08-09-epa-waterquality.html</loc>
+    <loc>https://josiahparry.com/posts/2020-02-19-r-history.html</loc>
     <lastmod>2023-11-10T21:40:34.961Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/2020-09-14-what-the-hell-is-critical-race-theory.html</loc>
-    <lastmod>2023-11-10T21:40:34.962Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/index.html</loc>
-    <lastmod>2023-11-25T16:47:21.809Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2020-09-07-demographic-change-white-fear-and-social-construction-of-race.html</loc>
-    <lastmod>2023-11-10T21:40:34.962Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2019-05-25-introducing-trendyy.html</loc>
-    <lastmod>2023-11-10T21:40:34.960Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2022-05-11-exploratory-spatial-data-analysis-in-r.html</loc>
-    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2022-02-12-the-heck-is-a-statistical-moment.html</loc>
-    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2022-10-03-spacetime-representations.html</loc>
-    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2022-05-11-make-your-r-scripts-databricks-notebooks.html</loc>
-    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2020-12-09-secure-package-environment.html</loc>
-    <lastmod>2023-11-10T21:40:34.962Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2019-03-30-plumber-genius-api.html</loc>
-    <lastmod>2023-11-10T21:40:34.959Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2020-06-12-red-queen.html</loc>
-    <lastmod>2023-11-10T21:40:34.961Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2020-01-13-gs4-auth.html</loc>
-    <lastmod>2023-11-10T21:40:34.961Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2022-11-23-youtube-videos.html</loc>
-    <lastmod>2023-11-10T21:40:34.972Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2023-01-19-raw-strings-in-r.html</loc>
-    <lastmod>2023-11-10T21:40:34.972Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2022-04-05-an-open-system-requirements-database.html</loc>
+    <loc>https://josiahparry.com/posts/2021-06-18-sliced-a-brief-reflection.html</loc>
     <lastmod>2023-11-10T21:40:34.963Z</lastmod>
   </url>
   <url>
@@ -101,39 +41,95 @@
     <lastmod>2023-11-10T21:40:34.960Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/2021-06-18-sliced-a-brief-reflection.html</loc>
+    <loc>https://josiahparry.com/posts/2022-04-05-an-open-system-requirements-database.html</loc>
     <lastmod>2023-11-10T21:40:34.963Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/2020-02-19-r-history.html</loc>
+    <loc>https://josiahparry.com/posts/2023-01-19-raw-strings-in-r.html</loc>
+    <lastmod>2023-11-10T21:40:34.972Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2022-11-23-youtube-videos.html</loc>
+    <lastmod>2023-11-10T21:40:34.972Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2020-01-13-gs4-auth.html</loc>
     <lastmod>2023-11-10T21:40:34.961Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/2019-05-08-genius-learnr-tutorial.html</loc>
-    <lastmod>2023-11-10T21:40:34.960Z</lastmod>
+    <loc>https://josiahparry.com/posts/2020-06-12-red-queen.html</loc>
+    <lastmod>2023-11-10T21:40:34.961Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/posts/2022-02-12-installing-python-on-my-m1-in-under-10-minutes.html</loc>
+    <loc>https://josiahparry.com/posts/2019-03-30-plumber-genius-api.html</loc>
+    <lastmod>2023-11-10T21:40:34.959Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2020-12-09-secure-package-environment.html</loc>
+    <lastmod>2023-11-10T21:40:34.962Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2022-05-11-make-your-r-scripts-databricks-notebooks.html</loc>
     <lastmod>2023-11-10T21:40:34.963Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/projects/pkgs/sysreqs.html</loc>
+    <loc>https://josiahparry.com/posts/2022-10-03-spacetime-representations.html</loc>
+    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2022-02-12-the-heck-is-a-statistical-moment.html</loc>
+    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2022-05-11-exploratory-spatial-data-analysis-in-r.html</loc>
+    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2019-05-25-introducing-trendyy.html</loc>
+    <lastmod>2023-11-10T21:40:34.960Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2020-09-07-demographic-change-white-fear-and-social-construction-of-race.html</loc>
+    <lastmod>2023-11-10T21:40:34.962Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/index.html</loc>
+    <lastmod>2023-11-25T16:47:21.809Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2020-09-14-what-the-hell-is-critical-race-theory.html</loc>
+    <lastmod>2023-11-10T21:40:34.962Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2019-08-09-epa-waterquality.html</loc>
+    <lastmod>2023-11-10T21:40:34.961Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2021-04-28-user-apr-27-2021.html</loc>
+    <lastmod>2023-11-10T21:40:34.963Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2018-10-27-read_multiple_csv.html</loc>
+    <lastmod>2023-11-10T21:40:34.959Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2019-08-04-my-parts.html</loc>
+    <lastmod>2023-11-10T21:40:34.960Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2023-07-06-r-is-still-fast.html</loc>
+    <lastmod>2023-11-10T21:40:34.983Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2023-11-10-enums-in-r/index.html</loc>
+    <lastmod>2023-11-10T21:29:29.544Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/genius.html</loc>
     <lastmod>2023-11-10T21:40:35.050Z</lastmod>
   </url>
   <url>
-    <loc>https://josiahparry.com/projects/writing/uitk.html</loc>
-    <lastmod>2023-11-10T21:40:35.051Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/index.html</loc>
-    <lastmod>2023-11-10T21:40:34.958Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2023-11-24-dfusionrdr/index.html</loc>
-    <lastmod>2023-11-25T16:45:31.221Z</lastmod>
-  </url>
-  <url>
-    <loc>https://josiahparry.com/posts/2023-09-20-sdsl/index.html</loc>
-    <lastmod>2023-11-10T21:40:34.999Z</lastmod>
+    <loc>https://josiahparry.com/projects/writing/mirr.html</loc>
+    <lastmod>2023-11-10T21:40:35.050Z</lastmod>
   </url>
 </urlset>
