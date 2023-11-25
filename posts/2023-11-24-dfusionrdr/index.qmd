@@ -7,14 +7,18 @@ categories: ["rust", "pkg-dev", "extendr", "arrow"]
 
 ## Goal
 
-For this tutorial we're going to create a very simple Rust-based R package using `extendr` and `arrow-extendr`. The package will use the new and very powerful `DataFusion` crate to create a csv reader.
+For this tutorial we're going to create a very simple Rust-based R package using [`extendr`](https://extendr.github.io/) and [`arrow-extendr`](https://josiahparry.github.io/arrow-extendr/arrow_extendr/index.html). The package will use the new and very powerful [**`DataFusion`**](https://arrow.apache.org/datafusion/) crate to create a csv reader.
 
-We'll learn a little bit about how `extendr`, Rust, and `arrow-extendr` works throughout the process. 
+::: aside
+"DataFusion is a very fast, extensible query engine for building high-quality data-centric systems in Rust, using the Apache Arrow in-memory format." 
+:::
+
+We'll learn a little bit about how `extendr`, Rust, and `arrow-extendr` works along the way. 
 
 ## Create a new R package
 
 
-We will use `{usethis}` to create a new R package called `dfusionrdr` (prnounced d-fusion reader).
+We will use [`{usethis}`](https://usethis.r-lib.org/) to create a new R package called `dfusionrdr` (prnounced d-fusion reader).
 
 ::: aside
 The following section is the standard process for creating a new Rust based R package. It's a pretty simple process once you get used to it! 
@@ -394,3 +398,104 @@ bench::mark(
 ```
 
 Insanely fast! 
+
+------------
+
+## Addendum 
+
+The source code for the entire package is below. It also includes a function `read_sql_csv_dfusion()` which takes a SQL statement and reads it into memory if you want to explore that. For example:
+
+
+```r
+query <- 'SELECT count(*) as "n", "species" FROM csv GROUP BY "species"'
+
+as.data.frame(
+  read_sql_csv_dfusion(query, "inst/penguins.csv") 
+)
+#>     n   species
+#> 1  68 Chinstrap
+#> 2 152    Adelie
+#> 3 124    Gentoo
+```
+
+### Source code: 
+
+```{.rust filename="lib.rs"}
+use arrow_extendr::to::IntoArrowRobj;
+use extendr_api::prelude::*;
+use datafusion::prelude::*;
+use tokio::runtime::Runtime;
+use std::result::Result;
+
+#[extendr]
+/// @export
+fn read_csv_dfusion(csv_path: &str) -> Robj {
+    let rt = Runtime::new().unwrap();
+    let ctx = SessionContext::new();
+    let csv = ctx.read_csv(
+        csv_path,
+        CsvReadOptions::new()
+    );
+
+    // create a dataframe from the csv
+    let df = rt.block_on(csv).unwrap();
+
+    // collect the results into record batches
+    let res = rt.block_on(df.collect()).unwrap();
+
+    res.into_arrow_robj().unwrap()
+}
+
+#[extendr]
+fn read_sql_csv_dfusion(sql_query: &str, csv_path: &str) -> Result<Robj, Error> {
+    let rt = Runtime::new().unwrap();
+    let ctx = SessionContext::new();
+
+    let csv_tbl_fut = ctx.register_csv(
+        "csv",
+        csv_path,
+        CsvReadOptions::new(),
+    );
+
+    // // we dont assign it to anything because we're just ensuring that it gets ran
+    let _ = rt.block_on(csv_tbl_fut).unwrap();
+
+    // // create a plan
+    let df = rt.block_on(ctx.sql(sql_query)).unwrap();
+
+    // // collect into a vector of record batches
+    let res = rt.block_on(df.collect()).unwrap();
+
+    // return the result to R
+    res.into_arrow_robj()
+}
+
+// Macro to generate exports.
+
+// This ensures exported functions are registered with R.
+// See corresponding C code in `entrypoint.c`.
+extendr_module! {
+    mod dfusionrdr;
+    fn read_sql_csv_dfusion;
+    fn read_csv_dfusion;
+}
+```
+
+
+```{.toml filename="Cargo.toml"}
+[package]
+name = 'dfusionrdr'
+publish = false
+version = '0.1.0'
+edition = '2021'
+
+[lib]
+crate-type = [ 'staticlib' ]
+name = 'dfusionrdr'
+
+[dependencies]
+arrow_extendr = { git = "https://github.com/JosiahParry/arrow-extendr" }
+datafusion = "33.0.0"
+extendr-api = '*'
+tokio = "1.34.0"
+```

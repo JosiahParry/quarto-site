@@ -20,14 +20,17 @@
 
 
 
-<section id="goal" class="level2">
+<section id="goal" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="goal">Goal</h2>
-<p>For this tutorial we’re going to create a very simple Rust-based R package using <code>extendr</code> and <code>arrow-extendr</code>. The package will use the new and very powerful <code>DataFusion</code> crate to create a csv reader.</p>
-<p>We’ll learn a little bit about how <code>extendr</code>, Rust, and <code>arrow-extendr</code> works throughout the process.</p>
+<p>For this tutorial we’re going to create a very simple Rust-based R package using <a href="https://extendr.github.io/"><code>extendr</code></a> and <a href="https://josiahparry.github.io/arrow-extendr/arrow_extendr/index.html"><code>arrow-extendr</code></a>. The package will use the new and very powerful <a href="https://arrow.apache.org/datafusion/"><strong><code>DataFusion</code></strong></a> crate to create a csv reader.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>“DataFusion is a very fast, extensible query engine for building high-quality data-centric systems in Rust, using the Apache Arrow in-memory format.”</p>
+</div></div><p>We’ll learn a little bit about how <code>extendr</code>, Rust, and <code>arrow-extendr</code> works along the way.</p>
 </section>
 <section id="create-a-new-r-package" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="create-a-new-r-package">Create a new R package</h2>
-<p>We will use <code>{usethis}</code> to create a new R package called <code>dfusionrdr</code> (prnounced d-fusion reader).</p>
+<p>We will use <a href="https://usethis.r-lib.org/"><code>{usethis}</code></a> to create a new R package called <code>dfusionrdr</code> (prnounced d-fusion reader).</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>The following section is the standard process for creating a new Rust based R package. It’s a pretty simple process once you get used to it!</p>
@@ -910,6 +913,470 @@ font-style: inherit;">#&gt; 1 datafusion  922.3µs   1.04ms     915.     1.07MB 
 background-color: null;
 font-style: inherit;">#&gt; 2 readr        14.6ms  15.31ms      65.6    13.2MB     80.8</span></span></code></pre></div>
 <p>Insanely fast!</p>
+<hr>
+</section>
+</section>
+<section id="addendum" class="level2">
+<h2 class="anchored" data-anchor-id="addendum">Addendum</h2>
+<p>The source code for the entire package is below. It also includes a function <code>read_sql_csv_dfusion()</code> which takes a SQL statement and reads it into memory if you want to explore that. For example:</p>
+<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">query <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'SELECT count(*) as "n", "species" FROM csv GROUP BY "species"'</span></span>
+<span id="cb21-2"></span>
+<span id="cb21-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.data.frame</span>(</span>
+<span id="cb21-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_sql_csv_dfusion</span>(query, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inst/penguins.csv"</span>) </span>
+<span id="cb21-5">)</span>
+<span id="cb21-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;     n   species</span></span>
+<span id="cb21-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 1  68 Chinstrap</span></span>
+<span id="cb21-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 2 152    Adelie</span></span>
+<span id="cb21-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; 3 124    Gentoo</span></span></code></pre></div>
+<section id="source-code" class="level3">
+<h3 class="anchored" data-anchor-id="source-code">Source code:</h3>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>lib.rs</strong></pre>
+</div>
+<div class="sourceCode" id="cb22" data-filename="lib.rs" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb22-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">arrow_extendr::to::</span>IntoArrowRobj<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">extendr_api::prelude::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*;</span></span>
+<span id="cb22-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">datafusion::prelude::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*;</span></span>
+<span id="cb22-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tokio::runtime::</span>Runtime<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-5"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::result::</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-6"></span>
+<span id="cb22-7"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">#[</span>extendr<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb22-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/// @export</span></span>
+<span id="cb22-9"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_csv_dfusion(csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> Robj <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb22-10">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> rt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Runtime::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-11">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-12">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>read_csv(</span>
+<span id="cb22-13">        csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb22-14">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()</span>
+<span id="cb22-15">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-16"></span>
+<span id="cb22-17">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// create a dataframe from the csv</span></span>
+<span id="cb22-18">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(csv)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-19"></span>
+<span id="cb22-20">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// collect the results into record batches</span></span>
+<span id="cb22-21">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(df<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>collect())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-22"></span>
+<span id="cb22-23">    res<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>into_arrow_robj()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()</span>
+<span id="cb22-24"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb22-25"></span>
+<span id="cb22-26"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">#[</span>extendr<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb22-27"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_sql_csv_dfusion(sql_query<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>Robj<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb22-28">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> rt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Runtime::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-29">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SessionContext::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-30"></span>
+<span id="cb22-31">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> csv_tbl_fut <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>register_csv(</span>
+<span id="cb22-32">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"csv"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb22-33">        csv_path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb22-34">        <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CsvReadOptions::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb22-35">    )<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-36"></span>
+<span id="cb22-37">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// // we dont assign it to anything because we're just ensuring that it gets ran</span></span>
+<span id="cb22-38">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> _ <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(csv_tbl_fut)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-39"></span>
+<span id="cb22-40">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// // create a plan</span></span>
+<span id="cb22-41">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(ctx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>sql(sql_query))<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-42"></span>
+<span id="cb22-43">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// // collect into a vector of record batches</span></span>
+<span id="cb22-44">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>block_on(df<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>collect())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-45"></span>
+<span id="cb22-46">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// return the result to R</span></span>
+<span id="cb22-47">    res<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>into_arrow_robj()</span>
+<span id="cb22-48"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb22-49"></span>
+<span id="cb22-50"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Macro to generate exports.</span></span>
+<span id="cb22-51"></span>
+<span id="cb22-52"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// This ensures exported functions are registered with R.</span></span>
+<span id="cb22-53"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// See corresponding C code in `entrypoint.c`.</span></span>
+<span id="cb22-54"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">extendr_module!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb22-55">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mod</span> dfusionrdr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-56">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_sql_csv_dfusion;</span>
+<span id="cb22-57">    fn read_csv_dfusion;</span>
+<span id="cb22-58">}</span></code></pre></div>
+</div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Cargo.toml</strong></pre>
+</div>
+<div class="sourceCode" id="cb23" data-filename="Cargo.toml" style="background: #f1f3f5;"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb23-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[package]</span></span>
+<span id="cb23-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">name</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">dfusionrdr</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb23-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">publish</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">false</span></span>
+<span id="cb23-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">version</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">0.1.0</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb23-5"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">edition</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">2021</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb23-6"></span>
+<span id="cb23-7"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[lib]</span></span>
+<span id="cb23-8"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">crate-type</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">staticlib</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb23-9"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">name</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">dfusionrdr</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb23-10"></span>
+<span id="cb23-11"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[dependencies]</span></span>
+<span id="cb23-12"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">arrow_extendr</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{ </span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">git</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://github.com/JosiahParry/arrow-extendr"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> }</span></span>
+<span id="cb23-13"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">datafusion</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"33.0.0"</span></span>
+<span id="cb23-14"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">extendr-api</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">*</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb23-15"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tokio</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1.34.0"</span></span></code></pre></div>
+</div>
 
 
 </section>

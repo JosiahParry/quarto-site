@@ -206,6 +206,10 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
   <li><a href="#sending-dataframes-to-r-with-arrow-extendr" id="toc-sending-dataframes-to-r-with-arrow-extendr" class="nav-link" data-scroll-target="#sending-dataframes-to-r-with-arrow-extendr">Sending <code>DataFrame</code>s to R with arrow-extendr</a></li>
   <li><a href="#handling-arrow-rs-from-r" id="toc-handling-arrow-rs-from-r" class="nav-link" data-scroll-target="#handling-arrow-rs-from-r">Handling arrow-rs from R</a></li>
   </ul></li>
+  <li><a href="#addendum" id="toc-addendum" class="nav-link" data-scroll-target="#addendum">Addendum</a>
+  <ul class="collapse">
+  <li><a href="#source-code" id="toc-source-code" class="nav-link" data-scroll-target="#source-code">Source code:</a></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -254,14 +258,17 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </header>
 
 
-<section id="goal" class="level2">
+<section id="goal" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="goal">Goal</h2>
-<p>For this tutorial we’re going to create a very simple Rust-based R package using <code>extendr</code> and <code>arrow-extendr</code>. The package will use the new and very powerful <code>DataFusion</code> crate to create a csv reader.</p>
-<p>We’ll learn a little bit about how <code>extendr</code>, Rust, and <code>arrow-extendr</code> works throughout the process.</p>
+<p>For this tutorial we’re going to create a very simple Rust-based R package using <a href="https://extendr.github.io/"><code>extendr</code></a> and <a href="https://josiahparry.github.io/arrow-extendr/arrow_extendr/index.html"><code>arrow-extendr</code></a>. The package will use the new and very powerful <a href="https://arrow.apache.org/datafusion/"><strong><code>DataFusion</code></strong></a> crate to create a csv reader.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>“DataFusion is a very fast, extensible query engine for building high-quality data-centric systems in Rust, using the Apache Arrow in-memory format.”</p>
+</div></div><p>We’ll learn a little bit about how <code>extendr</code>, Rust, and <code>arrow-extendr</code> works along the way.</p>
 </section>
 <section id="create-a-new-r-package" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="create-a-new-r-package">Create a new R package</h2>
-<p>We will use <code>{usethis}</code> to create a new R package called <code>dfusionrdr</code> (prnounced d-fusion reader).</p>
+<p>We will use <a href="https://usethis.r-lib.org/"><code>{usethis}</code></a> to create a new R package called <code>dfusionrdr</code> (prnounced d-fusion reader).</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>The following section is the standard process for creating a new Rust based R package. It’s a pretty simple process once you get used to it!</p>
@@ -622,6 +629,106 @@ Tip
 <span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 datafusion  922.3µs   1.04ms     915.     1.07MB      0  </span></span>
 <span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 readr        14.6ms  15.31ms      65.6    13.2MB     80.8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Insanely fast!</p>
+<hr>
+</section>
+</section>
+<section id="addendum" class="level2">
+<h2 class="anchored" data-anchor-id="addendum">Addendum</h2>
+<p>The source code for the entire package is below. It also includes a function <code>read_sql_csv_dfusion()</code> which takes a SQL statement and reads it into memory if you want to explore that. For example:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="st">'SELECT count(*) as "n", "species" FROM csv GROUP BY "species"'</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sql_csv_dfusion</span>(query, <span class="st">"inst/penguins.csv"</span>) </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     n   species</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  68 Chinstrap</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 152    Adelie</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 124    Gentoo</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="source-code" class="level3">
+<h3 class="anchored" data-anchor-id="source-code">Source code:</h3>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>lib.rs</strong></pre>
+</div>
+<div class="sourceCode" id="cb22" data-filename="lib.rs"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">arrow_extendr::to::</span>IntoArrowRobj<span class="op">;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">extendr_api::prelude::</span><span class="op">*;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">datafusion::prelude::</span><span class="op">*;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">tokio::runtime::</span>Runtime<span class="op">;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">std::result::</span><span class="dt">Result</span><span class="op">;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span>extendr<span class="at">]</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">/// @export</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> read_csv_dfusion(csv_path<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">-&gt;</span> Robj <span class="op">{</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> rt <span class="op">=</span> <span class="pp">Runtime::</span>new()<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> ctx <span class="op">=</span> <span class="pp">SessionContext::</span>new()<span class="op">;</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> csv <span class="op">=</span> ctx<span class="op">.</span>read_csv(</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        csv_path<span class="op">,</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>        <span class="pp">CsvReadOptions::</span>new()</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// create a dataframe from the csv</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> df <span class="op">=</span> rt<span class="op">.</span>block_on(csv)<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">// collect the results into record batches</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> res <span class="op">=</span> rt<span class="op">.</span>block_on(df<span class="op">.</span>collect())<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    res<span class="op">.</span>into_arrow_robj()<span class="op">.</span>unwrap()</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span>extendr<span class="at">]</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> read_sql_csv_dfusion(sql_query<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> csv_path<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Robj<span class="op">,</span> <span class="bu">Error</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> rt <span class="op">=</span> <span class="pp">Runtime::</span>new()<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> ctx <span class="op">=</span> <span class="pp">SessionContext::</span>new()<span class="op">;</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> csv_tbl_fut <span class="op">=</span> ctx<span class="op">.</span>register_csv(</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"csv"</span><span class="op">,</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>        csv_path<span class="op">,</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>        <span class="pp">CsvReadOptions::</span>new()<span class="op">,</span></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">// // we dont assign it to anything because we're just ensuring that it gets ran</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> _ <span class="op">=</span> rt<span class="op">.</span>block_on(csv_tbl_fut)<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">// // create a plan</span></span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> df <span class="op">=</span> rt<span class="op">.</span>block_on(ctx<span class="op">.</span>sql(sql_query))<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="co">// // collect into a vector of record batches</span></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> res <span class="op">=</span> rt<span class="op">.</span>block_on(df<span class="op">.</span>collect())<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>    <span class="co">// return the result to R</span></span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>    res<span class="op">.</span>into_arrow_robj()</span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a><span class="co">// Macro to generate exports.</span></span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a><span class="co">// This ensures exported functions are registered with R.</span></span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a><span class="co">// See corresponding C code in `entrypoint.c`.</span></span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a><span class="pp">extendr_module!</span> <span class="op">{</span></span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>    <span class="kw">mod</span> dfusionrdr<span class="op">;</span></span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> read_sql_csv_dfusion;</span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a>    fn read_csv_dfusion;</span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Cargo.toml</strong></pre>
+</div>
+<div class="sourceCode" id="cb23" data-filename="Cargo.toml"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[package]</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">'</span><span class="vs">dfusionrdr</span><span class="st">'</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="dt">publish</span> <span class="op">=</span> <span class="cn">false</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="dt">version</span> <span class="op">=</span> <span class="st">'</span><span class="vs">0.1.0</span><span class="st">'</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="dt">edition</span> <span class="op">=</span> <span class="st">'</span><span class="vs">2021</span><span class="st">'</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="kw">[lib]</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="dt">crate-type</span> <span class="op">=</span> <span class="op">[</span> <span class="st">'</span><span class="vs">staticlib</span><span class="st">'</span> <span class="op">]</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">'</span><span class="vs">dfusionrdr</span><span class="st">'</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="kw">[dependencies]</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="dt">arrow_extendr</span> <span class="op">=</span> <span class="op">{ </span><span class="dt">git</span><span class="op"> =</span> <span class="st">"https://github.com/JosiahParry/arrow-extendr"</span><span class="op"> }</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="dt">datafusion</span> <span class="op">=</span> <span class="st">"33.0.0"</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="dt">extendr-api</span> <span class="op">=</span> <span class="st">'</span><span class="vs">*</span><span class="st">'</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="dt">tokio</span> <span class="op">=</span> <span class="st">"1.34.0"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>
