@@ -1,15 +1,15 @@
 {
   "listingMap": {
-    "index.qmd": [
-      "/posts*/!(index).*md",
-      "/posts/*/*.qmd"
-    ],
     "posts/index.qmd": [
       "./"
     ],
     "projects.qmd": [
       "/projects/pkgs",
       "/projects/writing"
+    ],
+    "index.qmd": [
+      "/posts*/!(index).*md",
+      "/posts/*/*.qmd"
     ]
   }
 }

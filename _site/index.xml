@@ -10,7 +10,89 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Sat, 25 Nov 2023 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 27 Nov 2023 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Writing S3 head() methods</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2023-11-27-custom-head-method/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>I’ve been struggling for the past 15-20 minutes trying to fix the following <code>R CMD check</code> greivances.</p>
+<pre><code>checking whether the namespace can be loaded with stated dependencies ... WARNING
+  Error: object 'head' not found whilst loading namespace 'arcgislayers'
+  Execution halted
+
+checking dependencies in R code ... NOTE
+  Error: object 'head' not found whilst loading namespace 'arcgislayers'</code></pre>
+<p>It feels like something that shouldn’t be difficult? You write the method and you export it right? Well, that’s true if the function is exported in <code>base</code>. But there are a lot of handy functions that are in base R that <em>are not</em> in the package <code>{base}</code>.</p>
+<p><code>head()</code>, the function I’m fighting with, is actually an export of the base R package <code>{utils}</code>.</p>
+<p>Here’s some code I have that I couldn’t get to export <code>head()</code> properly.</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' @export</span></span>
+<span id="cb2-2">head.FeatureLayer <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">token =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.getenv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ARCGIS_TOKEN"</span>), ...) {</span>
+<span id="cb2-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">collect_layer</span>(x, n_max, token)</span>
+<span id="cb2-4">}</span></code></pre></div>
+<p>To fix this we need to do the following:</p>
+<ol type="1">
+<li>Add <code>utils</code> as an imported package with <code>usethis::use_package("utils")</code></li>
+<li>Then we need to specifically import <code>head</code> by adding <code>#' @importFrom utils head</code></li>
+<li>Redocument with <code>devtools::document()</code> (or cmd + shift + d)</li>
+</ol>
+<p>The whole shebang:</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' @importFrom utils head</span></span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' @export</span></span>
+<span id="cb3-3">head.FeatureLayer <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">token =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.getenv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ARCGIS_TOKEN"</span>), ...) {</span>
+<span id="cb3-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">collect_layer</span>(x, n, token)</span>
+<span id="cb3-5">}</span></code></pre></div>
+<p>Now R CMD check won’t complain about it.</p>
+
+
+
+ ]]></description>
+  <category>pkg-dev</category>
+  <guid>https://josiahparry.com/posts/2023-11-27-custom-head-method/</guid>
+  <pubDate>Mon, 27 Nov 2023 05:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Building a DataFusion CSV reader with arrow-extendr</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -7426,301 +7508,7 @@ font-style: inherit;">summarise.sdf</span></span></code></pre></div>
   <title></title>
   <dc:creator>Josiah Parry</dc:creator>
   <link>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</link>
-  <description><![CDATA[ <section id="jhu-talk-slides" class="level1"><h1>JHU talk (slides)</h1>
-<div class="notes">
-<p>Hey everyone, my name is Josiah. Thank you all for having me. And thank you René for inviting me here to chat with you all. It excites me to see so many people being exposed to GIS and spatial analysis. I’m going to use my time to tell you all about my experience from undergraduate, graduate school, and where I am today. Then I’ll talk briefly about the spatial analysis</p>
-</div>
-<section id="objectives" class="level2"><h2 class="anchored" data-anchor-id="objectives">objectives</h2>
-<ul>
-<li>tell you my story</li>
-<li>maybe inspire you to program</li>
-<li>a brief lesson on spatial analysis</li>
-<li>anything you want this is your time</li>
-</ul>
-<div class="notes">
-<p>I hope that you take away from this that your degree and the classes that you take do not dictate what field you have to go in. That your personal interests and studies are just as important, and if not sometimes more important, than what you learn in the classroom. Meaning, that while college classes are a wonderful introduction to subjects and fields nothing can compare with impassioned self-directed studying.</p>
-<p>I want you to want to learn to program. I don’t want you to begrudgingly learn to program, I want you to want to program. Being even conversational in a programming langauge can pay compounding dividends.</p>
-<p>i also want to discuss one brief but very important topic in spatial analysis.</p>
-<p>and really this time is yours so you can tell me what you want from me and i can do my best to provide</p>
-</div>
-</section></section><section id="a-bit-about-myself" class="level1 page-columns page-full"><h1>A bit about myself</h1>
-<p>or, why should you actually listen to me</p>
-<div class="notes">
-<p>i typically avoid biographical slides in my talks but as I have free reign today. I want to tell you a bit about myself. My goal in doing so is to illustrate that it doesn’t really matter what your background is, spatial analysis is important and applicable to literally everyone and every domain</p>
-</div>
-<section id="its-a-me" class="level2"><h2 class="anchored" data-anchor-id="its-a-me">It’s a me</h2>
-<ul>
-<li>MS in Urban Informatics, Northeastern</li>
-<li>Sr.&nbsp;Product Engineer @ Esri
-<ul>
-<li>Spatial Statistics</li>
-</ul>
-</li>
-<li>Previously @ RStudio (now Posit)</li>
-<li>Programming in R since 2014</li>
-</ul>
-<div class="notes">
-<p>So who am I and how am I qualified to tell you anything? I can tell you who I am but I don’t know if I’m qualified for anything!</p>
-<p>I graduated with a degree in Urban informatics from NEU in April 2020. It was a really bad time but yet also very good time to finish a degree</p>
-<p>I work at a company called Esri, we make the software known as ArcGIS. I work as a Sr.&nbsp;Product Engineer on the spatial statistics team. That means that I and a group of about 10 other people think deeply about what tools the “-ists” need to have at their disposal and how to make them intuitive, interpretable, and easy to use. By “ists” I mean the analysts, epidemiologists, biologists, criminologists, and what not.</p>
-<p>Before that I worked at a company formerly called RStudio which is where I met René. I worked with government customers ensuring they could use RStudio professional products and bridge open source tools and enterprise products</p>
-</div>
-</section><section id="humble-beginnings" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="humble-beginnings">humble beginnings</h2>
-<div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p><img src="https://static.wixstatic.com/media/4999e9_37b24b7ea1824977926f1937eac91725~mv2.png/v1/fit/w_800%2Ch_587%2Cal_c/file.png" class="img-fluid figure-img"></p>
-<figcaption class="margin-caption">Plymouth State</figcaption></figure>
-</div>
-<div class="notes">
-<p>Unlike many of you here I was not, and still am not, very academically inclined. I went to a small school in Northern New Hampshire called Plymouth State University (PSU).</p>
-</div>
-</section></section><section id="psu-is-nationally-recognized" class="level1"><h1>PSU is nationally recognized</h1>
-<p>but not in the way that most people want to be</p>
-<div class="notes">
-<p>While unknown to many, Plymouth State is actually a nationally recognized school.</p>
-</div>
-</section><section id="section" class="level1"><h1></h1>
-<blockquote class="blockquote">
-<p>“…this New Hampshire institution of higher learning is back. Four things students dig are skiing, skiing, studying and [partying] on the lake.</p>
-</blockquote>
-<div class="caption">
-<p>Playboy, 2010</p>
-</div>
-<div class="notes">
-<p>recognized by playboy that is… this quote from playboy 2010 sort of gets to the heart of where I went to school. PSU wasn’t a really academic place. And people who go there aren’t typically ones who find themselves going to graduate school</p>
-<p>So the fact I work in <em>spatial stats</em> of all things is wild.</p>
-</div>
-</section><section id="finding-geography" class="level1"><h1>finding geography</h1>
-<p>from <em>anthropology</em> &amp; <em>sociology</em> to GIS</p>
-<div class="notes">
-<p>In college I actually initially studied anthropology and sociology. My interest had been in culture and social behavior. I loved getting in the weeds with social theories like symbolic interactionism, functionalism, conflict theory and all that. I eventually took an introduction to geography which is where I had first heard Tobler’s first law of geography</p>
-</div>
-</section><section id="tobler-changed-my-perspective" class="level1"><h1>Tobler changed my perspective</h1>
-</section><section id="section-1" class="level1"><h1></h1>
-<blockquote class="blockquote">
-<p>“everything is related to everything else, but near things are more related than distant things.”</p>
-</blockquote>
-<div class="caption">
-<p>Waldo Tobler</p>
-</div>
-</section><section id="humanity-is-inherently-spatial" class="level1"><h1>Humanity is inherently spatial</h1>
-<p>everything we do happens <em>somewhere</em></p>
-<div class="notes">
-<p>I began to start thinking about social phenomenon from a larger perspective. Where space actually matters. I began thinking about where things happen. Social contexts should not only be framed around income, education, and parenting, but should include geographic measures such as neighborhood and other measures of proximity.</p>
-</div>
-</section><section id="section-2" class="level1 page-columns page-full"><h1></h1>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2015-geography-presentation.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>circa 2014</p>
-</div></div></section><section id="i-become-a-gis-pro" class="level1 page-columns page-full"><h1>I become a GIS <em>pro</em>
-</h1>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/gini-coef.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>circa 2015</p>
-</div></div><section id="stats-interest-became-an-r-interest" class="level2"><h2 class="anchored" data-anchor-id="stats-interest-became-an-r-interest">stats interest became an R interest</h2>
-<ul>
-<li>wanted to do more advanced stats</li>
-<li>learned 1:1 with my professor</li>
-<li>finding data meant cleaning data</li>
-<li>explored new packages and exposed to new domains
-<ul>
-<li>natural language</li>
-<li>software engineering</li>
-<li>etc</li>
-</ul>
-</li>
-</ul></section><section id="the-next-few-years" class="level2"><h2 class="anchored" data-anchor-id="the-next-few-years">The next few years</h2>
-<ul>
-<li>spend all my free time learning R</li>
-<li>I intern at DataCamp making R courses</li>
-<li>Research using interactive GIS</li>
-<li>Decide grad school was the right thing for me
-<ul>
-<li>promptly rejected from all but one school</li>
-</ul>
-</li>
-</ul></section><section id="northeastern" class="level2"><h2 class="anchored" data-anchor-id="northeastern">Northeastern</h2>
-<p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCIPAiAFpP11NpTvKw1DKXJQA2XPuuBCmuIh85qfCDE3qTxxZvqicGZs1L6TtW9zrhKgE&amp;usqp=CAU.png" class="img-fluid"></p>
-<div class="notes">
-<p>at northeastern is when I really dove into spatial analysis my understanding and utility of it really began when i was a research assistant at the boston area research initiative</p>
-<p>we looked at indicators of social disorder using administrative data.</p>
-<p>a lot of what we looked at were neighbor hood differences but very simple differences using fixed effects in regressions</p>
-</div>
-</section><section id="advanced-spatial-analysis" class="level2"><h2 class="anchored" data-anchor-id="advanced-spatial-analysis">Advanced Spatial Analysis</h2>
-<p><img src="https://geoffboeing.com/wp-content/uploads/2018/07/city-street-orientations-world-osmnx-930x1024.png" class="img-fluid"></p>
-</section><section id="advanced-spatial-analysis-1" class="level2"><h2 class="anchored" data-anchor-id="advanced-spatial-analysis-1">Advanced Spatial Analysis</h2>
-<ul>
-<li>one of my last courses in grad school</li>
-<li>learned about spatial autocorrelation</li>
-<li>spatial regression</li>
-<li>basics of networks analysis</li>
-</ul>
-<div class="notes">
-<p>i learned just enough to know where to look. Everything I learned in my graduate program was just enough to know where to look for more if i wanted to</p>
-</div>
-</section><section id="a-pandemic-rages" class="level2"><h2 class="anchored" data-anchor-id="a-pandemic-rages">a pandemic rages</h2>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/sfdep.png" class="img-fluid"></p>
-</section></section><section id="going-beyond-maps" class="level1"><h1>Going beyond maps</h1>
-<p>neighborhoods, autocorrelation, and tooling</p>
-<div class="notes">
-<p>in graduate school is when i was exposed to spatial analysis outside of the context of map-making. though my real learning didn’t happen until a year or so after leaving graduate school</p>
-<p>if there is one idea in spatial analysis i want to leave you with it’s the idea of the neighborhood and how we actually measure it.</p>
-<p>So, at this point if anyone has any questions i’m happy to answer them otherwise. I’m going to discuss the very fundamental concept neighborhoods, neighbors and the spatial lag</p>
-</div>
-</section><section id="neighborhood" class="level1"><h1>Neighborhood</h1>
-<p>fundamental concept of analysis ## In urban studies</p>
-<ul>
-<li>the neighborhood fundamental to sociology
-<ul>
-<li>Chicago school (Park &amp; Burgess)</li>
-</ul>
-</li>
-<li>used to understand differences inside of the city</li>
-<li>too much nuance</li>
-</ul>
-<section id="in-spatial-analysis" class="level2"><h2 class="anchored" data-anchor-id="in-spatial-analysis">In spatial analysis</h2>
-<ul>
-<li>are phenomena spatially dependent?
-<ul>
-<li>do similar values occur near each other</li>
-</ul>
-</li>
-<li>start focal with a location <img src="https://latex.codecogs.com/png.latex?i">
-</li>
-<li>it’s neighbors are <img src="https://latex.codecogs.com/png.latex?j">
-</li>
-<li>
-<img src="https://latex.codecogs.com/png.latex?X_i"> is compared to <img src="https://latex.codecogs.com/png.latex?X_j">
-<ul>
-<li>
-<em>not</em> to <img src="https://latex.codecogs.com/png.latex?X">
-</li>
-</ul>
-</li>
-</ul></section></section><section id="how-do-we-define-the-neighbors" class="level1"><h1>how do we define the neighbors?</h1>
-<p>it depends….</p>
-<div class="notes">
-<p>it really depends on if what you’re studying are points or polygons and i’m most comfortable with polygons for spatial analysis it also makes the ideas much simpler to follow</p>
-</div>
-<section id="contiguities" class="level2"><h2 class="anchored" data-anchor-id="contiguities">contiguities</h2>
-<p>how do you choose what the neighbors are for a location?</p>
-<div class="cell">
-
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-2-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="rook-contiguity" class="level2"><h2 class="anchored" data-anchor-id="rook-contiguity">Rook Contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-3-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="rook-contiguity-1" class="level2"><h2 class="anchored" data-anchor-id="rook-contiguity-1">Rook Contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-4-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="queen-contiguity" class="level2"><h2 class="anchored" data-anchor-id="queen-contiguity">Queen contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-5-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="queen-contiguity-1" class="level2"><h2 class="anchored" data-anchor-id="queen-contiguity-1">Queen contiguity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-6-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="neighbors-in-practice" class="level2"><h2 class="anchored" data-anchor-id="neighbors-in-practice">Neighbors in practice</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-7-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section></section><section id="evaluating-the-neighborhood" class="level1"><h1>Evaluating the neighborhood</h1>
-<p>how does <img src="https://latex.codecogs.com/png.latex?i"> compare to <img src="https://latex.codecogs.com/png.latex?j"></p>
-</section><section id="the-spatial-lag" class="level1"><h1>the <em>spatial lag</em>
-</h1>
-<p>the neighborhood value</p>
-<section id="understanding-the-lag" class="level2"><h2 class="anchored" data-anchor-id="understanding-the-lag">Understanding the lag</h2>
-<ul>
-<li>“expected value” of the neighborhood</li>
-<li>it is the average value of the neighborhood (excluding <img src="https://latex.codecogs.com/png.latex?i">)</li>
-<li>summarizes values of <img src="https://latex.codecogs.com/png.latex?x"> for an observation <img src="https://latex.codecogs.com/png.latex?i">’s neighborhood</li>
-</ul></section><section id="observed-values" class="level2"><h2 class="anchored" data-anchor-id="observed-values">Observed values</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-8-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-</section><section id="neighborhood-values-at-i" class="level2"><h2 class="anchored" data-anchor-id="neighborhood-values-at-i">Neighborhood values at <img src="https://latex.codecogs.com/png.latex?i">
-</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-9-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-<div class="caption">
-<p>the lag is a neighborhood smoother</p>
-</div>
-</section><section id="observed-vs-neighborhood" class="level2"><h2 class="anchored" data-anchor-id="observed-vs-neighborhood">Observed vs neighborhood</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU_files/figure-revealjs/unnamed-chunk-10-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-<div class="caption">
-<p>where locations deviate from their neighbors</p>
-</div>
-</section><section id="spatial-lag-is-the-basis-of" class="level2"><h2 class="anchored" data-anchor-id="spatial-lag-is-the-basis-of">Spatial Lag is the basis of:</h2>
-<ul>
-<li>spatial clustering (autocorrelation)</li>
-<li>hot spot detection (clustering)</li>
-<li>spatial regression
-<ul>
-<li>(inference / neighborhood spill over effects)</li>
-</ul>
-</li>
-<li>spatio-temporal hot spot analysis</li>
-</ul></section><section id="example" class="level2"><h2 class="anchored" data-anchor-id="example">Example</h2>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/guns-cluster.png" class="img-fluid"></p>
-</section><section id="example-1" class="level2"><h2 class="anchored" data-anchor-id="example-1">Example</h2>
-<p><img src="https://josiahparry.com/posts/2023-02-10-jhu/ehsa.png" class="img-fluid"></p>
-</section><section id="tools-in-the-r-ecosystem" class="level2"><h2 class="anchored" data-anchor-id="tools-in-the-r-ecosystem">Tools in the R ecosystem</h2>
-<ul>
-<li>
-<code>sf</code> - spatial vector data</li>
-<li>
-<code>spdep</code> - spatial statistics</li>
-<li>
-<code>sfdep</code> - a tidy interface to spdep</li>
-<li>
-<code>rgeoda</code> - R interface to GeoDa</li>
-</ul></section><section id="tools-in-python-ecosystem" class="level2"><h2 class="anchored" data-anchor-id="tools-in-python-ecosystem">Tools in Python ecosystem</h2>
-<ul>
-<li>
-<code>geopandas</code> - <code>sf</code> equivalent</li>
-<li>
-<code>pysal</code> a very robust set of spatial statistics toools</li>
-<li>
-<code>shapely</code> for geometries</li>
-</ul></section><section id="what-do-you-want-to-do-next" class="level2"><h2 class="anchored" data-anchor-id="what-do-you-want-to-do-next">What do you want to do next?</h2>
-<ul>
-<li>i can answer questions</li>
-<li>i can demo code</li>
-<li>i can talk through the spatial lag in more detail</li>
-<li>we can discuss hot spot analysis</li>
-<li>anything you want :)</li>
-</ul>
-
-
-</section></section> ]]></description>
+  <description><![CDATA[ undefined ]]></description>
   <guid>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</guid>
   <pubDate>Fri, 10 Feb 2023 05:00:00 GMT</pubDate>
 </item>
@@ -8110,7 +7898,7 @@ font-style: inherit;">reactable</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/reactable/man/reactable.html">reactable</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://glin.github.io/reactable/reference/reactable.html">reactable</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -10609,35 +10397,6 @@ print("I feel powerful.")</code></pre>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2022-05-11-make-your-r-scripts-databricks-notebooks.html</guid>
   <pubDate>Wed, 11 May 2022 04:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Exploratory Spatial Data Analysis in R</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2022-05-11-exploratory-spatial-data-analysis-in-r.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<section id="about-the-talk" class="level2">
-<h2 class="anchored" data-anchor-id="about-the-talk">About the Talk</h2>
-<p>Geospatial data is becoming increasingly common across domains and industries. Spatial data is no longer only in the hands of soil scientists, meteorologists, and criminologists, but in marketing, retail, finance, etc. It is common for spatial data to be treated as any other tabular data set. However, there is information to be drawn from our data’s relation to space. The standard exploratory data analysis toolkit will not always suffice. In this talk I introduce the basics of exploratory spatial data analysis (ESDA) and the <a href="https://sfdep.josiahparry.com/?utm_source=nyhackr">{sfdep}</a> package. <a href="https://sfdep.josiahparry.com/?utm_source=nyhackr">{sfdep}</a> builds on the shoulders of <a href="https://cran.r-project.org/web/packages/spdep/index.html?utm_source=nyhackr">{spdep}</a> for spatial dependence, emphasizes the use of simple features and the <a href="https://cran.r-project.org/web/packages/sf/index.html?utm_source=nyhackr">{sf}</a> package, and integrates within your tidyverse-centric workflow. By the end of this talk users will understand the basics of ESDA and know how to start incorporating these skills in their own work.</p>
-</section>
-<section id="recording" class="level2">
-<h2 class="anchored" data-anchor-id="recording">Recording</h2>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/i_MA1U6SJ1Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
-</iframe>
-
-
-</section>
-
- ]]></description>
-  <category>esda</category>
-  <category>sfdep</category>
-  <category>r-spatial</category>
-  <category>talk</category>
-  <guid>https://josiahparry.com/posts/2022-05-11-exploratory-spatial-data-analysis-in-r.html</guid>
-  <pubDate>Thu, 28 Apr 2022 04:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

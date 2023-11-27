@@ -1,0 +1,49 @@
+---
+title: "Writing S3 `head()` methods"
+subtitle: "a note to self for later"
+date: 2023-11-27
+categories: ["pkg-dev"]
+---
+
+I've been struggling for the past 15-20 minutes trying to fix the following `R CMD check` greivances. 
+
+```
+checking whether the namespace can be loaded with stated dependencies ... WARNING
+  Error: object 'head' not found whilst loading namespace 'arcgislayers'
+  Execution halted
+
+checking dependencies in R code ... NOTE
+  Error: object 'head' not found whilst loading namespace 'arcgislayers'
+```
+
+It feels like something that shouldn't be difficult? You write the method and you export it right? Well, that's true if the function is exported in `base`. But there are a lot of handy functions that are in base R that _are not_ in the package `{base}`. 
+
+`head()`, the function I'm fighting with, is actually an export of the base R package `{utils}`. 
+
+Here's some code I have that I couldn't get to export `head()` properly.
+
+```r
+#' @export
+head.FeatureLayer <- function(x, n = 6, token = Sys.getenv("ARCGIS_TOKEN"), ...) {
+  collect_layer(x, n_max, token)
+}
+```
+
+To fix this we need to do the following: 
+
+1. Add `utils` as an imported package with `usethis::use_package("utils")`
+2. Then we need to specifically import `head` by adding `#' @importFrom utils head`
+3. Redocument with `devtools::document()` (or cmd + shift + d)
+
+
+The whole shebang:
+
+```r
+#' @importFrom utils head
+#' @export
+head.FeatureLayer <- function(x, n = 6, token = Sys.getenv("ARCGIS_TOKEN"), ...) {
+  collect_layer(x, n, token)
+}
+```
+
+Now R CMD check won't complain about it.
