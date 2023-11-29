@@ -8610,7 +8610,7 @@ font-style: inherit;">geostan</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">sim_sar</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://connordonegan.github.io/geostan/reference/sim_sar.html">sim_sar</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>w <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -8802,7 +8802,7 @@ font-style: inherit;">"Point and it's neighbors"</span><span class="op" style="c
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>For bootstrap we grab a point and then the neighbors from another point. This function will randomize a <code>nb</code> list object.</p>
@@ -9021,7 +9021,7 @@ font-style: inherit;">"Point and random point's neighbors"</span><span class="op
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Often, we will want to create a reference distribution by creating a large number of simulations—typically 999. As the simulations increase in size, we are limited in the amount of samples we can draw. The number of neighborhoods becomes limiting!</p>
@@ -9169,13 +9169,13 @@ background-color: null;
 font-style: inherit;">]</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
-[1]  7  9 19 20 21
+[1]  90  91  92 102 104 114 115 116
 
 [[2]]
-[1]  3  4  5 15 17 27 28 29
+[1] 29 30 31 41 43 53 54 55
 
 [[3]]
-[1]  92  93  94 104 106 116 117 118</code></pre>
+[1] 15 16 17 27 29 39 40 41</code></pre>
 </div>
 </div>
 <p>Here we can see the random pattern. Look’s like there is fair amount of clustering of like values.</p>
@@ -9277,7 +9277,7 @@ font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span> </span></code></pre></div>
 <div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>With the weights and the neighbors we can calculate the global Moran. I’ll refer to this as the “observed.” Store it into an object called <code>obs</code>. We’ll need this to calculate a simulated p-value later.</p>
@@ -9311,10 +9311,10 @@ font-style: inherit;">]</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">]</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.346877</code></pre>
+<pre><code>[1] 0.465776</code></pre>
 </div>
 </div>
-<p>0.35 is a fair amount of positive spatial autocorrelation indicating that like values tend to cluster. But is this due to random chance, or does it depend on where these locations are? Now that we have the observed value of Moran’s I, we can simulate the value under spatial randomness using the bootstrapped sampling. To do so, we bootstrap sample our neighbors, recalculate the weights and then the global Moran. Now, if you’ve read my <a href="https://sfdep.josiahparry.com/articles/conditional-permutation.html">vignette on conditional permutation</a>, you know what is coming next. We need to create a reference distribution of the global Moran under spatial randomness. To do that, we apply our boot strap <code>nsim</code> times and recalculate the global Moran with each new neighbor list. I love the function <code><a href="https://rdrr.io/r/base/lapply.html">replicate()</a></code> for these purposes.</p>
+<p>0.47 is a fair amount of positive spatial autocorrelation indicating that like values tend to cluster. But is this due to random chance, or does it depend on where these locations are? Now that we have the observed value of Moran’s I, we can simulate the value under spatial randomness using the bootstrapped sampling. To do so, we bootstrap sample our neighbors, recalculate the weights and then the global Moran. Now, if you’ve read my <a href="https://sfdep.josiahparry.com/articles/conditional-permutation.html">vignette on conditional permutation</a>, you know what is coming next. We need to create a reference distribution of the global Moran under spatial randomness. To do that, we apply our boot strap <code>nsim</code> times and recalculate the global Moran with each new neighbor list. I love the function <code><a href="https://rdrr.io/r/base/lapply.html">replicate()</a></code> for these purposes.</p>
 <div class="cell">
 <div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
@@ -9455,7 +9455,7 @@ font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <section id="bootstrap-limitations" class="level3"><h3 class="anchored" data-anchor-id="bootstrap-limitations">Bootstrap limitations</h3>
@@ -9790,13 +9790,13 @@ background-color: null;
 font-style: inherit;">]</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
-[1] 68 71 51
+[1]  83  98 120
 
 [[2]]
-[1]  27  44  26  35 127
+[1] 124  54 111  69  93
 
 [[3]]
-[1]   6 134  48 136  70</code></pre>
+[1]  49 108  28   4  18</code></pre>
 </div>
 </div>
 <p>Now, let’s repeat the same exercise using conditional permutation.</p>
@@ -9884,7 +9884,7 @@ font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 71853</code></pre>
+<pre><code>[1] 71855</code></pre>
 </div>
 </div>
 <p>There are farrrrr more unique values. In fact, there is a unique value for each simulation - location pair. If we look at the histograms, the difference is even more stark. The conditional permutation approach actually begins to represent a real distribution.</p>
@@ -9935,7 +9935,7 @@ font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://josiahparry.com/posts/csr_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>So, this is all for me to say that bootstrapping isn’t it for creating simulated distributions for which to calculate your p-values.</p>
