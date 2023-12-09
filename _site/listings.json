@@ -15,6 +15,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/rust-for-r-users/installing-rust.html",
       "/posts/2023-11-27-custom-head-method/index.html",
       "/posts/2023-11-24-dfusionrdr/index.html",
       "/posts/2023-11-10-enums-in-r/index.html",
@@ -83,6 +84,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/rust-for-r-users/installing-rust.html",
       "/posts/2023-11-27-custom-head-method/index.html",
       "/posts/2023-11-24-dfusionrdr/index.html",
       "/posts/2023-11-10-enums-in-r/index.html",

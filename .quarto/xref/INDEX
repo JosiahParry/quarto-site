@@ -292,5 +292,8 @@
   },
   "posts/2023-11-27-custom-head-method/index.qmd": {
     "index.html": "5decde6f"
+  },
+  "posts/rust-for-r-users/installing-rust.qmd": {
+    "installing-rust.html": "cc76e8e7"
   }
 }

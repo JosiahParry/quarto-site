@@ -1,0 +1,38 @@
+I want R package developers to start using Rust
+If package developers understand when they can enhance a program using rust R packages
+will be come far more performant that their pure R counterparts (not always, but often).
+Provide access to easy parallelism, asynchronous computing if necessary.
+
+I assume that your are comfortable with the basics of the command line. These are 
+
+- navigating directories and creating folders 
+- running basic cli commands 
+
+The first thing we need to do is install rust. I will say it time and time again. It is the second easiest langauge to install. 
+
+Go to https://rustup.rs/ and follow the instructions. Boom you're done. 
+
+
+Check that its installed `cargo --version` 
+
+Creating your first program
+
+Rust is a compiled programming language unlike R which is an interpreted one.
+We can run R interactively and see errors and outputs as we go along. With Rust 
+cannot run it line by line but the whole thing at once. To catch errors inside of the IDE without having to compile and run our program we use something called the rust-analyser. 
+
+I use VS Code so i'll recommend that.
+Install the rust-analyzer extension. This will help us spot warnings, errors, and variable
+types while we're going through this. 
+
+
+from the command line create a new crate. Rather than "package" the things that we build are called crates. Rust does not let you use a single rust file. You have to create a whole crate. 
+
+`cargo new [your-crate-name]`
+
+This will create a new directory with 
+
+To cover: 
+
+- borrow checker
+- binary vs library
