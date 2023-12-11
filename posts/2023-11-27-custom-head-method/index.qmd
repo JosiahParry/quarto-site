@@ -3,6 +3,7 @@ title: "Writing S3 `head()` methods"
 subtitle: "a note to self for later"
 date: 2023-11-27
 categories: ["pkg-dev"]
+freeze: true
 ---
 
 I've been struggling for the past 15-20 minutes trying to fix the following `R CMD check` greivances. 
