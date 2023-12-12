@@ -1,7 +1,7 @@
 ---
 title: "Spatial Data Science Across Languages"
 subtitle: "some key takeaways"
-keep-md: true
+freeze: true
 date: 2023-09-22
 categories: [r, r-spatial, spatial]
 ---
