@@ -1,5 +1,7 @@
 project:
-  type: website
+  type: website  
+  resources:
+    - ads.txt 
   
 execute: 
   freeze: true
@@ -48,6 +50,9 @@ format:
       - theming.scss
     css: styles.css
     mainfont: "Open Sans"
+
+
+
 
 
 
