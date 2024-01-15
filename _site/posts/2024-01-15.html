@@ -273,11 +273,12 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> resize_plot(w<span class="op">:</span> <span class="dt">f64</span><span class="op">,</span> h<span class="op">:</span> <span class="dt">f64</span>) <span class="op">-&gt;</span> JsValue<span class="op">;</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>This lets me call <code>resize_plot()</code> directly from my rust code which is super cool! However, because of the way that this all works with leptos, whatever is not contained inside of a function is execute on <em>every single page</em> even where it is not needed.</p>
-<p>Because I have <code>resize_plot()</code> called in one of my leptos components it gets imported in the site-wide javascript from leptos at <code>/pkg/myapp.js</code>.</p>
+<p>This lets me call <code>resize_plot()</code> directly from my rust code which is super cool! However, because of the way that wasm-bindgen works, whatever is not contained inside of a function is execute on <em>every single page</em> even where it is not needed.</p>
+<p>Because I have <code>resize_plot()</code> called in one of my leptos components it gets imported in the site-wide javascript via wasm-bindgen at <code>/pkg/myapp.js</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { resize_plot } <span class="im">from</span> <span class="st">'./snippets/myapp-aa4c1e3078dc6708/webr.js'</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>On pages where this code isn’t needed or uses errors can abound which will break client side reactivty in leptos.</p>
+<p>On pages where this code isn’t needed or uses errors can abound which will break client side reactivity in leptos.</p>
 <p>Now it’s a matter of having to figure out how to appropriately import and expose javascript functions so that no errors arise with wasm-bindgen.</p>
+<p>In one case, I was able to move everything over to pure javascript which is fine. I’m unsure how I will handle others.</p>
 
 
 

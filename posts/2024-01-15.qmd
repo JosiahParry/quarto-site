@@ -49,14 +49,17 @@ extern "C" {
 ```
 
 This lets me call `resize_plot()` directly from my rust code which is super cool! 
-However, because of the way that this all works with leptos, whatever is not contained inside of a function is execute on _every single page_ even where it is not needed. 
+However, because of the way that wasm-bindgen works, whatever is not contained inside of a function is execute on _every single page_ even where it is not needed. 
 
-Because I have `resize_plot()` called in one of my leptos components it gets imported in the site-wide javascript from leptos at `/pkg/myapp.js`. 
+Because I have `resize_plot()` called in one of my leptos components it gets imported in the site-wide javascript via wasm-bindgen at `/pkg/myapp.js`. 
 
 ```javascript
 import { resize_plot } from './snippets/myapp-aa4c1e3078dc6708/webr.js';
 ```
 
-On pages where this code isn't needed or uses errors can abound which will break client side reactivty in leptos. 
+On pages where this code isn't needed or uses errors can abound which will break client side reactivity in leptos. 
 
 Now it's a matter of having to figure out how to appropriately import and expose javascript functions so that no errors arise with wasm-bindgen. 
+
+In one case, I was able to move everything over to pure javascript which is fine. I'm unsure how I will handle others. 
+
