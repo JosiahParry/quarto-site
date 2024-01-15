@@ -295,5 +295,8 @@
   },
   "posts/rust-for-r-users/installing-rust.qmd": {
     "installing-rust.html": "cc76e8e7"
+  },
+  "posts/2024-01-15.qmd": {
+    "2024-01-15.html": "b621602b"
   }
 }

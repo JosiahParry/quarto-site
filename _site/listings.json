@@ -15,6 +15,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-01-15.html",
       "/posts/2023-11-27-custom-head-method/index.html",
       "/posts/2023-11-24-dfusionrdr/index.html",
       "/posts/2023-11-10-enums-in-r/index.html",
@@ -82,6 +83,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-01-15.html",
       "/posts/2023-11-27-custom-head-method/index.html",
       "/posts/2023-11-24-dfusionrdr/index.html",
       "/posts/2023-11-10-enums-in-r/index.html",
