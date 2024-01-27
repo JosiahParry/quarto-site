@@ -1,0 +1,176 @@
+---
+title: "Shared segment of parallel lines"
+date: "2024-01-27"
+categories: [r-spatial, spatial]
+---
+
+## I need your help!!
+
+I am working on a problem where I identify approximately parallel lines. From the two lines that I have deemed parallel, I want to calculate the length of the segment that has a shared domain or range, or both domain and range. 
+
+In these examples I am using truly parallel lines for sake of simplicity. 
+
+There are four scenarios that we have to solve for: positive slope, negative slope, no slope, and undefined slopes. 
+
+**Helper functions: **
+
+```{r}
+#| code-fold: true
+# calculate range of x values 
+x_range <- function(x) {
+  bbox <- sf::st_bbox(x)
+  return(c(bbox$xmin, bbox$xmax))
+}
+
+# calculate range of y values 
+y_range <- function(x) {
+  bbox <- sf::st_bbox(x)
+  return(c(bbox$ymin, bbox$ymax))
+}
+
+# calculate overlapping range between two ranges
+overlap_range <- function(r1, r2) {
+  if (r1[2] < r2[1] || r2[2] < r1[1]) {
+    return(NA)
+  } else {
+    return(c(max(r1[1], r2[1]), min(r1[2], r2[2])))
+  }
+}
+
+find_overlaps <- function(a, b) {
+  list(
+    x_overlap = overlap_range(x_range(a), x_range(b)),
+    y_overlap = overlap_range(y_range(a), y_range(b))
+  )
+}
+
+overlap_rect <- function(x) {
+  bbox <- sf::st_bbox(
+    c(
+      xmin = x$x_overlap[1], 
+      xmax = x$x_overlap[2],
+      ymin = x$y_overlap[1],
+      ymax = x$y_overlap[2]
+    )
+  )
+  sf::st_as_sfc(bbox)
+}
+```
+
+
+
+
+## Positive Slope
+
+The first scenario is the shared positive slope. 
+
+**Question**:
+
+How do I find the coordinates of the contained line segment to calculate the length? The solution should be able to handle the scenario where x and y are flipped as well.
+
+```{r}
+# Positive Slope Scenario
+x <- wk::wkt(
+  c(
+    "LINESTRING(0.0 0.0, 2.0 2.0)", # target line
+    "LINESTRING(0.5 0.75, 2.5 2.75)" # one we've deemed parallel
+  )
+) 
+plot(x)
+```
+
+We can see that these two lines are parallel. We find their overlapping range:
+
+```{r}
+overlap <- find_overlaps(x[1], x[2])
+overlap
+```
+
+What we want to calculate is the length of the red line segment contained by the bounding box.
+
+```{r}
+plot(x, col = c("red", "black"))
+plot(overlap_rect(overlap), add = TRUE)
+```
+
+
+# Negative Slope Scenario
+
+We have a very similar scenario. But this time with a _negative_ slope. The solution should be able to handle if I want to find each line segment if x and y are swapped.
+
+```{r}
+x <- wk::wkt(
+  c(
+    "LINESTRING(0 2, 2 0)", # target line
+    "LINESTRING(1 0.5, 3 -1.5)" # deemed parallel
+  )
+)
+
+(overlap <- find_overlaps(x[1], x[2]))
+plot(x)
+plot(overlap_rect(overlap), border = "red", add = TRUE)
+```
+
+
+
+# Undefined Slope Scenario
+
+Here, our overlap is only in one dimension as opposed to two. It may be more simple? 
+
+I think the answer here is is `y_max - y_min`. 
+
+
+```{r}
+x <- wk::wkt(
+  c(
+    "LINESTRING(2 1.5, 2 2.5)", # the target line 
+    "LINESTRING(1 1, 1 2)", # deemed parallel
+    "LINESTRING(2 1.5, 2 2)" # overlap range (1D)
+  )
+)
+
+(overlap <- find_overlaps(x[1], x[2]))
+plot(x[1:2])
+plot(x[3], lwd = 3, lty = 1, col = "red", add = TRUE)
+```
+
+
+**Segment Length**: 
+
+Here is how we can calculate the overlap in the y-dimension: 
+
+```{r}
+overlap <- find_overlaps(x[1], x[2])
+y_over <- overlap$y_overlap
+y_over[2] - y_over[1]
+```
+
+# No slope scenario
+
+Similar to the undefined slope. We have a one dimensional overlap. I think the answer here is `x_max - x_min`. 
+
+```{r}
+x <- wk::wkt(
+  c(
+    "LINESTRING(0 1, 2 1)", # target feature
+    "LINESTRING(1 2, 3 2)", # deemed parallel
+    "LINESTRING(1 1, 2 1)" # overlap range (1D)
+  )
+)
+
+
+plot(x[1:2])
+plot(x[3], lwd = 3, lty = 1, col = "red", add = TRUE)
+```
+
+
+**Segment Length**: 
+
+Here is how we can calculate the overlap in the x-dimension: 
+
+```{r}
+overlap <- find_overlaps(x[1], x[2])
+x_over <- overlap$x_overlap
+x_over[2] - x_over[1]
+```
+
