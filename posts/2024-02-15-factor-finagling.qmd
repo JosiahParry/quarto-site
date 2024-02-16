@@ -56,7 +56,7 @@ To combine them we would need to ensure that they are both factors.
 c(f, factor("d", levels(f)))
 ```
 
-## Using `vcrts`
+## Using `vctrs`
 
 Upon further thinking, [`vctrs`](https://vctrs.r-lib.org/) tends to have the type-safe behavior that I wish from R (and aspects of it should probably be adapted into base R). 
 

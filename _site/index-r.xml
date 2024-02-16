@@ -7083,7 +7083,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
 </div>
 </div>
-<section id="using-vcrts" class="level2"><h2 class="anchored" data-anchor-id="using-vcrts">Using <code>vcrts</code>
+<section id="using-vctrs" class="level2"><h2 class="anchored" data-anchor-id="using-vctrs">Using <code>vctrs</code>
 </h2>
 <p>Upon further thinking, <a href="https://vctrs.r-lib.org/"><code>vctrs</code></a> tends to have the type-safe behavior that I wish from R (and aspects of it should probably be adapted into base R).</p>
 <p>I think vctrs gets to the behavior that I want actually. If I have a value and I use <code><a href="https://vctrs.r-lib.org/reference/vec_cast.html">vctrs::vec_cast()</a></code> and provide the existing factor vector <code>f</code> to the <code>to</code> argument, it will use the levels.</p>
@@ -7136,7 +7136,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-02-15-factor-finagling.html</guid>
-  <pubDate>Fri, 16 Feb 2024 00:22:51 GMT</pubDate>
+  <pubDate>Fri, 16 Feb 2024 00:26:13 GMT</pubDate>
 </item>
 </channel>
 </rss>

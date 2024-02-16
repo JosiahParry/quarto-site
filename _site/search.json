@@ -744,5 +744,12 @@
     "title": "Why do we sleep on factors?",
     "section": "Using vcrts\n",
     "text": "Using vcrts\n\nUpon further thinking, vctrs tends to have the type-safe behavior that I wish from R (and aspects of it should probably be adapted into base R).\nI think vctrs gets to the behavior that I want actually. If I have a value and I use vctrs::vec_cast() and provide the existing factor vector f to the to argument, it will use the levels.\n\nvctrs::vec_cast(\"z\", f)\n\n[1] z\nLevels: a b c d e f g h i j k l m n o p q r s t u v w x y z\n\n\nBut this will not succeed if we pass it a value that is unknown. The error message is a bit cryptic and frankly feels a little pythonic in the verbosity of the traceback! But this is type safe! And I LIKE IT!\n\nvctrs::vec_cast(\"123\", f)\n\nError:\n! Can't convert from `\"123\"` &lt;character&gt; to &lt;factor&lt;754f0&gt;&gt; due to loss of generality.\n• Locations: 1"
+  },
+  {
+    "objectID": "posts/2024-02-15-factor-finagling.html#using-vctrs",
+    "href": "posts/2024-02-15-factor-finagling.html#using-vctrs",
+    "title": "Why do we sleep on factors?",
+    "section": "Using vctrs\n",
+    "text": "Using vctrs\n\nUpon further thinking, vctrs tends to have the type-safe behavior that I wish from R (and aspects of it should probably be adapted into base R).\nI think vctrs gets to the behavior that I want actually. If I have a value and I use vctrs::vec_cast() and provide the existing factor vector f to the to argument, it will use the levels.\n\nvctrs::vec_cast(\"z\", f)\n\n[1] z\nLevels: a b c d e f g h i j k l m n o p q r s t u v w x y z\n\n\nBut this will not succeed if we pass it a value that is unknown. The error message is a bit cryptic and frankly feels a little pythonic in the verbosity of the traceback! But this is type safe! And I LIKE IT!\n\nvctrs::vec_cast(\"123\", f)\n\nError:\n! Can't convert from `\"123\"` &lt;character&gt; to &lt;factor&lt;754f0&gt;&gt; due to loss of generality.\n• Locations: 1"
   }
 ]
