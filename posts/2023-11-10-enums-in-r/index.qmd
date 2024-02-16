@@ -1,7 +1,6 @@
 ---
 title: "Enums in R: towards type safe R"
 date: 2023-11-10
-keep-md: true
 categories: [r, package-dev, rust]
 ---
 
