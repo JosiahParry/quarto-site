@@ -1,0 +1,438 @@
+---
+title: "The Fallacy of one person, one vote"
+subtitle: "Quantifying constituency representation"
+date: "2019-03-17"
+categories:
+  - politics
+tags:
+  - political science
+  - politics
+  - US
+  - history
+  - social science
+---
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(fig.height = 4, echo = FALSE, warning = FALSE, message = FALSE) 
+library(tidyverse)
+library(plotly)
+library(glue)
+sample_pops <- tibble(Region = c("WY", "CA", "US"),
+       Population = c(563626, 37253956, 308745538))
+```
+
+
+On October 6, 2018, the US Senate voted 50–48 in favor of the appointment of Associate Justice Brett Kavanaugh. This led many pundits to point out a ["disconnect"](https://govtrackinsider.com/with-kavanaugh-vote-the-senate-reaches-a-historic-low-in-democratic-metric-dfb0f5fa7fa) between the Senate and the body politic. The 50 senators who voted “yea” represent only 44% of the nation’s population. The year prior, Supreme Court Justice Neil Gorsuch was confirmed by 54 senators representing approximately 45% of the population. This trend of increasing control by a decreasing portion of the constituency has been attributed to a rise in partisanship.
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">In the age of minority rule, a Supreme Court justice appointed by a president who got fewer votes is confirmed by a party in the Senate that got fewer votes, to validate policies opposed by most Americans: <a href="https://t.co/HoCoFnXnZV">https://t.co/HoCoFnXnZV</a></p>&mdash; Paul Waldman (@paulwaldman1) <a href="https://twitter.com/paulwaldman1/status/1016784128753176577?ref_src=twsrc%5Etfw">July 10, 2018</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">good morning! just sitting here drinking coffee and thinking about how the state of wyoming has two senators and a total population smaller than portland, oregon. hbu?</p>&mdash; sarah jeong (@sarahjeong) <a href="https://twitter.com/sarahjeong/status/1098590548590395392?ref_src=twsrc%5Etfw">February 21, 2019</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+Since the mid 90’s [Dr. Frances E. Lee](https://gvpt.umd.edu/facultyprofile/lee/frances) has been developing a body of literature on Senate apportionment, and her book [_Sizing Up the Senate_](https://www.press.uchicago.edu/ucp/books/book/chicago/S/bo3636044.html) has become part of the current political milieu ([Vox](https://www.vox.com/2018/10/13/17971340/the-senate-represents-states-not-people-constitution-kavanaugh-supreme-court), [CNN](https://www.cnn.com/2018/07/10/politics/small-states-supreme-court/index.html), [New York Times](http://archive.nytimes.com/www.nytimes.com/interactive/2013/03/11/us/politics/democracy-tested.html?_r=0#/%23smallstate)). The book discusses, among many things, the relevant historical context surrounding the creation and organization of the Senate at the constitutional Convention.
+In her 1998 paper “The Consequences of Senate Apportionment for the Geographic Distribution of Federal Funds” [(Lee, 1998)](https://www.jstor.org/stable/2648000), Dr. Lee describes the “representation index”, a measure to quantify the over- or underrepresentation of a state in the US senate. In the formulation described in the paper, “the index is simply the ratio of the state’s actual population to 1/50th of the nation’s population” (Lee, 1998). In the formulation described in the paper, “the index is simply the ratio of the state’s actual population to 1/50th of the nation’s population” (Lee, 1998). It is written mathematically as $\frac{State \ Population}{1/50 \ * \ US \ Population}$. This creates a number between $(0, \infty)$. As it is put in _Sizing up the Senate_,
+
+> when the [index] is equal to one, the state is neither over- nor underrepresented by reference to a one person, one vote standard; when it is less than one, the state is overrepresented; when it is greater than one, the state is underrepresented.  (Lee and Oppenheimer, 1999, p.161)
+
+Many of Lee’s analyses utilize this index, and it has proved useful in temporal comparisons and modeling. However, it does not seem immediately capable of effectively evaluating other legislative bodies such as the House of Representatives. Here I will put forth an adaptation of this measure. That measure will then be adjusted to evaluate the House of Representatives. The House model will then be generalized to fit any representative body.
+
+## Interpretibility
+
+The representation index has three main shortcomings, each of which are simple to address. First, the index produces a counter-intuitive number. An index of greater than 1 indicates an underrepresented state, and vice versa. Second, the interpretation of a middle value of 1 is useful for the “one person, one vote” standard. But the index is a divergent measure where 1 is the middle with the bounds (0,∞). Often, when one thinks of divergence, it is from an origin, or 0. Third, the index has a lower limit of 0 and no upper bound. This inhibits comparisons in both directions.
+
+To illustrate the point let’s take the populations of California and Wyoming based on 2010 Census figures.
+
+```{r}
+knitr::kable(sample_pops, align = "l")
+```
+
+
+
+If we calculate the representation index for these places, we get:
+
+```{r}
+mutate(sample_pops[1:2,],
+       `Representation Index` = round(Population / (308745538/50), 2)) %>% 
+  knitr::kable(align = "l")
+```
+
+In this example, California has a representation index of 6. This means that it is vastly underrepresented, whereas Wyoming has an index value of nearly 0 meaning it is vastly overrepresented. To interpret this, we must remember that a larger value actually means less representation.
+
+But if we invert our formula, we obtain a more informative number.
+
+```{r}
+mutate(sample_pops[1:2,],  
+       `New Rep. Index` = round((308745538/50)/Population, 2)) %>% 
+  knitr::kable(align = "l")
+```
+
+
+In this table it is clear that Wyoming is overrepresented and California is underrepresented. But still, in evaluating these numbers we are required to do the mental math to contextualize the divergence from a middle value. California has a value of 0.83 less than the one person, one vote standard. To handle this, we can center the score around 0 by simply subtracting 1.
+
+```{r}
+mutate(sample_pops[1:2,],  
+       `Representation Index` = round(Population / (308745538/50), 2), 
+       `New Rep. Index` = round((308745538/50)/Population,2) - 1) %>% 
+  knitr::kable(align = "l")
+```
+
+
+Thus the formula for the new representation index is $\dfrac{\dfrac{1}{50} \ * \ US \ Population}{State \ Population} - 1$. When the measures are compared, we see that the initial measure used by Dr. Lee emphasizes underrepresentation of California, whereas the measure I have suggested emphasises the overrepresentation of Wyoming. From here on I will refer to these as the underrepresentation index (URI) and the overrepresentation index (ORI), respectively.
+
+ The URI and ORI are informative, but both are biased in scale. The bounds of the URI are $(0,\infty)$ and the ORI are $(-1, \infty)$. A value is needed that can simultaneously demonstrate the over- and underrepresentation of a state.
+ 
+The ORI can be altered slightly to create this balanced measure. By taking the natural logarithm of the ratio 1/50th of the US population to a state’s population, a divergent scale naturally occurs. When the ratio is equal to 1 (or adhering to the one person, one vote standard), the value becomes 0. When the denominator is less than the numerator (or when the state has a smaller share of population than its share of votes), the value is positive and vice versa. Thus we arrive at the formula $\ln\Bigg({\dfrac{\dfrac{1}{50} \ * \ US \ Population}{State \ Population}}\Bigg)$. The following table compares these three measures.
+
+
+```{r}
+mutate(sample_pops[1:2,],  
+       `URI` = round(Population / (308745538/50), 2), 
+       `ORI` = round((308745538/50)/Population,2) - 1,
+       `New Rep. Index` = round(log((308745538/50)/Population), 2)) %>% 
+  knitr::kable(align = "l")
+```
+
+
+The new representation index can be generalized to the House of Representatives or any other representative body. In the following sections, the representation index is adapted to the House of Representatives, the California Assembly and Senate, and the New Hampshire House and Senate.
+
+## Representation Index and the House of Representatives
+
+Representation in the House of Representative is proportional meaning that a state has a number of legislative representatives proportional to its population. For example, if a state were to have 50% of the nation’s population it should represent 50% of the legislative body. This is the principle that the representation index evaluates.
+
+In the above adaptation of the representation index, the nation’s population is divided by 50. This would be the population of a single state if every state had the same number of citizens. Then, that number is scaled (divided) by the state’s actual population, and the logarithm of the result is the representation index. Thus if a state’s population is exactly equal to 1/50th of the nation’s population, its representation in the Senate is proportional.
+
+To adapt this measure to the House, we must think about how the relationship between proportional representation and population can be expressed numerically. As mentioned above, proportional representation would mean that a state comprising 50% of the national population would likewise comprise 50% of the House’s representatives. The ratio of these two proportions is 1, which creates a similar comparison to Lee’s ratio of 1/50th of national population to state population.  This is the motivation for a formula of a representation index for the House of Representatives. The new formula, then, is $\ln\Big(\frac{State \ share \ of \ reps}{State \ share \ of \ pop.}\Big)$.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+us_reps <- read_csv("https://raw.githubusercontent.com/JosiahParry/us_representation/master/data/us/us_house.csv") %>% 
+  filter(year == 2010)
+
+us_pop <- read_csv("https://raw.githubusercontent.com/JosiahParry/us_representation/master/data/us/census_state_pop.csv") %>% 
+  filter(year == 2010)
+
+us_house_pop <- left_join(us_reps, us_pop,
+                          by = c("state_name" = "name", "year")) %>% 
+  mutate(id = row_number(),
+         x = row_number(),
+         total_pop = sum(population),
+         share_pop = population / total_pop,
+         rep_index = log((n_reps/total_reps) / share_pop),
+         id = reorder(id, rep_index),
+         ri_cat = case_when(
+           rep_index < log(1/.95) & rep_index > log(1/1.05) ~ "One person, one vote",
+           rep_index > log(1/.95) ~ "Overrepresented",
+           rep_index < log(1/1.05) ~ "Underrepresented"
+         ),
+         State = glue("{state_name}\n
+                      % Pop: {round(share_pop*100, 2)}%
+                      \n# Reps: {n_reps}\n
+                      RI: {round(rep_index, 2)}"))
+
+
+ggplotly(
+  ggplot(us_house_pop, aes(as.numeric(id), rep_index, color = ri_cat, label = State)) +
+    geom_ribbon(aes(ymin = -.05, ymax = .05, x = x),
+                inherit.aes = FALSE,
+                fill = "#637dff", alpha = 0.2) + 
+    geom_hline(yintercept = -.05, color = "#637dff", lty = 2, alpha = .5) +
+    geom_hline(yintercept = .05, color = "#637dff", lty = 2, alpha = .5) +
+    geom_point() +
+    theme_minimal() +
+    labs(title = "US House of Representatives" , x = "", y = "Representation Index") +
+    scale_color_manual(values = c("#637dff", "#ce6d6d", "#fcb06a")) +
+    theme(axis.text.x = element_blank(),
+          legend.position = "bottom",
+          legend.title = element_blank()), tooltip = "State") %>% 
+    layout(legend = list(orientation = "h"))
+
+```
+
+
+In this case, if the share of the population is smaller than the share of representatives,  the index is inflated, meaning the state is overrepresented. If the share of population is greater than the share of representatives, the index is deflated, meaning the state is underrepresented. This index ranges from $(-\infty, \infty)$.
+
+## Generalizing the Representation Index
+
+The representation index for the House of Representatives is written in such a way that it can be adapted for any representative body. The formula evaluates equality of the share of representatives and the share of the total constituency. In general, the formula can be written as $\ln\Big(\frac{\%\ share \ of \ reps}{\% \ share \ of \ constituency}\Big)$.
+
+To illustrate, let’s use this formula to calculate the representation index of the Assembly and Senate of California. In 2011, after the most recent census, California redrew its districts. The data used in this demonstration are from the [LA Times](http://spreadsheets.latimes.com/stateAssembly-2011-0729/). The California Assembly and Senate have 80 and 40 members respectively each representing one district.
+
+For this example, I consider a difference of 5% in either direction as adhering to the one person, one vote principle. To illustrate this, if the ratio is $\frac{1%}{0.95}$ the index score is 0.05. Alternatively, if the ratio is $\frac{1}{1.05}$, the index score is -0.05.
+
+```{r message=FALSE, warning=FALSE}
+#http://spreadsheets.latimes.com/stateAssembly-2011-0729/
+ca_assembly <- read_csv("https://raw.githubusercontent.com/JosiahParry/us_representation/master/data/ca/ca_state_assembly.csv") %>% 
+  select(id = ID, population = Population) %>% 
+  mutate(total_pop = sum(population),
+         share_pop = population / total_pop,
+         rep_index = log((1/80)/share_pop),
+         ri_cat = case_when(
+           rep_index < log(1/.95) & rep_index > log(1/1.05) ~ "One person, one vote",
+           rep_index > log(1/.95) ~ "Overrepresented",
+         rep_index < log(1/1.05) ~ "Underrepresented"
+         ),
+         District = glue("{id}\n
+                      % Pop: {round(share_pop*100, 2)}%\n
+                      RI: {round(rep_index, 2)}"))
+
+
+ca_assembly_gg <- ggplotly(
+  ggplot(ca_assembly,
+                aes(as.numeric(id), rep_index, color = ri_cat, label = District)) +
+   geom_ribbon(aes(ymin = -.05, ymax = .05, x = 1:nrow(ca_assembly)),
+        inherit.aes = FALSE,
+        fill = "#637dff", alpha = 0.2) + 
+  geom_hline(yintercept = -.05, color = "#637dff", lty = 2, alpha = .5) +
+  geom_hline(yintercept = .05, color = "#637dff", lty = 2, alpha = .5) +
+  geom_point() +
+  theme_minimal() +
+  ylim(c(-.05, .05)) +
+  labs(title = "California Assembly", x = "", y = "Representation Index") +
+  ylim(c(-.05, .05)) +
+  scale_color_manual(values = c("#637dff", "#ce6d6d", "#fcb06a")) +
+  theme(axis.text.x = element_blank(),
+        legend.position = "bottom",
+        legend.title = element_blank()), tooltip = "District") %>% 
+  layout(legend = list(orientation = "h"))
+
+ca_senate <- read_csv("https://raw.githubusercontent.com/JosiahParry/us_representation/master/data/ca/ca_state_senate.csv") %>% 
+  select(id = ID, population = Population) %>% 
+  mutate(total_pop = sum(population),
+         share_pop = population / total_pop,
+         rep_index = log((1/40)/share_pop),
+         ri_cat = case_when(
+           rep_index < log(1/.95) & rep_index > log(1/1.05) ~ "One person, one vote",
+           rep_index > log(1/.95) ~ "Overrepresented",
+         rep_index < log(1/1.05) ~ "Underrepresented"
+         ), District = glue("{id}\n
+                      % Pop: {round(share_pop*100, 2)}%\n
+                      RI: {round(rep_index, 2)}"))
+
+
+ca_senate_gg <- ggplotly(
+  ggplot(ca_senate, 
+         aes(as.numeric(id), rep_index, color = ri_cat, label = District)) +
+    geom_ribbon(aes(ymin = -.05, ymax = .05, x = 1:nrow(ca_senate)),
+        inherit.aes = FALSE,
+        fill = "#637dff", alpha = 0.2) + 
+    geom_hline(yintercept = -.05, color = "#637dff", lty = 2, alpha = .5) +
+    geom_hline(yintercept = .05, color = "#637dff", lty = 2, alpha = .5) +
+    geom_point() +
+    theme_minimal() +
+    ylim(c(-.05, .05)) +
+    labs(title = "California Senate", x = "", y = "Representation Index") +
+    ylim(c(-.05, .05)) +
+    scale_color_manual(values = c("#637dff", "#ce6d6d", "#fcb06a")) +
+    theme(axis.text.x = element_blank(),
+          legend.position = "bottom",
+          legend.title = element_blank()), tooltip = "District") %>% 
+  layout(legend = list(orientation = "h"))
+
+ca_assembly_gg
+```
+```{r}
+ca_senate_gg
+```
+
+
+The above example demonstrates the use of the representation index for both houses of the California legislature. This is good news as it demonstrates that the state upholds the [Equal Protection Clause](https://www.law.cornell.edu/constitution/amendmentxiv) of the Fourteenth Amendment and adheres to the Supreme Court decision [Reynolds v. Sims](https://www.law.cornell.edu/supremecourt/text/377/533), in which the court held that state districts must be proportionally drawn  (unlike US Senate districts).
+
+As Wikipedia [states](https://en.wikipedia.org/wiki/California_State_Assembly_districts), “[given California]’s large population and relatively small legislature, the Assembly has the largest population per representative ratio of any lower house legislature in the United States; only the federal U.S. House of Representatives has a larger ratio.” California’s representative body differs greatly from that of, for example, New Hampshire.
+
+New Hampshire has arguably the most unique lower house legislature of any state: there are 400 representatives from 204 districts. House districts also include what are called [floterial districts](https://www.nhmagazine.com/2012/11/01/new-hampshire-districts/), areas that represent multiple municipalities. The legality of such districts has been disputed in the state Supreme Court, but nonetheless they persist, and as a result, New Hampshire has one of the smallest constituent-to-representative ratios in the nation. This results in overrepresentation for almost every municipality.
+
+```{r}
+nh_pop <- read_csv("https://raw.githubusercontent.com/JosiahParry/us_representation/master/data/nh/nh_population-estimates-2017.csv") %>% 
+  na.omit() %>% 
+  gather(year, pop, -county, -municipality) %>% 
+  mutate_if(is.character, tolower) %>% 
+  filter(year == 2017)
+
+
+nh_reps <- read_csv("https://raw.githubusercontent.com/JosiahParry/us_representation/master/data/nh/nh_reps_18.csv")
+
+total_reps <- length(unique(nh_reps$rep_name))
+
+nh_house_ri <- nh_reps %>% 
+  group_by(municipality) %>% 
+  summarise(n_reps = n()) %>% 
+  mutate(share_reps = n_reps / total_reps) %>% 
+  inner_join(nh_pop) %>% 
+  mutate(total_pop = sum(pop, na.rm = TRUE),
+         id = row_number(),
+         share_pop = pop / total_pop,
+         rep_index = log(share_reps/ share_pop),
+         ri_cat = case_when(
+           rep_index < log(1/.95) & rep_index > log(1/1.05) ~ "One person, one vote",
+           rep_index > log(1/.95) ~ "Overrepresented",
+         rep_index < log(1/1.05) ~ "Underrepresented"
+         ), Municipality = glue("{str_to_title(municipality)}\n
+                      % Pop: {round(share_pop*100, 2)}%\n
+                      RI: {round(rep_index, 2)}")
+  )
+
+
+ggplotly(
+  ggplot(nh_house_ri, 
+        aes(as.numeric(id), rep_index, color = ri_cat, label = Municipality)) +
+        geom_ribbon(aes(ymin = -.05, ymax = .05, x = 1:nrow(nh_house_ri)),
+        inherit.aes = FALSE,
+        fill = "#637dff", alpha = 0.2) + 
+    geom_hline(yintercept = -.05, color = "#637dff", lty = 2, alpha = .5) +
+    geom_hline(yintercept = .05, color = "#637dff", lty = 2, alpha = .5) +
+  geom_point() + 
+  theme_minimal() +
+  labs(title = "New Hampshire House of Representatives", 
+       x = "", y = "Representation Index") +
+  scale_color_manual(values = c("#637dff", "#ce6d6d", "#fcb06a")) +
+  theme(axis.text.x = element_blank(),
+        legend.position = "bottom",
+        legend.title = element_blank()), tooltip = "Municipality") %>% 
+  layout(legend = list(orientation = "h"))
+```
+
+
+The above chart illustrates this phenomenon. Interestingly, the most populous cities and towns in the region are represented according to the one person, one vote paradigm. When applied to the state senate, the results are much different.
+
+```{r}
+sd_towns <- read_csv("https://raw.githubusercontent.com/JosiahParry/us_representation/master/data/nh/nh_senate_towns.csv")
+
+
+nh_senate_ri <- nh_pop %>% 
+  inner_join(sd_towns, by = c("municipality" = "town")) %>% 
+  select(-category, town = municipality) %>% 
+  group_by(sd_id) %>% 
+  summarise(pop = sum(pop)) %>% 
+  #group_by(year) %>% 
+  mutate(total_pop = sum(pop)) %>% 
+  ungroup() %>% 
+  mutate(share_pop = pop / total_pop,
+         rep_index = log((1/24)/ share_pop),
+         ri_cat = case_when(
+           rep_index < log(1/.95) & rep_index > log(1/1.05) ~ "One person, one vote",
+           rep_index > log(1/.95) ~ "Overrepresented",
+         rep_index < log(1/1.05) ~ "Underrepresented"
+         ),
+         id = row_number(),
+         District = glue("{sd_id}\n
+                      % Pop: {round(share_pop*100, 2)}%\n
+                      RI: {round(rep_index, 2)}"))
+
+
+
+ggplotly(ggplot(nh_senate_ri, 
+       aes(as.numeric(id), rep_index, color = ri_cat, label = District)) +
+        geom_ribbon(aes(ymin = -.05, ymax = .05, x = 1:nrow(nh_senate_ri)),
+        inherit.aes = FALSE,
+        fill = "#637dff", alpha = 0.2) + 
+    geom_hline(yintercept = -.05, color = "#637dff", lty = 2, alpha = .5) +
+    geom_hline(yintercept = .05, color = "#637dff", lty = 2, alpha = .5) +
+  geom_point() + 
+  theme_minimal() +
+  labs(title = "New Hampshire Senate", x = "", y = "Representation Index") +
+  scale_color_manual(values = c("#637dff", "#ce6d6d", "#fcb06a")) +
+  theme(axis.text.x = element_blank(),
+        legend.position = "bottom",
+        legend.title = element_blank()), tooltip = "District") %>%  
+  layout(legend = list(orientation = "h"))
+```
+
+The representation index for the New Hampshire Senate trends toward underrepresentation. The median value is shown with a dotted red line. It is apparent that the representation of the Senate of New Hampshire is not as equally representative as that of California. The population distribution across the state is highly unequal with a vast majority residents living close to the Maine and Massachusetts borders plausibly contributing to this inequality.  
+
+## Further Directions
+
+The ability to compare representation across governing bodies has large implications for comparative political analysis. Further development of the representation index allows scholars and researchers to compare constituency representation among similar bodies—as demonstrated with the case of California and New Hampshire.
+
+The new formulation of the representation index is conducive to inter-governmental body analysis. This is possible by the index’s ability to place bodies of different size on the same scale. A result of this is the ability to perform hypothesis testing among groups. As a motivating example, the representation indexes of states are compared along partisanship lines.
+
+```{r}
+state_lookup <- state.name
+names(state_lookup) <- state.abb
+
+senators <- read_csv('https://theunitedstates.io/congress-legislators/legislators-current.csv') %>% 
+  filter(type == "sen") %>% 
+  select(full_name, state, party) %>% 
+  mutate(state_name = str_replace_all(state, state_lookup))
+
+
+state_party <- senators %>%
+  mutate(x = 1) %>% 
+  spread(party, x, fill = 0) %>% 
+  arrange(-Independent) %>% 
+  group_by(state) %>% 
+  summarise(n_dem = as.factor(sum(Democrat))) %>% 
+  left_join(us_house_pop) %>% 
+  mutate(senate_rep_index = log((1/50)/(share_pop)),
+         id = fct_reorder(id, senate_rep_index),
+         party = case_when(
+           n_dem == 2 ~ "Democrat",
+           n_dem == 0 ~ "Republican", 
+           n_dem == 1 ~ "Split / Other"
+         ),
+         State = glue("{state_name}\n# Dem: {n_dem}\nRep. Index: {round(senate_rep_index,2)}"))
+
+
+
+ggplotly(ggplot(state_party, 
+       aes(as.numeric(id), senate_rep_index, color = party, label = State)) +
+  geom_ribbon(aes(ymin = -.05, ymax = .05, x = 1:50),
+              inherit.aes = FALSE,
+              fill = "#637dff", alpha = 0.2) + 
+  geom_hline(yintercept = -.05, color = "#637dff", lty = 2, alpha = .5) +
+  geom_hline(yintercept = .05, color = "#637dff", lty = 2, alpha = .5) +
+  geom_point(show.legend = FALSE) + 
+  theme_minimal() +
+  labs(title = "US Senate", x = "", y = "Representation Index") +
+  scale_color_manual(values = c("#637dff", "#ce6d6d", "#fcb06a")) +
+  theme(axis.text.x = element_blank(),
+        legend.position = "none",
+        legend.title = element_blank()
+        ) + 
+  facet_wrap(~party), tooltip = "State") 
+```
+
+
+State Senate representation indexes were calculated using the general representation index formula for all 50 states. A two-sample t-test was performed comparing states with two Republican senators to those with two Democratic senators. In doing so, we fail to reject the null hypothesis $( \ t(39) = 1.117, \ p = 0.27 \ )$ that there is a difference of representation index based solely on partisanship. 
+
+```{r}
+state_party %>% 
+  mutate(party = fct_rev(party)) %>% 
+  ggplot(aes(x = party, y = rep_index,
+             fill = party, color = party)) +
+  geom_violin(alpha = 0.5, lwd = 0) +
+  scale_color_manual(values = c("Democrat" = "#637dff", 
+                                "Republican" = "#ce6d6d",
+                                "Split / Other" = "#fcb06a")) +
+  scale_fill_manual(values = c("Democrat" = "#637dff",
+                               "Republican" = "#ce6d6d",
+                               "Split / Other" = "#fcb06a")) +
+  geom_point(alpha = .5) + 
+  #geom_jitter() + 
+  theme_minimal() +
+  coord_flip() +
+  theme(legend.position = "none") + 
+  labs(title = "Senate Representation Index",
+       subtitle = "Distribution by party", x = "", y = "")
+```
+
+```{r}
+state_party %>% 
+  group_by(Party = party) %>%
+  summarize(n = n(),
+            Mean = mean(senate_rep_index),
+            SD = sd(senate_rep_index),
+            SE = SD/sqrt(n)) %>% 
+  ungroup() %>% 
+  bind_rows(
+    summarize(state_party,
+              n = n(),
+              Mean = mean(senate_rep_index),
+              SD = sd(senate_rep_index),
+              SE = SD/sqrt(n),
+              Party = "Total")
+  ) %>% 
+  knitr::kable(digits = 2, align = "l")
+```
+
+
+It has been demonstrated that the representation index is an informative measure that can be utilized to examine over and underrepresentation of a governing body. This new formulation of the representation index is useful in its ability to evaluate both over and under-representation and  to compare different political entities. One could imagine, for example, a comparison of constituency representation between the United States and France’s upper and lower legislative houses.
