@@ -1,0 +1,32 @@
+---
+title: "Databases for Data Scientist"
+subtitle: "And why you probably dont need one"
+date: "2024-05-16"
+categories: [production, arrow, duckdb]
+---
+
+It's been coming up a lot recently, or, maybe, I've just been focused on this a lot more. Data scientists are coming to terms with the fact that they have to work with databases if they want their analytics to scale. That is pretty normal. But one of the bigger challenges is that these data scientists don't really know how to make that leap. What do they need to know to make that transition? 
+
+For many of use in the "know", we know that there actually isn't all that much different between a database and a data.frame. A data frame is in memory but a database table is just _over there_ sitting somewhere else. 
+
+> If you know how to write dplyr, you already know how to work with a database.
+
+## What do you need to know? 
+
+For those of you who want to begin to use databases in your work and want to start scaling your analysis, there are a few topics that would be helpful for you to know. I'm not going to teach you them here. But list them out so you can google it. And truthfully, you already know what these are but you don't know the terminology. 
+
+Here is my list of things to know: 
+
+1. Learn what **RDBMS** means. 
+  - relational database management system or sometimes just DBMS
+2. Understand **primary keys** and **foreign keys**
+3. Figure out what database **normalization** is and when its useful
+3. Schemas vs. tables for organizational purposes
+4. Views vs tables (this is handy for making tables to be consumed by BI / other things)
+5. Table indexes and what they are (that way you can know when you might need them)
+
+## Why you might not actually need a full RDBMS
+
+With the ubiquity of parquet and tools like apache arrow and DuckDB, there's a good chance that for what you want to accomplish in your analytical workflow, you don't need a fully fledged database. Organized parquet files into a database-like structure will be sufficient. DuckDB and Arrow can allow you to work with these data in a larger than memory capacity. You don't need to read it all into memory, actually. 
+
+Before you say you need Postgres for analytics, instead, try parquet (and with hive partitioning if your data are larger) with DuckDB and Apache Arrow. It's likely all you need.

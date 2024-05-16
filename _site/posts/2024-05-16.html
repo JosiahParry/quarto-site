@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.4.489">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
 <meta name="author" content="Josiah Parry">
-<meta name="dcterms.date" content="2024-02-15">
-<title>Josiah Parry - Why do we sleep on factors?</title>
+
+<title>Josiah Parry - Databases for Data Scientist</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,41 +21,8 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
+
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
@@ -70,7 +39,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -95,22 +65,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script><script type="text/javascript">
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script>
+
+<script type="text/javascript">
 
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
-</script><script async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9842567530621468" crossorigin="anonymous"></script><link rel="stylesheet" href="../styles.css">
-<meta name="twitter:title" content="Josiah Parry - Why do we sleep on factors?">
-<meta name="twitter:description" content="And how I wish things may behave?">
+</script>
+<script async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9842567530621468" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - Databases for Data Scientist">
+<meta name="twitter:description" content="And why you probably dont need one">
 <meta name="twitter:creator" content="@josiahparry">
 <meta name="twitter:card" content="summary_large_image">
 </head>
-<body class="nav-sidebar docked slimcontent">
+
+<body class="nav-sidebar docked">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
@@ -123,9 +103,13 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
         <i class="bi bi-search"></i>
       </button>
     </div>
-  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Josiah Parry</a> 
     </div>
@@ -137,7 +121,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
         </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-<li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">home</span></a>
@@ -168,22 +152,31 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
   </div>
 </li>
     </ul>
-</div>
-    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
    
   <ul>
-<li><a href="#using-vctrs" id="toc-using-vctrs" class="nav-link active" data-scroll-target="#using-vctrs">Using <code>vctrs</code></a></li>
-  </ul></nav>
-</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+  <li><a href="#what-do-you-need-to-know" id="toc-what-do-you-need-to-know" class="nav-link active" data-scroll-target="#what-do-you-need-to-know">What do you need to know?</a></li>
+  <li><a href="#why-you-might-not-actually-need-a-full-rdbms" id="toc-why-you-might-not-actually-need-a-full-rdbms" class="nav-link" data-scroll-target="#why-you-might-not-actually-need-a-full-rdbms">Why you might not actually need a full RDBMS</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Why do we sleep on factors?</h1>
-<p class="subtitle lead">And how I wish things may behave?</p>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Databases for Data Scientist</h1>
+<p class="subtitle lead">And why you probably dont need one</p>
   <div class="quarto-categories">
-    <div class="quarto-category">r</div>
+    <div class="quarto-category">production</div>
+    <div class="quarto-category">arrow</div>
+    <div class="quarto-category">duckdb</div>
   </div>
   </div>
 
@@ -198,99 +191,48 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
           </div>
   </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">February 15, 2024</p>
-    </div>
-  </div>
   
     
   </div>
   
 
 
-</header><p>Factors are R’s version of an enum(eration) (<a href="../posts/2023-11-10-enums-in-r/index.html">related post</a>). They’re quite handy and I think we can probably rely on them a bit more for enumations like <code>c("a", "b", "c")</code>. Today I’ve been helping test a new possible feature of <a href="https://extendr.github.io/"><code>extendr</code></a> involving factors and it has me thinking a bit about some behaviors. Here are my extemporaneous thoughts:</p>
-<p>When we have a factor, how can we get new values and associate it with an existing factor?</p>
-<p>For example, we can create a factor of the alphabet.</p>
-<div class="cell">
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">letters</span><span class="op">)</span></span>
-<span><span class="va">f</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] a b c d e f g h i j k l m n o p q r s t u v w x y z
-Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
-</div>
-</div>
-<p>Say we have new values that match the level names and want to extend the vector or create a new one based on the levels.</p>
-<p>It would be <em>nice</em> if we could subset a factor based on the levels name</p>
-<div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f</span><span class="op">[</span><span class="st">"a"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] &lt;NA&gt;
-Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
-</div>
-</div>
-<p>but this gives us an <code>NA</code> because there is no named element <code>"a"</code>. If we gave them names we could access it accordingly</p>
-<div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">letters</span><span class="op">)</span><span class="op">[</span><span class="st">"a"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>a 
-a 
-Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
-</div>
-</div>
-<p>but this would be antithetical to the efficiency of a factor.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>They key selling point of a factor is that we define the levels only once and associate them based on integer positions. This is far far far faster and more memory efficient than repeating a value a sh!t ton of times.</p>
-</div></div><p>To create a new factor we have to pass in the levels accordingly:</p>
-<div class="cell">
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] d
-Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
-</div>
-</div>
-<p>This is actually pretty nice! But I feel like there could be an even better experience, though I don’t know what it would be…</p>
-<p>If we wanted to extend the vector by combining the existing factor with levels names we coerce to a character vector but instead of the levels we get the integer values.</p>
-<div class="cell">
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"a"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"  "10" "11" "12" "13" "14" "15"
-[16] "16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "26" "a" </code></pre>
-</div>
-</div>
-<p>To combine them we would need to ensure that they are both factors.</p>
-<div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">f</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] a b c d e f g h i j k l m n o p q r s t u v w x y z d
-Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
-</div>
-</div>
-<section id="using-vctrs" class="level2"><h2 class="anchored" data-anchor-id="using-vctrs">Using <code>vctrs</code>
-</h2>
-<p>Upon further thinking, <a href="https://vctrs.r-lib.org/"><code>vctrs</code></a> tends to have the type-safe behavior that I wish from R (and aspects of it should probably be adapted into base R).</p>
-<p>I think vctrs gets to the behavior that I want actually. If I have a value and I use <code><a href="https://vctrs.r-lib.org/reference/vec_cast.html">vctrs::vec_cast()</a></code> and provide the existing factor vector <code>f</code> to the <code>to</code> argument, it will use the levels.</p>
-<div class="cell">
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">vctrs</span><span class="fu">::</span><span class="fu"><a href="https://vctrs.r-lib.org/reference/vec_cast.html">vec_cast</a></span><span class="op">(</span><span class="st">"z"</span>, <span class="va">f</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] z
-Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
-</div>
-</div>
-<p>But this <em>will not</em> succeed if we pass it a value that is unknown. The error message is a bit cryptic and frankly feels a little pythonic in the verbosity of the traceback! But this is type safe! And I LIKE IT!</p>
-<div class="cell">
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">vctrs</span><span class="fu">::</span><span class="fu"><a href="https://vctrs.r-lib.org/reference/vec_cast.html">vec_cast</a></span><span class="op">(</span><span class="st">"123"</span>, <span class="va">f</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error:
-! Can't convert from `"123"` &lt;character&gt; to &lt;factor&lt;754f0&gt;&gt; due to loss of generality.
-• Locations: 1</code></pre>
-</div>
-</div>
+</header>
 
 
-</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+<p>It’s been coming up a lot recently, or, maybe, I’ve just been focused on this a lot more. Data scientists are coming to terms with the fact that they have to work with databases if they want their analytics to scale. That is pretty normal. But one of the bigger challenges is that these data scientists don’t really know how to make that leap. What do they need to know to make that transition?</p>
+<p>For many of use in the “know”, we know that there actually isn’t all that much different between a database and a data.frame. A data frame is in memory but a database table is just <em>over there</em> sitting somewhere else.</p>
+<blockquote class="blockquote">
+<p>If you know how to write dplyr, you already know how to work with a database.</p>
+</blockquote>
+<section id="what-do-you-need-to-know" class="level2">
+<h2 class="anchored" data-anchor-id="what-do-you-need-to-know">What do you need to know?</h2>
+<p>For those of you who want to begin to use databases in your work and want to start scaling your analysis, there are a few topics that would be helpful for you to know. I’m not going to teach you them here. But list them out so you can google it. And truthfully, you already know what these are but you don’t know the terminology.</p>
+<p>Here is my list of things to know:</p>
+<ol type="1">
+<li>Learn what <strong>RDBMS</strong> means.</li>
+</ol>
+<ul>
+<li>relational database management system or sometimes just DBMS</li>
+</ul>
+<ol start="2" type="1">
+<li>Understand <strong>primary keys</strong> and <strong>foreign keys</strong></li>
+<li>Figure out what database <strong>noramlization</strong> is and when its useful</li>
+<li>Schemas vs.&nbsp;tables for organizational purposes</li>
+<li>Views vs tables (this is handy for making tables to be consumed by BI / other things)</li>
+<li>Table indexes and what they are (that way you can know when you might need them)</li>
+</ol>
+</section>
+<section id="why-you-might-not-actually-need-a-full-rdbms" class="level2">
+<h2 class="anchored" data-anchor-id="why-you-might-not-actually-need-a-full-rdbms">Why you might not actually need a full RDBMS</h2>
+<p>With the ubiquity of parquet and tools like apache arrow and DuckDB, there’s a good chance that for what you want to accomplish in your analytical workflow, you don’t need a fully fledged database. Organized parquet files into a database-like structure will be sufficient. DuckDB and Arrow can allow you to work with these data in a larger than memory capacity. You don’t need to read it all into memory, actually.</p>
+<p>Before you say you need Postgres for analytics, instead, try parquet (and with hive partitioning if your data are larger) with DuckDB and Apache Arrow. It’s likely all you need.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -679,9 +621,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script><script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
 </script>
 </div> <!-- /content -->
+
 
 
 

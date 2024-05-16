@@ -1,6 +1,7 @@
 ---
 title: "Why do we sleep on factors?"
 subtitle: "And how I wish things may behave?"
+date: "2024-02-15"
 categories: [r]
 ---
 
