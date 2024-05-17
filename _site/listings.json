@@ -15,6 +15,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-05-17-moran-eigenvectors.html",
       "/posts/2024-05-16-databases-for-ds.html",
       "/posts/2024-02-15-factor-finagling.html",
       "/posts/2024-01-27-shared-segments.html",
@@ -86,6 +87,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-05-17-moran-eigenvectors.html",
       "/posts/2024-05-16-databases-for-ds.html",
       "/posts/2024-02-15-factor-finagling.html",
       "/posts/2024-01-27-shared-segments.html",

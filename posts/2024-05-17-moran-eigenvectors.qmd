@@ -1,0 +1,162 @@
+---
+title: "Encoding spatial patterns as variables"
+subtitle: "Principal Coordinate Analysis & Moran Eigenvectors"
+date: "2024-05-17"
+categories: [spatial, r]
+freeze: true
+---
+
+I've begun reading ["Spatial modelling: a comprehensive framework for principal coordinate analysis of neighbour matrices (PCNM)"](https://www.sciencedirect.com/science/article/abs/pii/S0304380006000925) which describes the process of making "Moran Eigenvector Maps."
+
+In this case, I haven't finished reading the paper but am quite thrilled by the prospect of it. One of the biggest problems in ecological and social science modelling is that space is often a confounder in models. By this I mean that a lot of phenomena we see are **spatially dependent**.
+
+Reductively, spatial dependence means that variables or outcomes are strongly linked to where things are. For example, income tends to be spatially dependent. Meaning that high income areas are typically surounded by other high income areas. 
+
+## The problem
+
+When modelling data that exhibit spatial dependence, spatial relationships need to be accounted for. Otherwise, you will often find that model residuals (errors) _also exhibit spatial dependence_. So? How can you control for this. 
+
+There are a number of techniques that people use from more statistically sound ones, to tricks used by ML engineers. For example you may introduce the spatial lag (neighborhood average of a variable) to account for some of the spatial association. 
+
+## Principal Coordinate Analysis (PCoA)
+
+One interesting idea is using principle components analysis to encode geography into numeric variables. Conceptually, the idea is actually rather simple! 
+
+When we do spatial statistics, we create what are called spatial weights matrices. These define which features are related to eachother. 
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+For example we can identify the neighbors from the famous guerry dataset based on the contiguity—that is if they are touching. We create a `nb` and `wt` object. The `nb` are the neighbors and `wt` uses a gaussian kernel. The gaussian kernel assigns more weight to to locations that are closer and less weight to those that are further—essentially following the normal distribution. 
+
+```{r, message = FALSE}
+library(sfdep)
+library(dplyr)
+
+geoms <- guerry$geometry
+centroids <- sf::st_centroid(geoms)
+
+nb <- st_contiguity(geoms)
+wt <- st_kernel_weights(nb, centroids, "gaussian")
+```
+
+Visually, this is what the neighborhood relationship looks like: 
+
+```{r}
+#| code-fold: true
+library(ggplot2)
+sfn <- st_as_graph(geoms, nb, )
+
+autoplot(sfn) +
+  geom_sf(data = geoms, fill = NA, color = "black", lwd = 0.2) +
+  theme_void()
+```
+
+The weights object is a ragged array which is used to be a sparse matrix representation of the spatial weights. 
+ 
+```{r}
+head(wt)
+```
+
+The spatial weights are an `n x n` square matrix. The idea behind the paper above is that we can encode the spatial relationships in this neighborhood matrix using principle components. 
+
+We can take the weights matrix and create a dense matrix from it: 
+
+```{r}
+m <- wt_as_matrix(nb, wt)
+```
+
+Using this new matrix, we can perform PCA on it. 
+
+```{r}
+pca_res <- prcomp(m)
+summary(pca_res)
+```
+
+The spatial relationships that are embedded by the spatial weights matrix, are now encoded as components from a PCA. This means that we can use each of these components as a univariate measure of space. And, they also exhibit quite interesting patterns of spatial dependence. 
+
+## Exploring PCoA 
+
+These components essentially capture spatial autocorrelation. For example we an look at the first component. 
+
+```{r}
+# extract the first component
+comp1 <- pca_res$rotation[, 1]
+
+ggplot(guerry, aes(fill = comp1)) +
+  geom_sf(color = "black", lwd = 0.2) +
+  scale_fill_viridis_c() +
+  theme_void() +
+  labs(fill = "Eigenvector")
+```
+
+It displays a pattern of being near Paris (the dark purple, or negative eigenvector values) or being nearer to Aveyron, the positive eigenvector values. Clearly, this displays some interesting global spatial autocorrelation. But how much? 
+
+We can measure the global spatial autocorrelation of this component using Moran's I.
+
+```{r}
+global_moran_perm(comp1, nb, wt)
+```
+
+The result is `1.0698` which is greater than the theoretical maximum of 1. There is a ridiculous amount of spatial autocorrelation here. 
+
+## Using PCoA Eigenvectors to reduce spatial confounding
+
+Predicting crime based on population and the prostitution levels of 1830s France shows that there is a _lot_ of spatial autocorrelation in the residuals. This means that the results of the model do not appropriately account for spatial dependence. 
+
+```{r}
+mod <- lm(crime_pers ~ pop1831 + prostitutes, data = guerry)
+summary(mod)
+global_moran_test(resid(mod), nb, wt)
+```
+
+
+If you include the first eigenvector component, the spatial autocorrelation of the residuals decrease dramatically. 
+
+```{r}
+mod <- lm(crime_pers ~ pop1831 + prostitutes + comp1, data = guerry)
+summary(mod)
+global_moran_test(resid(mod), nb, wt)
+```
+
+Interestingly, this increases the $R^2$ by 16 which is nothing to scoff at. The significance of `prostitutes` variable increases and the $\beta$ values shrink. And the first component accounts for pretty much everything else lol!
+
+
+### What about another component? 
+
+We can plot the relationship that is capture by the second component.
+
+```{r}
+# extract the second component
+comp2 <- pca_res$rotation[, 2]
+
+ggplot(guerry, aes(fill = comp2)) +
+  geom_sf(color = "black", lwd = 0.2) +
+  scale_fill_viridis_c() +
+  theme_void() +
+  labs(fill = "Eigenvector")
+```
+
+This component captures a west to east relationship rather than a north to south one. 
+Is the second component spatially autocorrelated?
+
+```{r}
+global_moran_perm(comp2, nb, wt)
+```
+
+Oh hell yeah it is. 
+
+If this component is included in the model instead of the first one we see something interesting. 
+
+```{r}
+mod <- lm(crime_pers ~ pop1831 + prostitutes + comp2, data = guerry)
+summary(mod)
+global_moran_test(resid(mod), nb, wt)
+```
+
+The model is not impacted nor is the spatial autocorrelation. So the pattern encompassed by the second component is not confounding our variables like the first one is. 
+
+## What does this mean?
+
+If you have spatially dependent features that you're predicting you should consider using these as input features to your models. I have a hunch that they would work insanely well with computer vision tasks and things models like Random Forests and XGBoost.
