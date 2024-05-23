@@ -10,7 +10,510 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Wed, 22 May 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 23 May 2024 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Spatial ML: Predicting on out-of-sample data</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-05-23-spatial-ml-prediction.html</link>
+  <description><![CDATA[ <p>The incorporation of spatially dependent variables in a machine learning model can greatly improve the model’s performance. These features can include, but not limited to:</p>
+<ul>
+<li>the spatial lag (neighborhood average) of a variable</li>
+<li>counts of neighboring features</li>
+<li>most common category nearby</li>
+<li>spatial embedding via principle coordinate analysis</li>
+</ul>
+<section id="deriving-spatial-features" class="level2"><h2 class="anchored" data-anchor-id="deriving-spatial-features">Deriving spatial features</h2>
+<p>These kinds of spatial variables are dependent upon the features nearby them. To calculate these variable one needs to have a concept of a neighborhood.</p>
+<blockquote class="blockquote">
+<p>N.B. These neighborhoods are typically found using spatial indices such as R* trees for polygons and lines and KD-trees for point features. These spatial indices make it fast to look up nearby features.</p>
+</blockquote>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://sfdep.josiahparry.com">sfdep</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://github.com/r-spatial/spatialreg/">spatialreg</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">nb</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://sfdep.josiahparry.com/reference/st_contiguity.html">st_contiguity</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">guerry</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geoms</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">guerry</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geometry</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">pnts</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_centroid</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geoms</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">edges</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://sfdep.josiahparry.com/reference/st_as_edges.html">st_as_edges</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">guerry</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geometry</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">nb</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://sfdep.josiahparry.com/reference/st_weights.html">st_weights</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">nb</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geoms</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">nb</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[[</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span>, main <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A polygon's neighborhood"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">edges</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">edges</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">from</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"geometry"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span>, add <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blue"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">wt</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://sfdep.josiahparry.com/reference/st_kernel_weights.html">st_kernel_weights</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">nb</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">pnts</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gaussian"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">listw</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html">nb2listw</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">nb</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">wt</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># function to do PCOA</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">pcoa</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">listw</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">n_comps</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">m</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">listw</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CsparseMatrix"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>, <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">irlba</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/irlba/man/prcomp_irlba.html">prcomp_irlba</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">m</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">n_comps</span>, center <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, scale <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">plot_comp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">comp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">comp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geoms</span>, color <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>, lwd <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>option <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>legend.position <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"none"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">comps</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pcoa</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">listw</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_comp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">comps</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">rotation</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>title <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A Spatial Component"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="https://josiahparry.com/posts/2024-05-23-spatial-ml-prediction_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="https://josiahparry.com/posts/2024-05-23-spatial-ml-prediction_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<p>Given an arrangement of features we derive input features from them. For example we use the neighborhood based on contiguity to calculate spatial lags. Or, we use the neighborhoods to create a spatial weights matrix to use as input into a principle coordinate analysis (PCoA) to derive embeddings of spatial relationships.</p>
+</section><section id="the-problem" class="level2"><h2 class="anchored" data-anchor-id="the-problem">The Problem</h2>
+<p>An issue arises when we want to use these models outside of the data that we used to train the model.</p>
+<p><strong>How do we incorporate space with out-of-sample data?</strong></p>
+<p>There are three approaches we can take, I believe.</p>
+<ol type="1">
+<li>Use the original spatial features to derive the spatial varaibles on the out of sample data.</li>
+<li>Grow the spatial index trees</li>
+<li>Calculate the spatial variables on the context of the new out-of-sample data.</li>
+</ol>
+<p>There are issues with each of these approaches.</p>
+</section><section id="using-original-spatial-features-for-test-samples" class="level2"><h2 class="anchored" data-anchor-id="using-original-spatial-features-for-test-samples">Using Original Spatial Features for test samples</h2>
+<p>Let us take the example of the spatial lag. To calculate the spatial lag of a feature outside of our sample, we would need to <em>retain the existing R* and KD trees</em>. This could be memory intensive. The process would be somewhat like this:</p>
+<ol type="1">
+<li>Identify the neighborhood of the new feature</li>
+<li>Calculate the spatial lag of the neighborhood in the context of the training dataset</li>
+<li>Use those variables for prediction</li>
+</ol>
+<section id="use-case" class="level3"><h3 class="anchored" data-anchor-id="use-case">Use case:</h3>
+<p>One would use this approach when they believe that their training data has covered the complete spatial extent of what they intend to model.</p>
+</section><section id="cons" class="level3"><h3 class="anchored" data-anchor-id="cons">Cons:</h3>
+<p>This would require storing the spatial indices that were used to create the variables along with the variables that are used. In the case of PCoA, you would need to maintain the loadings so that incoming data can be projected onto it.</p>
+</section></section><section id="growing-the-spatial-feature-space" class="level2"><h2 class="anchored" data-anchor-id="growing-the-spatial-feature-space">Growing the Spatial Feature Space</h2>
+<p>Another example would be that for the <em>entire out-of-sample dataset</em> we insert it into our spatial index then calculate the neighborhood for each feature. This means that each out-of-sample location can have a neighborhood that consists of features in the <em>original training dataset or the test set</em>.</p>
+<ol type="1">
+<li>Insert out-of-sample features into spatial index</li>
+<li>Identify neighborhood of out-of-sample features</li>
+<li>Calculate spatial lag in the context of both training and testing dataset</li>
+<li>Use those newly calculated spatial variables in the prediction set.</li>
+</ol>
+<p><strong>Important</strong>:</p>
+<p>From this, you can either, keep the newly inserted features in the spatial index so that they are available for later predictions or discard them after having identified your neigborhoods. If you choose the former, it makes the model mutable meaning that the spatial features generated from it would learn from each test set.</p>
+</section><section id="use-case-1" class="level2"><h2 class="anchored" data-anchor-id="use-case-1">Use case:</h2>
+<p>You would use this approach when the original training data does not cover the complete spatial extent of what is intended to be modeled.</p>
+</section><section id="cons-1" class="level2"><h2 class="anchored" data-anchor-id="cons-1">Cons</h2>
+<p>This would require storing the original spatial indicies and variables that were used to create the spatial variables. Additionally, this would require a <em>mutable spatial index</em>. In the case that the out-of-sample are not retained, the spatial index must be cloned which can be memory intensive depending on the size of it.</p>
+</section><section id="deriving-spatial-variables-from-the-test-set" class="level2"><h2 class="anchored" data-anchor-id="deriving-spatial-variables-from-the-test-set">Deriving Spatial Variables from the test set</h2>
+<p>This last approach is the most straight forward. If there are spatial features that are needed for prediction, you generate them entirely from the test dataset. In the case of the spatial lag you would:</p>
+<ol type="1">
+<li>Create a new spatial index for the test set</li>
+<li>Identify the neighborhood of each test feature in the test-set</li>
+<li>Calculate the spatial lag with these features</li>
+<li>Use those newly calculated spatial variables in the prediction set.</li>
+</ol></section><section id="use-case-2" class="level2"><h2 class="anchored" data-anchor-id="use-case-2">Use case:</h2>
+<p>You would use this approach when the model is intended to predict a specific phenomenon and is ambivalent to the spatial extent. The model is also intended to be predicted upon an entire target spatial extent. For example, the model is trained to detect housing prices in urban areas. The model might be trained on data in California but is intended to be used in urban areas in Ohio, Michigan, Massachusettes, etc.</p>
+</section><section id="cons-2" class="level2"><h2 class="anchored" data-anchor-id="cons-2">Cons</h2>
+<p>Calculating a spatial index can be time-consuming. It would require a test set that covers the entire spatial extent that is intended to be predicted upon. This would not be good for small batch or individual record prediction.</p>
+
+
+</section> ]]></description>
+  <category>spatial</category>
+  <category>ml</category>
+  <guid>https://josiahparry.com/posts/2024-05-23-spatial-ml-prediction.html</guid>
+  <pubDate>Thu, 23 May 2024 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Univariate Spatial Dimensionality Reduction</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -11619,91 +12122,6 @@ font-style: inherit;">summarise.sdf</span></span></code></pre></div>
   <description><![CDATA[ undefined ]]></description>
   <guid>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</guid>
   <pubDate>Fri, 10 Feb 2023 05:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Raw strings in R</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-01-19-raw-strings-in-r.html</link>
-  <description><![CDATA[ <p>The one thing about Python I actually really like is the ability to use raw strings. Raw strings are super helpful for me because at work I use a windows machine. And windows machines use a silly file path convention. The <code>\</code> back slack character is used as the file separator as opposed to the linux / unix <code>/</code> forward slash.</p>
-<p>Using the backslash is so annoying because it’s also an escape character. In python I can write the following to hard code a file path.</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1">file_path <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r"nav\to\file\path.ext"</span></span></code></pre></div>
-<p>Whereas in R typically you would have to write:</p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">file_path</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"nav\\to\\file\\path.ext"</span></span></code></pre></div>
-<p>Since <code>\</code> is an escape character you have to escape it first using itself. So, its annoying. And <code>file.path("nav", "to", "file", "path.ext", fsep = "\\")</code> is a wee bit cumbersome sometimes.</p>
-<section id="well-apparently-we-have-all-been-sleeping-on-raw-strings-in-r-since-version-4.0." class="level1"><h1>WELL APPARENTLY WE HAVE ALL BEEN SLEEPING ON RAW STRINGS IN R SINCE VERSION 4.0.</h1>
-</section><section id="its-version-4.2.2" class="level1 page-columns page-full"><h1>IT’s VERSION 4.2.2</h1>
-<div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p><img src="https://media.giphy.com/media/3o7TKA3ypeMbOXSrp6/giphy.gif" class="img-fluid figure-img"></p>
-<figcaption class="margin-caption">Damnit.</figcaption></figure>
-</div>
-<section id="aight." class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="aight.">Aight.</h2>
-<p>So like, you can use raw strings today.</p>
-<div class="page-columns page-full"><p></p><div class="no-row-height column-margin column-container"><span class="">How can I get the R-devel news? I’m on the mailing list and get it once a week and it’s like “Re: memory leak in png() ` not this stuff. Tips?</span></div></div>
-<p>It was announced in the <a href="https://cran.r-project.org/doc/manuals/r-devel/NEWS.html">news for version 4.0.0</a>.</p>
-<p>They write:</p>
-<blockquote class="blockquote">
-<p>There is a new syntax for specifying raw character constants similar to the one used in C++: r”(…)” with … any character sequence not containing the sequence ‘⁠)“⁠’. This makes it easier to write strings that contain backslashes or both single and double quotes. For more details see ?Quotes.</p>
-</blockquote>
-<p>You can write raw strings using the following formats:</p>
-<ul>
-<li><code>r"( ... )"</code></li>
-<li><code>r"{ ... }"</code></li>
-<li><code>r"[ ... ]"</code></li>
-<li><code>R"( ... )"</code></li>
-<li><code>R"{ ... }"</code></li>
-<li><code>R"[ ... ]"</code></li>
-</ul>
-<p>You can even trickier by adding dashes between the quote and the delimter. The dashes need to be symmetrical though. So the following is also valid.</p>
-<ul>
-<li><code>r"-{ ... }"-</code></li>
-<li><code>r"--{ ... }--"</code></li>
-<li><code>r"--{ * _ * }--"</code></li>
-</ul>
-<div class="page-columns page-full"><p></p><div class="no-row-height column-margin column-container"><span class="">It kinda looks like a crab</span></div></div>
-<p>Alright so back to the example</p>
-<div class="cell">
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r"{nav\to\file\path.ext}"</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "nav\\to\\file\\path.ext"</code></pre>
-</div>
-</div>
-<p>Hot damn. Thats nice.</p>
-<p>I freaked out at first though because R prints two backslashes. But if you cat the result they go away. So do not worry.</p>
-<div class="cell">
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r"{nav\to\file\path.ext}"</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>nav\to\file\path.ext</code></pre>
-</div>
-</div>
-
-
-</section></section> ]]></description>
-  <category>r</category>
-  <guid>https://josiahparry.com/posts/2023-01-19-raw-strings-in-r.html</guid>
-  <pubDate>Thu, 19 Jan 2023 05:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

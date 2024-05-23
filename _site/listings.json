@@ -15,6 +15,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-05-23-spatial-ml-prediction.html",
       "/posts/2024-05-22-univariate-mem.html",
       "/posts/2024-05-17-moran-eigenvectors.html",
       "/posts/2024-05-16-databases-for-ds.html",
@@ -88,6 +89,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-05-23-spatial-ml-prediction.html",
       "/posts/2024-05-22-univariate-mem.html",
       "/posts/2024-05-17-moran-eigenvectors.html",
       "/posts/2024-05-16-databases-for-ds.html",
