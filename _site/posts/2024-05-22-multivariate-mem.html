@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.489">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2024-05-22">
+<title>Josiah Parry - Univariate Spatial Dimensionality Reduction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script><script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
+</script><script async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9842567530621468" crossorigin="anonymous"></script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - Univariate Spatial Dimensionality Reduction">
+<meta name="twitter:description" content="Extening PCoA and Moran Eigenvector Maps to include attributes">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      Josiah Parry
+      </li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">about</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">posts</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">projects</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.xml" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RSS</span></a>
+  </div>
+</li>
+    </ul>
+</div>
+    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#univariate-spatial-encoding" id="toc-univariate-spatial-encoding" class="nav-link active" data-scroll-target="#univariate-spatial-encoding">Univariate spatial encoding</a>
+  <ul class="collapse">
+<li><a href="#revisiting-the-spatial-lag" id="toc-revisiting-the-spatial-lag" class="nav-link" data-scroll-target="#revisiting-the-spatial-lag">Revisiting the spatial lag</a></li>
+  <li><a href="#stopping-short-of-the-spatial-lag" id="toc-stopping-short-of-the-spatial-lag" class="nav-link" data-scroll-target="#stopping-short-of-the-spatial-lag">Stopping short of the spatial lag</a></li>
+  <li><a href="#do-they-exhibit-spatial-autocorrelation" id="toc-do-they-exhibit-spatial-autocorrelation" class="nav-link" data-scroll-target="#do-they-exhibit-spatial-autocorrelation">Do they exhibit spatial autocorrelation?</a></li>
+  <li><a href="#univariate-spatial-attribute-comopnent-w-regression" id="toc-univariate-spatial-attribute-comopnent-w-regression" class="nav-link" data-scroll-target="#univariate-spatial-attribute-comopnent-w-regression">Univariate Spatial Attribute Comopnent w/ Regression</a></li>
+  </ul>
+</li>
+  </ul></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Univariate Spatial Dimensionality Reduction</h1>
+<p class="subtitle lead">Extening PCoA and Moran Eigenvector Maps to include attributes</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">spatial</div>
+    <div class="quarto-category">r</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 22, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header><p>In discussing principal coordinate analysis (PCoA), the question naturally arose of “how could we incorporate non-spatial data into this method?” Well, that is what I wanted to explore.</p>
+<p>If we include an attribute e.g.&nbsp;crime rate, and embed that into the spatial components generated by PCoA we would truly be doing spatial dimension reduction. Not only would we be encoding spatial patterns, but we would be encoding spatial patterns as they relate to some attribute across the spatial surface.</p>
+<p>This is already explored in the context of gene expression via <a href="https://github.com/shangll123/SpatialPCA"><code>{spatialPCA}</code></a> (<a href="https://lulushang.org/SpatialPCA_Tutorial/">website here</a>). This is somewhat different to what I explored in my previous blog post. My brief review of the paper and R package tells me that the spatialPCA method applies the spatial weights matrix into the covariance matrix used in PCA.</p>
+<p>What I’m going to explore is a bit different than that.</p>
+<section id="univariate-spatial-encoding" class="level1"><h1>Univariate spatial encoding</h1>
+<p>Naturally, we want to look at how we can incorporate attributes into PCoA. Lets first start by creating a spatial weights matrix.</p>
+<p>As always, we use the Guerry dataset since it is tried and true. Here I create a spatial weights matrix using contiguity to identify neighborhoods and we use a guassian kernel (like spatial PCA). The Gaussian kernel makes it so that locations that are closer have more weight than those further away. Since we are using contiguity, the distance is estimated by using centroids.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">geom</span> <span class="op">&lt;-</span> <span class="va">guerry</span><span class="op">$</span><span class="va">geometry</span></span>
+<span><span class="va">pnts</span> <span class="op">&lt;-</span> <span class="fu">st_centroid</span><span class="op">(</span><span class="va">geom</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># neighbors via contiguity</span></span>
+<span><span class="va">nb</span> <span class="op">&lt;-</span> <span class="fu">st_contiguity</span><span class="op">(</span><span class="va">geom</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># gaussian kernel weights for neighbors</span></span>
+<span><span class="va">wt</span> <span class="op">&lt;-</span> <span class="fu">st_kernel_weights</span><span class="op">(</span><span class="va">nb</span>, <span class="va">pnts</span>, <span class="st">"gaussian"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="op">(</span><span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu">nb2listw</span><span class="op">(</span><span class="va">nb</span>, <span class="va">wt</span>, style <span class="op">=</span> <span class="st">"B"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Characteristics of weights list object:
+Neighbour list object:
+Number of regions: 85 
+Number of nonzero links: 420 
+Percentage nonzero weights: 5.813149 
+Average number of links: 4.941176 
+
+Weights style: B 
+Weights constants summary:
+   n   nn       S0       S1       S2
+B 85 7225 698.7942 2378.909 24825.15</code></pre>
+</div>
+</div>
+<section id="revisiting-the-spatial-lag" class="level2"><h2 class="anchored" data-anchor-id="revisiting-the-spatial-lag">Revisiting the spatial lag</h2>
+<p>The spatial lag is arguably the most fundamental spatial statistic. It is, in essence, the weighted average of a variable <span class="math inline">\(x\)</span> across a neighborhood.</p>
+<p>To calculate the spatial lag, referred often to as <span class="math inline">\(Wy\)</span>, we multiply our spatial weights matrix by our neighboring values. Let’s walk through how this works really quickly.</p>
+<p>We have the index positions of our neighbors and the weights that are associated with each of them.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">nb</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">wt</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code>[[1]]
+[1] 36 37 67 69
+
+[[2]]
+[1]  7 49 57 58 73 76
+
+[[3]]
+[1] 17 21 40 56 61 69
+
+[[4]]
+[1]  5 24 79 80
+
+[[5]]
+[1]  4 24 36
+
+[[6]]
+[1] 24 28 36 40 41 46 80</code></pre>
+</div>
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code>[[1]]
+[1] 1.553402 1.857660 2.062100 1.676694
+
+[[2]]
+[1] 1.801787 1.717777 1.439955 1.721547 1.260566 1.429496
+
+[[3]]
+[1] 1.599532 1.527097 1.376795 1.722723 1.865664 1.350771
+
+[[4]]
+[1] 2.040754 1.356645 1.871658 1.685343
+
+[[5]]
+[1] 2.040754 1.674375 1.689488
+
+[[6]]
+[1] 2.075805 1.679763 1.357435 1.308397 2.009760 1.812262 1.432539</code></pre>
+</div>
+</div>
+</div>
+<p>To calculate the spatial lag we first find the neighbors’ values for a vector x, multiply them by the weights and sum them up. In this case the variable is literacy.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">guerry</span><span class="op">$</span><span class="va">literacy</span></span>
+<span><span class="va">xj</span> <span class="op">&lt;-</span> <span class="fu">find_xj</span><span class="op">(</span><span class="va">x</span>, <span class="va">nb</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">xj</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 29 73 45 32
+
+[[2]]
+[1] 67 63 45 54 54 44
+
+[[3]]
+[1] 13 23 29 20 19 32
+
+[[4]]
+[1] 69 42 23 37
+
+[[5]]
+[1] 46 42 29
+
+[[6]]
+[1] 42 40 29 29 21 27 37</code></pre>
+</div>
+</div>
+<p>With the neighboring values, we can multiply them by the spatial weights.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">xj_wt</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html">map2</a></span><span class="op">(</span><span class="va">xj</span>, <span class="va">wt</span>, \<span class="op">(</span><span class="va">.xj</span>, <span class="va">.wt</span><span class="op">)</span> <span class="va">.xj</span> <span class="op">*</span> <span class="va">.wt</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">xj_wt</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1]  45.04865 135.60918  92.79449  53.65420
+
+[[2]]
+[1] 120.71975 108.21994  64.79797  92.96353  68.07056  62.89782
+
+[[3]]
+[1] 20.79392 35.12323 39.92704 34.45446 35.44761 43.22467
+
+[[4]]
+[1] 140.81202  56.97907  43.04814  62.35767
+
+[[5]]
+[1] 93.87468 70.32374 48.99514
+
+[[6]]
+[1] 87.18379 67.19052 39.36560 37.94350 42.20495 48.93109 53.00394</code></pre>
+</div>
+</div>
+<p>The last step in calculating the spatial lag is to sum that all up:</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x_lag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">xj_wt</span>, <span class="va">sum</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">x_lag</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 327.1065 517.6696 208.9709 303.1969 213.1936 375.8234</code></pre>
+</div>
+</div>
+<p>Or, simplified, that is:</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu">st_lag</span><span class="op">(</span><span class="va">x</span>, <span class="va">nb</span>, <span class="va">wt</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 327.1065 517.6696 208.9709 303.1969 213.1936 375.8234</code></pre>
+</div>
+</div>
+</section><section id="stopping-short-of-the-spatial-lag" class="level2"><h2 class="anchored" data-anchor-id="stopping-short-of-the-spatial-lag">Stopping short of the spatial lag</h2>
+<p>We use the spatial lag to get a univariate estimate of the spatial neighborhoods value. We have a matrix of xj values that we multiply the spatial weights matrix and then perform a row summation.</p>
+<p>What if we <em>didn’t</em> perform that summation, and instead applied PCA onto the weighted values of <code>xj</code>?</p>
+<p>We would then be encoding space and attributes into the components! In the below code chunk I am converting the spatial weights matrix to a sparse matrix and also creating a sparse matrix of the neighboring values. I am also scaling them.</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">listw</span>, <span class="st">"CsparseMatrix"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">xj</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span></span>
+<span>  <span class="fu">nb2listw</span><span class="op">(</span></span>
+<span>    <span class="va">nb</span>, <span class="fu">find_xj</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="va">nb</span><span class="op">)</span>, style <span class="op">=</span> <span class="st">"B"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="st">"CsparseMatrix"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we multiply them and perform PCA on the resultant matrix:</p>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">plot_comp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">comp</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="va">guerry</span>, <span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">comp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_sf</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">scale_fill_viridis_c</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">theme_void</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comps</span> <span class="op">&lt;-</span> <span class="fu">prcomp_irlba</span><span class="op">(</span><span class="va">xj</span> <span class="op">*</span> <span class="va">m</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">plot_comp</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">plot_comp</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">plot_comp</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">plot_comp</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="2024-05-22-multivariate-mem_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="2024-05-22-multivariate-mem_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="2024-05-22-multivariate-mem_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="2024-05-22-multivariate-mem_files/figure-html/unnamed-chunk-10-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<p>We can see that there are some meaningful components in here!</p>
+<p>The original variable’s distribution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">guerry</span>, <span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">literacy</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_sf</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">scale_fill_viridis_c</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Literacy"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">theme_void</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="2024-05-22-multivariate-mem_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see that there is some resemblance to original variable in these components.</p>
+</section><section id="do-they-exhibit-spatial-autocorrelation" class="level2"><h2 class="anchored" data-anchor-id="do-they-exhibit-spatial-autocorrelation">Do they exhibit spatial autocorrelation?</h2>
+<p>Yes, yes they do!</p>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comps_autocorr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">comps</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="fu">global_moran_test</span><span class="op">(</span><span class="va">.x</span>, <span class="va">nb</span>, <span class="va">wt</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="op">}</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">"component"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>            estimate1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">estimate1</span>, <span class="fl">3</span><span class="op">)</span>, p.value <span class="op">=</span> <span class="fu">rstatix</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/p_value.html">p_format</a></span><span class="op">(</span><span class="va">p.value</span><span class="op">)</span></span>
+<span>        <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">component</span>, <span class="st">"Moran's I"</span> <span class="op">=</span> <span class="va">estimate1</span>, p_val <span class="op">=</span> <span class="va">p.value</span><span class="op">)</span> </span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">comps_autocorr</span><span class="op">(</span><span class="va">comps</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  component `Moran's I` p_val  
+  &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;  
+1 PC1             0.689 &lt;0.0001
+2 PC2             0.611 &lt;0.0001
+3 PC3             0.409 &lt;0.0001
+4 PC4             0.594 &lt;0.0001</code></pre>
+</div>
+</div>
+<p>How do we use this, though? That is the part I am not so clear on. We have multiple components and they all exhibit <em>significant</em> autocorrelation. The applicability of each of these components may depend a lot upon what they are used to predict. The interpretation of them is tougher than identifying the applicability.</p>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">regress_component</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">guerry</span><span class="op">)</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"code_dept"</span>, <span class="st">"count"</span>, <span class="st">"region"</span>, <span class="st">"geometry"</span>, <span class="st">"area"</span>, <span class="st">"distance"</span>, <span class="st">"ave_id_geo"</span>, <span class="st">"main_city"</span>, <span class="st">"dept"</span>, <span class="st">"department"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">vars</span>, \<span class="op">(</span><span class="va">var</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/glance.html">glance</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">guerry</span><span class="op">[[</span><span class="va">var</span><span class="op">]</span><span class="op">]</span> <span class="op">~</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">"variable"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="op">-</span><span class="va">r.squared</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">variable</span>, <span class="va">r.squared</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">r.squared</span> <span class="op">&gt;</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>If we regress our components upon the variables in the Guerry dataset we might be able to see which patterns they can help explain away. This helper function filters out regressions with an <span class="math inline">\(R^2\)</span> of less than 0.1.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">regress_component</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">regress_component</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">regress_component</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">regress_component</span><span class="op">(</span><span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code># A tibble: 1 × 2
+  variable r.squared
+  &lt;chr&gt;        &lt;dbl&gt;
+1 literacy     0.136</code></pre>
+</div>
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code># A tibble: 5 × 2
+  variable        r.squared
+  &lt;chr&gt;               &lt;dbl&gt;
+1 donation_clergy     0.276
+2 desertion           0.193
+3 instruction         0.132
+4 literacy            0.121
+5 clergy              0.112</code></pre>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code># A tibble: 1 × 2
+  variable      r.squared
+  &lt;chr&gt;             &lt;dbl&gt;
+1 crime_parents     0.114</code></pre>
+</div>
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code># A tibble: 2 × 2
+  variable    r.squared
+  &lt;chr&gt;           &lt;dbl&gt;
+1 prostitutes     0.319
+2 wealth          0.189</code></pre>
+</div>
+</div>
+</div>
+<p>Interestingly the 3rd and 4th components are the most useful if we were looking for something to predict upon—this is a derived use case where we’re fishing for something that looks good.</p>
+</section><section id="univariate-spatial-attribute-comopnent-w-regression" class="level2"><h2 class="anchored" data-anchor-id="univariate-spatial-attribute-comopnent-w-regression">Univariate Spatial Attribute Comopnent w/ Regression</h2>
+<p>Let’s explore this 4rd component a bit more. If we regress <code>prostitutes ~ literacy</code> we see that there is a much weaker model. Surprisingly, in fact. And the residuals are only very mildly autocorrelated. Why is the component such a strong predictor????</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">prostitutes</span> <span class="op">~</span> <span class="va">literacy</span>, data <span class="op">=</span> <span class="va">guerry</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = prostitutes ~ literacy, data = guerry)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-415.6 -122.3  -40.5   57.9 4314.3 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept) -208.002    134.721  -1.544  0.12641   
+literacy       8.981      3.147   2.854  0.00545 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 502.9 on 83 degrees of freedom
+Multiple R-squared:  0.08935,   Adjusted R-squared:  0.07838 
+F-statistic: 8.144 on 1 and 83 DF,  p-value: 0.005455</code></pre>
+</div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">global_moran_test</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>, <span class="va">nb</span>, <span class="va">wt</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  x  
+weights: listw    
+
+Moran I statistic standard deviate = 5.0023, p-value = 2.832e-07
+alternative hypothesis: greater
+sample estimates:
+Moran I statistic       Expectation          Variance 
+      0.142390596      -0.011904762       0.000951401 </code></pre>
+</div>
+</div>
+<p>Adding in the component to the model, the <span class="math inline">\(R^2\)</span> shoots right up! But why?</p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">prostitutes</span> <span class="op">~</span> <span class="va">literacy</span> <span class="op">+</span> <span class="va">comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, data <span class="op">=</span> <span class="va">guerry</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = prostitutes ~ literacy + comps$rotation[, 4], data = guerry)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-766.7 -103.4  -65.6   36.5 3210.5 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)         -165.523    113.683  -1.456    0.149    
+literacy               6.326      2.688   2.353    0.021 *  
+comps$rotation[, 4] 2604.594    440.074   5.919 7.25e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 423.5 on 82 degrees of freedom
+Multiple R-squared:  0.3619,    Adjusted R-squared:  0.3464 
+F-statistic: 23.26 on 2 and 82 DF,  p-value: 9.995e-09</code></pre>
+</div>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">global_moran_test</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>, <span class="va">nb</span>, <span class="va">wt</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  x  
+weights: listw    
+
+Moran I statistic standard deviate = 2.3311, p-value = 0.009874
+alternative hypothesis: greater
+sample estimates:
+Moran I statistic       Expectation          Variance 
+      0.100827937      -0.011904762       0.002338716 </code></pre>
+</div>
+</div>
+<p>Often when there is a spatial effect of a variable, we utilize its spatial lag in the model. This is an SLX model but simplified.</p>
+<div class="cell">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">prostitutes</span> <span class="op">~</span> <span class="va">literacy</span> <span class="op">+</span> <span class="fu">st_lag</span><span class="op">(</span><span class="va">x</span>, <span class="va">nb</span>, <span class="va">wt</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">guerry</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = prostitutes ~ literacy + st_lag(x, nb, wt), data = guerry)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-500.7 -138.6  -29.5   54.1 4237.2 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)       -155.2878   149.8723  -1.036  0.30319   
+literacy            10.7142     3.8112   2.811  0.00617 **
+st_lag(x, nb, wt)   -0.3858     0.4764  -0.810  0.42034   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 503.9 on 82 degrees of freedom
+Multiple R-squared:  0.09657,   Adjusted R-squared:  0.07454 
+F-statistic: 4.383 on 2 and 82 DF,  p-value: 0.01554</code></pre>
+</div>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">global_moran_test</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>, <span class="va">nb</span>, <span class="va">wt</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  x  
+weights: listw    
+
+Moran I statistic standard deviate = 5.2839, p-value = 6.322e-08
+alternative hypothesis: greater
+sample estimates:
+Moran I statistic       Expectation          Variance 
+      0.167643014      -0.011904762       0.001154633 </code></pre>
+</div>
+</div>
+<p>Is this all autocorrelation? What if we look at including just a spatial component? What is interesting is that if we recreate this process using <em>only</em> the Moran’s Eigenvectors, there is nothing meaningful to be extracted that predicts prostitution as well as the spatial univariate component!</p>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sp_comps</span> <span class="op">&lt;-</span> <span class="fu">irlba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/irlba/man/prcomp_irlba.html">prcomp_irlba</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="va">m</span>, <span class="cn">T</span>, <span class="cn">T</span><span class="op">)</span>, <span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, <span class="fl">4</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">comps_autocorr</span><span class="op">(</span><span class="va">sp_comps</span><span class="op">)</span></span>
+<span><span class="fu">regress_component</span><span class="op">(</span><span class="va">sp_comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">regress_component</span><span class="op">(</span><span class="va">sp_comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">regress_component</span><span class="op">(</span><span class="va">sp_comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">regress_component</span><span class="op">(</span><span class="va">sp_comps</span><span class="op">$</span><span class="va">rotation</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="4">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 25.0%;justify-content: center;">
+<pre><code># A tibble: 4 × 3
+  component `Moran's I` p_val  
+  &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;  
+1 PC1             1.04  &lt;0.0001
+2 PC2             0.981 &lt;0.0001
+3 PC3             0.934 &lt;0.0001
+4 PC4             0.889 &lt;0.0001</code></pre>
+</div>
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 25.0%;justify-content: center;">
+<pre><code># A tibble: 10 × 2
+   variable        r.squared
+   &lt;chr&gt;               &lt;dbl&gt;
+ 1 desertion           0.366
+ 2 suicides            0.258
+ 3 crime_pers          0.203
+ 4 literacy            0.197
+ 5 crime_prop          0.178
+ 6 instruction         0.171
+ 7 wealth              0.158
+ 8 donation_clergy     0.155
+ 9 lottery             0.143
+10 commerce            0.138</code></pre>
+</div>
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 25.0%;justify-content: center;">
+<pre><code># A tibble: 4 × 2
+  variable    r.squared
+  &lt;chr&gt;           &lt;dbl&gt;
+1 literacy        0.256
+2 instruction     0.230
+3 donations       0.160
+4 commerce        0.151</code></pre>
+</div>
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 25.0%;justify-content: center;">
+<pre><code># A tibble: 2 × 2
+  variable    r.squared
+  &lt;chr&gt;           &lt;dbl&gt;
+1 instruction     0.142
+2 literacy        0.121</code></pre>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 25.0%;justify-content: center;">
+<pre><code># A tibble: 0 × 2
+# ℹ 2 variables: variable &lt;chr&gt;, r.squared &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</div>
+
+
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
