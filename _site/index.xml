@@ -10,7 +10,389 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Thu, 23 May 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 24 May 2024 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>{duckdb} or {duckplyr}?</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-05-24-duckdb-and-r.html</link>
+  <description><![CDATA[ <p>I’ve been diving pretty deep into DuckDB. It has shown that it has great utility for the vast majority of mid to large scale data analysis tasks—I’m talking Gigabytes not Petabytes. In particular, <a href="https://github.com/krlmlr">Kirill Müller</a> of <a href="https://cynkra.com/">Cynkra</a>, has been doing great work in bringing DuckDB to the R community.</p>
+<p>Today, this takes the form of two R packages:</p>
+<ul>
+<li><a href="https://r.duckdb.org/"><code>{duckdb}</code></a></li>
+<li><a href="https://duckdblabs.github.io/duckplyr/"><code>{duckplyr}</code></a></li>
+</ul>
+<p>I think the R community would <strong>benefit greatly</strong> by adopting DuckDB into their analytic workflows. It can used to make highly performant shiny applications or just speed up your workflow.</p>
+<p>For example, here is a demo of a Shiny application filtering, plotting, and visualizing 4.5 million records very quickly!</p>
+<p><img src="https://raw.githubusercontent.com/flrsh-dev/flrsh-lessons/main/duckdb-deep-dive/project/final-app.gif" class="img-fluid"></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+a personal note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>I’m beginning to build out some content for courses that I’ll be making availble through my new website <a href="https://flrsh.dev/">flrsh.dev</a> (pronounced flourish). Sign up if you want to be notified when we start rolling things out 🙃.</p>
+<p>The first course will be on DuckDB!</p>
+<p>Also, if it takes a while to load, thats because the provider is spinning up an instance because no one is on it lol! It is very much a <strong>WIP</strong>.</p>
+</div>
+</div>
+</div>
+<section id="yall-keep-asking-me-duckdb-or-duckplyr" class="level2"><h2 class="anchored" data-anchor-id="yall-keep-asking-me-duckdb-or-duckplyr">Y’all keep asking me <code>{duckdb}</code> or <code>{duckplyr}</code>
+</h2>
+<p>and before I tell you what my answer is, I’ll tell you why I’m bullish on DuckDB. I won’t ramble on details.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Jargon giraffe 🦒: bullish!
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Bullish is a term that is associated with a growing stock market. Think of the upward motion of their horns. People who are “bullish” would spend more money in the stock market expecting its prices to continue to rise and thus make more moneyyy 💸💸💸</p>
+</div>
+</div>
+</div>
+</section><section id="why-duckdb" class="level2"><h2 class="anchored" data-anchor-id="why-duckdb">Why DuckDB?</h2>
+<ul>
+<li>Supports <strong>larger-than-memory</strong> workloads</li>
+<li>Columnar vectorized operations means <strong>operating only on the data you need</strong> to and more of it and faster!</li>
+<li>Tight <a href="https://arrow.apache.org/docs/r/">Apache Arrow</a> integration!</li>
+<li>Supports <a href="https://substrait.io/">Substrait</a> for database agnostic query plans</li>
+<li>Runs in the browser (think <a href="https://shinylive.io/r/examples/">ShinyLive</a> + DuckDB means fast compute all running in the browser without a Shiny server)</li>
+<li>_ It is stupid fast_</li>
+</ul></section><section id="my-verdict" class="level2"><h2 class="anchored" data-anchor-id="my-verdict">My verdict?</h2>
+<p>The thing that is most important, in my opinion, for DuckDBs ability to be useful to the R community is its ability to work on data that is larger than RAM. <a href="https://duckdb.org/2024/03/29/external-aggregation.html">Read this awesome blog post</a>.</p>
+<div class="display-1">
+<blockquote class="blockquote">
+<p>Use <a href="https://r.duckdb.org/">duckdb</a>!!!</p>
+</blockquote>
+</div>
+<section id="duckplyr" class="level3"><h3 class="anchored" data-anchor-id="duckplyr"><code>{duckplyr}</code></h3>
+<p>The R package <a href="https://duckdblabs.github.io/duckplyr/">duckplyr</a> is a <strong>drop in replacement for dplyr</strong>. duckplyr operates only on data.frame objects and, as of today, only works with in memory data. This means it is limited to the size of your machine’s RAM.</p>
+</section><section id="duckdb" class="level3"><h3 class="anchored" data-anchor-id="duckdb"><code>{duckdb}</code></h3>
+<p><a href="https://r.duckdb.org/">duckdb</a>, on the other hand, is a <a href="https://dbi.r-dbi.org/reference/index.html"><code>{DBI}</code></a> extension package. This means that you can use DBI functions to write standard SQL. But it also means that you can use use tables in your DuckDB database with dplyr (via dbplyr).</p>
+<p><a href="https://r.duckdb.org/">duckdb</a> allows you to write standard dplyr code and create lazy tables that can be combined to make even lazier code! Moreover, you can utilize the <strong>out-of-core</strong> processing capabilities with DuckDB using <a href="https://r.duckdb.org/">duckdb</a> and, to me, that is the whole selling point.</p>
+<p>If performance is your objective and you, for some reason, refuse to use the out-of-core capabilities of DuckDB, you should just use <code>data.table</code> via <code>dtplyr</code>.</p>
+</section></section><section id="getting-started-with-duckdb-r" class="level2"><h2 class="anchored" data-anchor-id="getting-started-with-duckdb-r">Getting started with DuckDB &amp; R</h2>
+<p>Using DuckDB as a database backend for dplyr is pretty much the same as anything other backend you might use. Very similar code to what I’ll show you can be used to run code on Apache Spark or Postgres.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+😭 * crying * just use postgres
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+me, sobbing: just use postgres <a href="https://t.co/rJ4JcZJ4Zj">https://t.co/rJ4JcZJ4Zj</a>
+</p>
+— Jacob Matson (<span class="citation" data-cites="matsonj">@matsonj</span>) <a href="https://twitter.com/matsonj/status/1793681468134445371?ref_src=twsrc%5Etfw">May 23, 2024</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script><pre><code>|￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+    Just use Postgres    
+|＿＿＿＿＿＿＿＿＿＿＿＿＿＿|
+       \ (•◡•) / 
+        \     /</code></pre>
+</div>
+</div>
+</div>
+<section id="create-a-duckdb-driver" class="level3"><h3 class="anchored" data-anchor-id="create-a-duckdb-driver">Create a DuckDB driver</h3>
+<ol type="1">
+<li>Load duckdb: <code><a href="https://r.duckdb.org/">library(duckdb)</a></code>
+</li>
+<li>Create a database driver <code><a href="https://r.duckdb.org/reference/duckdb.html">duckdb()</a></code>
+</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://r.duckdb.org/">duckdb</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: DBI</code></pre>
+</div>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># This uses **in memory** database which is limited by RAM</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">drv</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this creates a persistent database which allows DuckDB to</span></span>
+<span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># perform **larger-than-memory** workloads</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">drv</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>fileext <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".duckdb"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">drv</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>&lt;duckdb_driver dbdir='/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmpt7T0Xr/file84ac2528edf1.duckdb' read_only=FALSE bigint=numeric&gt;</code></pre>
+</div>
+</div>
+<ol start="3" type="1">
+<li>Create a database connection object</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">con</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">drv</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">con</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>&lt;duckdb_connection 949a0 driver=&lt;duckdb_driver dbdir='/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmpt7T0Xr/file84ac2528edf1.duckdb' read_only=FALSE bigint=numeric&gt;&gt;</code></pre>
+</div>
+</div>
+<ol start="4" type="1">
+<li>Import some data from somewhere</li>
+</ol>
+<p>Here we will download a medium sized csv and import it.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>fileext <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".csv"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://raw.githubusercontent.com/flrsh-dev/flrsh-lessons/main/data/houses1990.csv"</span>,</span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmp</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">housing</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://r.duckdb.org/reference/backend-duckdb.html">tbl_file</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">con</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">housing</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   SQL [?? x 9]
+# Database: DuckDB v0.10.2 [root@Darwin 23.4.0:R 4.4.0//private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmpt7T0Xr/file84ac2528edf1.duckdb]
+   houseValue income houseAge rooms bedrooms population households latitude
+        &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+ 1     452600   8.33       41   880      129        322        126     37.9
+ 2     358500   8.30       21  7099     1106       2401       1138     37.9
+ 3     352100   7.26       52  1467      190        496        177     37.8
+ 4     341300   5.64       52  1274      235        558        219     37.8
+ 5     342200   3.85       52  1627      280        565        259     37.8
+ 6     269700   4.04       52   919      213        413        193     37.8
+ 7     299200   3.66       52  2535      489       1094        514     37.8
+ 8     241400   3.12       52  3104      687       1157        647     37.8
+ 9     226700   2.08       42  2555      665       1206        595     37.8
+10     261100   3.69       52  3549      707       1551        714     37.8
+# ℹ more rows
+# ℹ 1 more variable: longitude &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<ol start="5" type="1">
+<li>Run some dplyr code on the table</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">avg_price_by_age</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">housing</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">houseAge</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    avg_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">houseValue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">avg_price_by_age</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT houseAge, AVG(houseValue) AS avg_val
+FROM (FROM '/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T//Rtmpt7T0Xr/file84ac12eaa270.csv') q01
+GROUP BY houseAge</code></pre>
+</div>
+</div>
+<ol start="6" type="1">
+<li>Bring the results into memory</li>
+</ol>
+<p>Use <code><a href="https://dplyr.tidyverse.org/reference/compute.html">dplyr::collect()</a></code> to bring the results into memory as an actual tibble!</p>
+<div class="cell">
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">avg_price_df</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">avg_price_by_age</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">avg_price_df</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 52 × 2
+   houseAge avg_val
+      &lt;dbl&gt;   &lt;dbl&gt;
+ 1       17 190494.
+ 2       35 207299.
+ 3       37 207361.
+ 4       44 216233.
+ 5       30 200253.
+ 6       14 189597.
+ 7        5 208418.
+ 8        9 186673.
+ 9       21 200157.
+10       25 220414.
+# ℹ 42 more rows</code></pre>
+</div>
+</div>
+
+
+</section></section> ]]></description>
+  <category>r</category>
+  <category>prod</category>
+  <category>duckdb</category>
+  <guid>https://josiahparry.com/posts/2024-05-24-duckdb-and-r.html</guid>
+  <pubDate>Fri, 24 May 2024 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Spatial ML: Predicting on out-of-sample data</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -12114,14 +12496,6 @@ font-style: inherit;">summarise.sdf</span></span></code></pre></div>
   <category>personal</category>
   <guid>https://josiahparry.com/posts/2023-03-01-learning-rust.html</guid>
   <pubDate>Wed, 01 Mar 2023 05:00:00 GMT</pubDate>
-</item>
-<item>
-  <title></title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</link>
-  <description><![CDATA[ undefined ]]></description>
-  <guid>https://josiahparry.com/posts/2023-02-10-jhu/2023-02-10-JHU.html</guid>
-  <pubDate>Fri, 10 Feb 2023 05:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

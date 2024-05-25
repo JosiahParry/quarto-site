@@ -1,0 +1,152 @@
+---
+title: "{duckdb} or {duckplyr}? "
+subtitle: "DuckDB and the R ecosystem"
+date: "2024-05-24"
+categories: [r, prod, duckdb]
+freeze: true
+---
+
+I've been diving pretty deep into DuckDB. It has shown that it has great utility for the vast majority of mid to large scale data analysis tasks—I'm talking Gigabytes not Petabytes. In particular, [Kirill Müller](https://github.com/krlmlr) of [Cynkra](https://cynkra.com/), has been doing great work in bringing DuckDB to the R community. 
+
+Today, this takes the form of two R packages: 
+
+- [`{duckdb}`](https://r.duckdb.org/)
+- [`{duckplyr}`](https://duckdblabs.github.io/duckplyr/)
+
+I think the R community would **benefit greatly** by adopting DuckDB into their analytic workflows. It can used to make highly performant shiny applications or just speed up your workflow.
+
+For example, here is a demo of a Shiny application filtering, plotting, and visualizing 4.5 million records very quickly! 
+
+![](https://raw.githubusercontent.com/flrsh-dev/flrsh-lessons/main/duckdb-deep-dive/project/final-app.gif)
+
+:::{.callout-note collapse="true"}
+## a personal note
+I'm beginning to build out some content for courses that I'll be making availble through my new website [flrsh.dev](https://flrsh.dev/) (pronounced flourish). Sign up if you want to be notified when we start rolling things out 🙃. 
+
+The first course will be on DuckDB! 
+
+Also, if it takes a while to load, thats because the provider is spinning up an instance because no one is on it lol! It is very much a **WIP**.
+:::
+
+
+## Y'all keep asking me `{duckdb}` or `{duckplyr}`
+
+and before I tell you what my answer is, I'll tell you why I'm bullish on DuckDB. I won't ramble on details. 
+
+
+:::{.callout-tip collapse="true"}
+## Jargon giraffe 🦒: bullish!
+Bullish is a term that is associated with a growing stock market. Think of the upward motion of their horns. People who are "bullish" would spend more money in the stock market expecting its prices to continue to rise and thus make more moneyyy 💸💸💸
+:::
+
+## Why DuckDB?
+
+- Supports **larger-than-memory** workloads
+- Columnar vectorized operations means **operating only on the data you need** to and more of it and faster!
+- Tight [Apache Arrow](https://arrow.apache.org/docs/r/) integration!
+- Supports [Substrait](https://substrait.io/) for database agnostic query plans 
+- Runs in the browser (think [ShinyLive](https://shinylive.io/r/examples/) + DuckDB means fast compute all running in the browser without a Shiny server)
+- _ It is stupid fast_
+
+## My verdict?
+
+The thing that is most important, in my opinion, for DuckDBs ability to be useful to the R community is its ability to work on data that is larger than RAM. [Read this awesome blog post](https://duckdb.org/2024/03/29/external-aggregation.html).
+
+:::{.display-1}
+> Use `{duckdb}`!!!
+:::
+
+### `{duckplyr}`
+
+The R package `{duckplyr}` is a **drop in replacement for dplyr**. duckplyr operates only on data.frame objects and, as of today, only works with in memory data. This means it is limited to the size of your machine's RAM. 
+
+
+### `{duckdb}`
+
+`{duckdb}`, on the other hand, is a [`{DBI}`](https://dbi.r-dbi.org/reference/index.html) extension package. This means that you can use DBI functions to write standard SQL. But it also means that you can use use tables in your DuckDB database with dplyr (via dbplyr).
+
+`{duckdb}` allows you to write standard dplyr code and create lazy tables that can be combined to make even lazier code! Moreover, you can utilize the **out-of-core** processing capabilities with DuckDB using `{duckdb}` and, to me, that is the whole selling point. 
+
+If performance is your objective and you, for some reason, refuse to use the out-of-core capabilities of DuckDB, you should just use `data.table` via `dtplyr`. 
+
+
+
+## Getting started with DuckDB & R
+
+Using DuckDB as a database backend for dplyr is pretty much the same as anything other backend you might use. Very similar code to what I'll show you can be used to run code on Apache Spark or Postgres. 
+
+:::{.callout-note collapse="true"}
+## 😭 * crying * just use postgres
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">me, sobbing: just use postgres <a href="https://t.co/rJ4JcZJ4Zj">https://t.co/rJ4JcZJ4Zj</a></p>&mdash; Jacob Matson (@matsonj) <a href="https://twitter.com/matsonj/status/1793681468134445371?ref_src=twsrc%5Etfw">May 23, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+```
+|￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+    Just use Postgres    
+|＿＿＿＿＿＿＿＿＿＿＿＿＿＿|
+       \ (•◡•) / 
+        \     /
+```
+:::
+
+### Create a DuckDB driver
+
+1. Load duckdb: `library(duckdb)`
+2. Create a database driver `duckdb()`
+
+```{r}
+library(duckdb)
+
+# This uses **in memory** database which is limited by RAM
+drv <- duckdb()
+
+# this creates a persistent database which allows DuckDB to
+# perform **larger-than-memory** workloads
+drv <- duckdb(tempfile(fileext = ".duckdb"))
+drv
+```
+
+3. Create a database connection object
+
+```{r}
+con <- dbConnect(drv)
+con
+```
+
+4. Import some data from somewhere
+
+Here we will download a medium sized csv and import it. 
+
+```{r}
+tmp <- tempfile(fileext = ".csv")
+download.file(
+  "https://raw.githubusercontent.com/flrsh-dev/flrsh-lessons/main/data/houses1990.csv",
+  tmp
+)
+
+housing <- tbl_file(con, tmp)
+housing
+```
+
+5. Run some dplyr code on the table
+
+```{r message = FALSE}
+library(dplyr)
+```
+```{r warning=FALSE}
+avg_price_by_age <- housing |>
+  group_by(houseAge) |>
+  summarise(
+    avg_val = mean(houseValue)
+  )
+
+show_query(avg_price_by_age)
+```
+
+6. Bring the results into memory 
+
+Use `dplyr::collect()` to bring the results into memory as an actual tibble! 
+```{r}
+avg_price_df <- collect(avg_price_by_age)
+avg_price_df
+```
