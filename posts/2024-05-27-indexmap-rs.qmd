@@ -1,0 +1,59 @@
+---
+title: "IndexMap instead of BTreeMap"
+date: "2024-05-27"
+categories: [rust]
+freeze: true
+---
+
+
+# TL;DR
+
+* `HashMap<K, V>` is useful when you have a value that you need to fetch frequently based on a specific key. With a hashmap, the **order does not matter**. 
+* `BTreeMap<K, V>` is a hashmap but it keeps track of the order of the keys. In a BtreeMap, **order matters**. 
+* `IndexMap<K,V>` is like a BTreeMap but the **order is defined by insertion order**.
+
+## BTreeMaps & ordering 
+
+When I am programming in Rust, I often need to use either a `HashMap<K, V>` or a `BTreeMap<K, V>`. In the case of a BTreeMap, the order is based on the key values. For example if they are strings, the ordering is done alphabetically. Or if the value is numeric, it is done based on that. Or whatever other `Ord` trait you may have implemented or derived. 
+
+## When insertion is important 
+
+In another usecase, I want to fetch keys or values **based on the order they were inserted**. That is where [`IndexMap`](https://docs.rs/indexmap/latest/indexmap/) is helpful! IndexMap will iterate through the keys or values in the same order they were inserted. 
+
+In my current usecase, I am creating a [lazy_static](https://docs.rs/lazy_static/latest/lazy_static/) `IndexMap` that contains course content for [`flrsh.dev`](https://flrsh.dev)  (pronounced flourish).
+
+```rust
+lazy_static::lazy_static! {
+    pub static ref COURSE: IndexMap<String, String> = {
+        let mut m = IndexMap::new();
+        let content = serde_json::from_str::<CourseContent>(body::COURSE_BODY).unwrap();
+
+        content.0.into_iter().for_each(|exercise| {
+            m.insert(exercise.slug, exercise.body);
+        });
+        m
+    };
+}
+```
+
+The IndexMap is created by parsing the JSON file using [`serde_json`](https://docs.rs/serde_json). 
+
+The JSON file looks roughly like this: 
+
+```json
+[
+    {"slug": "String", "body": "String"},
+    {"slug": "String", "body": "String"},
+    {"slug": "String", "body": "String"},
+]
+```
+
+This gives me a `Vec<CourseContent>` which has two fields and the slug is the key and the body is the exercise. This is great because the JSON has the content in order and I need to be able to fetch it in order. 
+
+Ordering matters to me because I am using this IndexMap to update the navigationbar. We want to make sure that the next slug is not random! 
+
+
+
+
+
+

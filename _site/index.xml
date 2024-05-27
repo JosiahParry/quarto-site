@@ -10,7 +10,209 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Fri, 24 May 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 27 May 2024 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>IndexMap instead of BTreeMap</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-05-27-indexmap-rs.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="tldr" class="level1">
+<h1>TL;DR</h1>
+<ul>
+<li><code>HashMap&lt;K, V&gt;</code> is useful when you have a value that you need to fetch frequently based on a specific key. With a hashmap, the <strong>order does not matter</strong>.</li>
+<li><code>BTreeMap&lt;K, V&gt;</code> is a hashmap but it keeps track of the order of the keys. In a BtreeMap, <strong>order matters</strong>.</li>
+<li><code>IndexMap&lt;K,V&gt;</code> is like a BTreeMap but the <strong>order is defined by insertion order</strong>.</li>
+</ul>
+<section id="btreemaps-ordering" class="level2">
+<h2 class="anchored" data-anchor-id="btreemaps-ordering">BTreeMaps &amp; ordering</h2>
+<p>When I am programming in Rust, I often need to use either a <code>HashMap&lt;K, V&gt;</code> or a <code>BTreeMap&lt;K, V&gt;</code>. In the case of a BTreeMap, the order is based on the key values. For example if they are strings, the ordering is done alphabetically. Or if the value is numeric, it is done based on that. Or whatever other <code>Ord</code> trait you may have implemented or derived.</p>
+</section>
+<section id="when-insertion-is-important" class="level2">
+<h2 class="anchored" data-anchor-id="when-insertion-is-important">When insertion is important</h2>
+<p>In another usecase, I want to fetch keys or values <strong>based on the order they were inserted</strong>. That is where <a href="https://docs.rs/indexmap/latest/indexmap/"><code>IndexMap</code></a> is helpful! IndexMap will iterate through the keys or values in the same order they were inserted.</p>
+<p>In my current usecase, I am creating a <a href="https://docs.rs/lazy_static/latest/lazy_static/">lazy_static</a> <code>IndexMap</code> that contains course content for <a href="https://flrsh.dev"><code>flrsh.dev</code></a> (pronounced flourish).</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">lazy_static::lazy_static!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">static</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">ref</span> COURSE<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> IndexMap<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-3">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> m <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">IndexMap::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-4">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> content <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">serde_json::from_str::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>CourseContent<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>(<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">body::</span>COURSE_BODY)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-5"></span>
+<span id="cb1-6">        content<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>into_iter()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>for_each(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span>exercise<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-7">            m<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>insert(exercise<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>slug<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> exercise<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>body)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-8">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-9">        m</span>
+<span id="cb1-10">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb1-11"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>The IndexMap is created by parsing the JSON file using <a href="https://docs.rs/serde_json"><code>serde_json</code></a>.</p>
+<p>The JSON file looks roughly like this:</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb2-1"><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb2-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"slug"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"String"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"body"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"String"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"slug"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"String"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"body"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"String"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"slug"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"String"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"body"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"String"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-5"><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span></span></code></pre></div>
+<p>This gives me a <code>Vec&lt;CourseContent&gt;</code> which has two fields and the slug is the key and the body is the exercise. This is great because the JSON has the content in order and I need to be able to fetch it in order.</p>
+<p>Ordering matters to me because I am using this IndexMap to update the navigationbar. We want to make sure that the next slug is not random!</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>rust</category>
+  <guid>https://josiahparry.com/posts/2024-05-27-indexmap-rs.html</guid>
+  <pubDate>Mon, 27 May 2024 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>{duckdb} or {duckplyr}?</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -12465,37 +12667,6 @@ font-style: inherit;">summarise.sdf</span></span></code></pre></div>
   <guid>https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/</guid>
   <pubDate>Thu, 02 Mar 2023 05:00:00 GMT</pubDate>
   <media:content url="https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/feRris.svg" medium="image" type="image/svg+xml"/>
-</item>
-<item>
-  <title>learning rust</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-03-01-learning-rust.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>I have been wanting to learn a low level language for quite some time. Due to the power and prominence of Rcpp I had thought I wanted to learn C++. Every fast package in R uses C++, right? But Rust kept popping up. Rust, is fast. Rust is safe. Linux is going to be rewritten in Rust. Rust is the most loved language for 7 years in a row. Rust is easily multithreaded. Rust. Rust. Rust. I then heard a bit about <a href="https://extendr.github.io/rextendr/"><code>rextendr</code></a> a way to incorporate Rust into R packages. With that Rust became a real candidate language to learn.</p>
-<p>The <a href="https://twitter.com/hrbrmstr"><span class="citation" data-cites="hrbrmstr">@hrbrmstr</span></a> provided some sweet words of encouragement over twitter, <a href="https://github.com/hrbrmstr/kev-push">an example repo</a> to reference, and provided ideas on how to <a href="https://dailyfinds.hrbrmstr.dev/p/knowledge-drop-learning-rust">start learning Rust</a>.</p>
-<p>I spent some time with <a href="https://doc.rust-lang.org/stable/book/">“The Book”</a> to wrap my head around the basics. I then spent some time writing a chess <a href="https://github.com/josiahparry/fen">FEN parser</a>. I wrote a FEN parser. I wrote a whole program in Rust. That was crazy. The reason why I was able to continue learning Rust is because it is so easy to use (in comparison to C++). Once you wrap your head around the basics it rocks.</p>
-<p>Rust is a compiled language. Working with a compiled language is a huge paradigm shift. R is an interpreted language. Interpreted languages are super cool because we can run one line of code, do some stuff, and then run another line. Compiled languages have to take everything in at once. So there is no running a line, printing an object, then running another line. But that’s actually okay because of the Rust compiler is the best teacher I’ve ever had.</p>
-<p>When you make a mistake in Rust, the compiler will tell you <em>exactly</em> where that mistake is coming from—literally the line and column position. It will also often tell you exactly what code you need to change and how to change it to make your code run. So rather than running line by line, you can compile line by line.</p>
-<p>Learning Rust has made me a better R programmer for many reasons. Here are a few:</p>
-<ul>
-<li>I am conscious of type conversions and consistency</li>
-<li>I am conscientious of memory consumption</li>
-<li>I am a glutton for speed now</li>
-<li>I have a better understanding / framework for thinking about inheritance</li>
-</ul>
-<p>Programming in Rust has made me think of ways that R can be improved. Mostly in that scalar classes are missing from R (and from vctrs). We also lack the ability to use 64 bit integers which is a bit of a problem. I also think R packages should be designed to be extended. This would be done by exposing generic s3 functions that can be extended for your class. If the method exists for your class you inherit the functionality. I employed a prototype of this idea in the <a href="https://github.com/JosiahParry/sdf/"><code>sdf</code></a> package.</p>
-
-
-
- ]]></description>
-  <category>rust</category>
-  <category>personal</category>
-  <guid>https://josiahparry.com/posts/2023-03-01-learning-rust.html</guid>
-  <pubDate>Wed, 01 Mar 2023 05:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

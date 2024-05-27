@@ -328,5 +328,8 @@
   },
   "posts/2024-05-24-duckdb-and-r.qmd": {
     "2024-05-24-duckdb-and-r.html": "cf5e5b2d"
+  },
+  "posts/2024-05-27-indexmap-rs.qmd": {
+    "2024-05-27-indexmap-rs.html": "fc289b32"
   }
 }
