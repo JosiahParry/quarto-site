@@ -1,0 +1,91 @@
+---
+title: "Designing {arcgisgeocode}"
+subtitle: "Making a highly performant API interface"
+date: "2024-06-06"
+freeze: true
+---
+
+I recently had the pleasure of publishing the R package [`{arcgisgeocode}`](https://github.com/R-ArcGIS/arcgisgeocode/). It is an R interface to the [ArcGIS World Geocoder](https://www.esri.com/en-us/arcgis/products/arcgis-world-geocoder). You could say it is the "official" Esri geocoding R package. 
+
+To my knowledge, **it is the fastest geocoding library available in the R ecosystem**. The ArcGIS World Geocoder is made avialable through [`{tidygeocoder}`](https://jessecambon.github.io/tidygeocoder/) as well as [`{arcgeocoder}`](https://dieghernan.github.io/arcgeocoder/). 
+
+`{arcgisgeocode}` provides the full functionality of the World Geocoder which includes bulk geocoding functionality which the other two do not. The other two packages provide an interface to the [`/findAddressCandidates`](https://developers.arcgis.com/rest/geocode/api-reference/geocoding-find-address-candidates.htm) and [`/reverseGeocode`](https://developers.arcgis.com/rest/geocode/api-reference/geocoding-reverse-geocode.htm) API endpoints. The former provides single address **forward geocoding** and the latter provides **reverse geocoding**. 
+
+`{arcgisgeocode}` is **~17x faster** when performing single address geocoding and **~40x faster** when performing reverse geocoding when compared to the community counterparts. There are 2 primary reasons why this is. 
+
+
+The prolific [Kyle Barron](https://kylebarron.dev/) responded to one of my tweets a few months ago. 
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">isn&#39;t geocoding always bottlenecked by the server?</p>&mdash; Kyle Barron @kylebarron@mapstodon.space (@kylebarron2) <a href="https://twitter.com/kylebarron2/status/1773509095024107756?ref_src=twsrc%5Etfw">March 29, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+This statement is true in an aboslute sense. But then if it is only the server that is the bottle neck, why does `{arcgisgeocode}` out-perform two other packages calling **the exact same API endpoints**?
+
+The reasons are primarily two-fold. 
+
+# JSON parsing is slow
+
+The first is that both tidygeocoder and arcgeocoder rely on  [`{jsonlite}`](https://cran.r-project.org/web/packages/jsonlite/index.html) to both encode json and parse json. I have said it many times before and I'll say it again—jsonlite was a revolutionary R package but it has proven to be _slow_. 
+
+The way that these API requests work is that we need to craft JSON from R objects, inject them into our API request, and then process the JSON that we get back from the server. 
+
+Encoding R objects as text strings is slow. Reading text and converting them back into R objects is also slow. 
+
+:::{.aside} 
+This is tangentially why Apache Arrow is so amazing. It uses the same memory layout regardless of where you are. If we were using Arrow arrays and the API received [Arrow IPC](https://arrow.apache.org/docs/python/ipc.html) and sent Arrow IPC, we would be able serialize and deserialize much faster!!!!
+:::
+
+## Handling JSON with serde
+
+[serde_json](https://docs.rs/serde_json) is a Rust crate that handles **ser**ialization and **de**serialization of Rust structs. It takes the guess work out of encoding and decoding JSON responses because it requires that we specify what the json will look like. `{arcgisgeocode}` uses `serde_json` to perform JSON serialization and deserialization. 
+
+For example I have the following [struct definition](https://github.com/R-ArcGIS/arcgisgeocode/blob/62edfcccc572f2fa518095b2d85acc0c1d041c9c/src/rust/src/batch_geocode.rs#L26-L43)
+
+```rust
+pub struct Address {
+    objectid: i32,
+    #[serde(rename = "singleLine")]
+    single_line: Option<String>,
+    address: Option<String>,
+    address2: Option<String>,
+    address3: Option<String>,
+    neighborhood: Option<String>,
+    city: Option<String>,
+    subregion: Option<String>,
+    region: Option<String>,
+    postal: Option<String>,
+    #[serde(rename = "postalExt")]
+    postal_ext: Option<String>,
+    #[serde(rename = "countryCode")]
+    country_code: Option<String>,
+    location: Option<EsriPoint>,
+}
+```
+
+These struct definitions plus serde_json all coupled with the [`extendr`](https://github.com/extendr/extendr) library means that I can process and create JSON extremely fast!
+
+# Using a request pool
+
+Both `{tidygeocoder}` and `{arcgeocoder}` both use [`{httr}`](https://httr.r-lib.org/) whereas `{arcgisgeocode}` uses [`{httr2}`](https://httr2.r-lib.org/). There may be speed-ups inherent in switching. 
+
+But the primary difference is that in `{arcgisgeocode}`, we use a [`req_perform_parallel()`](https://httr2.r-lib.org/reference/req_perform_parallel.html) with a small connection pool. This allows for multiple workers to be handling requests concurrently. That means there is less time being spent waiting for each request to be handled and then processed by our R code. 
+
+Note that with great power comes great responsibility. Using `req_perform_parallel()` without care may lead to accidentally committing a [DDoS attack](https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/). For that reason we use a conservative number of workers. 
+
+# Closing notes
+
+While Kyle is correct in the absolute sense, that the bottleneck of performance does come down to the geocoding service, it is also true that the clients that we write to call these services might be adding additional performance overhead. 
+
+To improve performance, I would recommend identifying the slowest part and making it faster. In general, when it comes to API clients, this is almost always the **(de)serialization** and the request handling. 
+
+I don't expect everyone to learn how to write Rust. But you can make informed decisions about what libraries you are using. 
+
+:::{.callout-tip}
+# Learn how to parse json with Rust
+<iframe width="560" height="315" src="https://www.youtube.com/embed/f2HfHlYQLks?si=NO5VOZRLBola3qVE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+:::
+
+
+If you are using `jsonlite` and you care about performance. Stop that. I strongly recommend using RccpSimdJson (for parsing only), yyjson (for both), and jsonify—in that order. You will find your code to be _much faster_.
+
+Next, if you are making multiple requests to the same endpoint. Consider using a small worker pool using `req_perform_parallel()` and then watch how the speed improves. 
+

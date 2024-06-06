@@ -15,6 +15,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-06-06-designing-arcgisgeocode.html",
       "/posts/2024-05-27-indexmap-rs.html",
       "/posts/2024-05-24-duckdb-and-r.html",
       "/posts/2024-05-23-spatial-ml-prediction.html",
@@ -91,6 +92,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-06-06-designing-arcgisgeocode.html",
       "/posts/2024-05-27-indexmap-rs.html",
       "/posts/2024-05-24-duckdb-and-r.html",
       "/posts/2024-05-23-spatial-ml-prediction.html",
