@@ -1,6 +1,6 @@
 ---
-title: "Designing {arcgisgeocode}"
-subtitle: "Making a highly performant API interface"
+title: "Making a Ridiculously Fast™ API Client"
+subtitle: "Design choices for a highly performant R package"
 date: "2024-06-06"
 freeze: true
 ---
