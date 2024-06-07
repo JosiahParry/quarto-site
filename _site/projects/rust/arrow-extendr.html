@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Josiah Parry">
-<meta name="dcterms.date" content="2022-08-10">
 
-<title>Josiah Parry - R package system requirements</title>
+<title>Josiah Parry – arrow-extendr</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -41,8 +39,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
-<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -82,10 +78,6 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta name="twitter:title" content="Josiah Parry - R package system requirements">
-<meta name="twitter:description" content="">
-<meta name="twitter:creator" content="@josiahparry">
-<meta name="twitter:card" content="summary_large_image">
 </head>
 
 <body class="nav-sidebar docked">
@@ -178,7 +170,13 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </li>
     </ul>
     </div>
-    
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#arrow_extendr" id="toc-arrow_extendr" class="nav-link active" data-scroll-target="#arrow_extendr">arrow_extendr</a></li>
+  </ul>
+</nav>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -189,9 +187,8 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">R package system requirements</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">package</div>
+    <div class="quarto-category">rust</div>
     <div class="quarto-category">r</div>
   </div>
   </div>
@@ -200,19 +197,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Josiah Parry </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">August 10, 2022</p>
-    </div>
-  </div>
   
     
   </div>
@@ -222,14 +207,13 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </header>
 
 
-<ul>
-<li><a href="https://github.com/JosiahParry/r-sysreqs"><i class="fa-brands fa-github" aria-label="github"></i> GitHub repo</a></li>
-<li><a href="../../posts/2022-04-05-an-open-system-requirements-database.html">Related blog post</a></li>
-</ul>
-<p>The goal of sysreqs is to make it easy to identify R package system dependencies. There are two components to this package: an “API” and a wrapper package.</p>
-<p>This API and package is based on rstudio/r-system-requirements and the API client for RStudio Package Manager. The functionality is inspired by pak::pkg_system_requirements().</p>
+<section id="arrow_extendr" class="level1">
+<h1>arrow_extendr</h1>
+<p>arrow-extendr is a crate that facilitates the transfer of <a href="https://arrow.apache.org/">Apache Arrow</a> memory between R and Rust. It utilizes <a href="https://extendr.github.io/">extendr</a>, the <a href="https://arrow.apache.org/nanoarrow/0.3.0/r/index.html"><strong><code>{nanoarrow}</code></strong></a> R package, and <a href="https://docs.rs/arrow">arrow-rs</a>.</p>
+<p><a href="https://github.com/josiahParry/arrow-extendr"><code>arrow_extendr</code></a></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

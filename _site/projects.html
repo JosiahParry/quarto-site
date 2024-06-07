@@ -123,6 +123,34 @@ ul.task-list li input[type="checkbox"] {
       window['quarto-listing-loaded']();
     }
   })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-rust .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-categories','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-rust'] = new List('listing-rust', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
   </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script>
 
@@ -140,6 +168,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 
 <link rel="stylesheet" href="styles.css">
 <meta name="twitter:title" content="Josiah Parry - projects">
+<meta name="twitter:description" content="">
 <meta name="twitter:creator" content="@josiahparry">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -181,7 +210,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">home</span></a>
+ <span class="menu-text">home&nbsp;</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -204,7 +233,29 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.xml" class="sidebar-item-text sidebar-link">
+  <a href="https://github.com/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://linkedin.com/in/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://twitter.com/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text">Twitter</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.xml" class="sidebar-item-text sidebar-link"><i class="bi bi-rss-fill" role="img">
+</i> 
  <span class="menu-text">RSS</span></a>
   </div>
 </li>
@@ -214,7 +265,8 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#packages-contributions" id="toc-packages-contributions" class="nav-link active" data-scroll-target="#packages-contributions">Packages &amp; contributions</a></li>
+  <li><a href="#rust-libraries" id="toc-rust-libraries" class="nav-link active" data-scroll-target="#rust-libraries">Rust libraries</a></li>
+  <li><a href="#packages-contributions" id="toc-packages-contributions" class="nav-link" data-scroll-target="#packages-contributions">Packages &amp; contributions</a></li>
   <li><a href="#things-ive-written" id="toc-things-ive-written" class="nav-link" data-scroll-target="#things-ive-written">Things I’ve written</a></li>
   </ul>
 </nav>
@@ -245,11 +297,116 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </header>
 
 
+<p>Over the years I’ve built or contributed to quite a few things. These are just a select few of them.</p>
+<section id="rust-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="rust-libraries">Rust libraries</h3>
+<div id="listing-rust" class="quarto-listing quarto-listing-container-grid">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-categories="rust,r,production" data-listing-file-modified-sort="1717787021127" data-listing-reading-time-sort="1" data-listing-word-count-sort="30">
+<a href="./projects/rust/valve.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Valve
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('rust'); return false;">
+rust
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('production'); return false;">
+production
+</div>
+</div>
+<div class="card-text listing-description">
+<code>valve</code> creates multi-threaded Plumber APIs powered by Rust’s tokio and axum web frameworks. Plumber connections are automatically spawned, pooled, and terminated using deadpool…
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="1" data-categories="rust,r" data-listing-file-modified-sort="1717788973058" data-listing-reading-time-sort="1" data-listing-word-count-sort="25">
+<a href="./projects/rust/arrow-extendr.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+arrow_extendr
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('rust'); return false;">
+rust
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
+</div>
+<div class="card-text listing-description">
+arrow-extendr is a crate that facilitates the transfer of Apache Arrow memory between R and Rust. It utilizes extendr, the <strong><code>{nanoarrow}</code></strong> R package, and arrow-rs.
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="2" data-categories="rust,spatial" data-listing-file-modified-sort="1717788946878" data-listing-reading-time-sort="1" data-listing-word-count-sort="74">
+<a href="./projects/rust/serde-esri.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+serde_esri
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('rust'); return false;">
+rust
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
+spatial
+</div>
+</div>
+<div class="card-text listing-description">
+<code>serde_esri</code> provides struct definitions to represent Esri JSON objects with <code>serde::Deserialize</code> and <code>serde::Serialize</code> trait implementations.
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="3" data-categories="rust,r,spatial" data-listing-file-modified-sort="1717788982955" data-listing-reading-time-sort="1" data-listing-word-count-sort="78">
+<a href="./projects/rust/sfconversions.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+sfconversions
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('rust'); return false;">
+rust
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
+spatial
+</div>
+</div>
+<div class="card-text listing-description">
+A minimal Rust library to convert geometry objects from the R package {sf} into geo-types geometry primitives using extendr.
+</div>
+</div>
+</div>
+</a>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div>
+</section>
 <section id="packages-contributions" class="level3">
 <h3 class="anchored" data-anchor-id="packages-contributions">Packages &amp; contributions</h3>
 <div id="listing-pkgs" class="quarto-listing quarto-listing-container-grid">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="package" data-listing-date-sort="1660104000000" data-listing-file-modified-sort="1699652435050" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="59">
+<div class="g-col-1" data-index="0" data-categories="package,r" data-listing-date-sort="1660104000000" data-listing-file-modified-sort="1717786478510" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="59">
 <a href="./projects/pkgs/sysreqs.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
@@ -260,6 +417,9 @@ R package system requirements
 <div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
 package
 </div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
 </div>
 <div class="card-text listing-description">
 The goal of sysreqs is to make it easy to identify R package system dependencies. There are two components to this package: an “API” and a wrapper package.
@@ -268,7 +428,35 @@ The goal of sysreqs is to make it easy to identify R package system dependencies
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="1" data-categories="package,music" data-listing-file-modified-sort="1699652435050" data-listing-reading-time-sort="1" data-listing-word-count-sort="85">
+<div class="g-col-1" data-index="1" data-categories="rust,r,package,spatial" data-listing-file-modified-sort="1717788097157" data-listing-reading-time-sort="1" data-listing-word-count-sort="155">
+<a href="./projects/pkgs/r-arcgis-bridge.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+R-ArcGIS Bridge
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('rust'); return false;">
+rust
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
+package
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
+spatial
+</div>
+</div>
+<div class="card-text listing-description">
+The R-ArcGIS Bridge is a suite of R packages designed to integrate the ArcGIS into the R ecosystem. I have developed a (growing) number of R packages to integrate ArcGIS…
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="2" data-categories="package,music" data-listing-file-modified-sort="1699652435050" data-listing-reading-time-sort="1" data-listing-word-count-sort="85">
 <a href="./projects/pkgs/genius.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
@@ -290,7 +478,7 @@ genius was my first R package and my first digital child. genius provided a way 
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="2" data-categories="spatial,package" data-listing-date-sort="1678939200000" data-listing-file-modified-sort="1699652435050" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="472">
+<div class="g-col-1" data-index="3" data-categories="rust,r,spatial,package" data-listing-date-sort="1678939200000" data-listing-file-modified-sort="1717786916723" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="461">
 <a href="./projects/pkgs/h3o.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
@@ -298,6 +486,12 @@ genius was my first R package and my first digital child. genius provided a way 
 h3o for H3 indexing
 </h5>
 <div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('rust'); return false;">
+rust
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
 <div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
 spatial
 </div>
@@ -312,7 +506,32 @@ package
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="3" data-categories="package,spatial" data-listing-file-modified-sort="1699652435050" data-listing-reading-time-sort="1" data-listing-word-count-sort="97">
+<div class="g-col-1" data-index="4" data-categories="rust,spatial,r" data-listing-file-modified-sort="1717787054691" data-listing-reading-time-sort="1" data-listing-word-count-sort="55">
+<a href="./projects/pkgs/rsgeo.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+rsgeo
+</h5>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('rust'); return false;">
+rust
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
+spatial
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
+</div>
+<div class="card-text listing-description">
+<code>rsgeo</code> is an interface to the Rust libraries <code>geo-types</code> and <code>geo</code>. <code>geo-types</code> implements pure rust geometry primitives. The <code>geo</code> library adds additional algorithm functionalities…<code></code><code></code>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="5" data-categories="package,spatial,r" data-listing-file-modified-sort="1717786471455" data-listing-reading-time-sort="1" data-listing-word-count-sort="97">
 <a href="./projects/pkgs/sfdep.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
@@ -326,6 +545,9 @@ package
 <div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
 spatial
 </div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
+</div>
 </div>
 <div class="card-text listing-description">
 sfdep is an R package that acts as a tidy interface to the spdep package. In addition it provides some statistics that are not available elsewhere in the R ecosystem such as…
@@ -334,7 +556,7 @@ sfdep is an R package that acts as a tidy interface to the spdep package. In add
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="4" data-categories="package,spatial" data-listing-file-modified-sort="1699652435050" data-listing-reading-time-sort="1" data-listing-word-count-sort="62">
+<div class="g-col-1" data-index="6" data-categories="package,spatial,r" data-listing-file-modified-sort="1717786474587" data-listing-reading-time-sort="1" data-listing-word-count-sort="62">
 <a href="./projects/pkgs/spdep.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
@@ -347,6 +569,9 @@ package
 </div>
 <div class="listing-category" onclick="window.quartoListingCategory('spatial'); return false;">
 spatial
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('r'); return false;">
+r
 </div>
 </div>
 <div class="card-text listing-description">

@@ -10,9 +10,19 @@ listing:
     contents: "/projects/writing"
     type: grid
     fields: [title, categories, description]
+  - id: rust
+    contents: "/projects/rust"
+    type: grid
+    fields: [title, categories, description]
   
 ---   
 
+Over the years I've built or contributed to quite a few things. These are just a select few of them. 
+
+### Rust libraries
+
+::: {#rust}
+:::
 
 ### Packages & contributions
 

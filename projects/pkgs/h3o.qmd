@@ -1,6 +1,6 @@
 ---
 title: "h3o for H3 indexing"
-categories: [spatial, package]
+categories: [rust, r, spatial, package]
 date: 2023-03-16
 ---
 
@@ -45,13 +45,13 @@ bbox_raw <- setNames(
 )
 
 # create some points
-pnts <- st_bbox(bbox_raw) |> 
-  st_as_sfc() |> 
-  st_set_crs(4326) |> 
+pnts <- st_bbox(bbox_raw) |>
+  st_as_sfc() |>
+  st_set_crs(4326) |>
   st_sample(25)
 
 # convert to H3 index
-hexs <- h3_from_points(pnts, 4) 
+hexs <- h3_from_points(pnts, 4)
 hexs
 ```
 
@@ -73,8 +73,8 @@ To illustrate tidyverse compatibility lets create an sf object and create a colu
 ```{r}
 library(dplyr, warn.conflicts = FALSE)
 
-hexs <- tibble(geometry = pnts) |> 
-  st_as_sf() |> 
+hexs <- tibble(geometry = pnts) |>
+  st_as_sf() |>
   mutate(h3 = h3_from_points(geometry, 4))
 
 hexs
@@ -83,14 +83,14 @@ hexs
 Afterwards, lets create a K = 3 disk around each grid cell, create a compact disk by compacting the cells, then unnest into a longer data frame, and update our geometries.
 
 ```{r}
-compact_hexs <- hexs |> 
+compact_hexs <- hexs |>
   mutate(
     disks = grid_disk(h3, 3),
     compact_disks = purrr::map(disks, compact_cells)
-  ) |> 
-  tidyr::unnest_longer(compact_disks) |> 
-  mutate(geometry = st_as_sfc(compact_disks)) |> 
-  st_as_sf() 
+  ) |>
+  tidyr::unnest_longer(compact_disks) |>
+  mutate(geometry = st_as_sfc(compact_disks)) |>
+  st_as_sf()
 ```
 
 Use ggplot2 to make a simple visualization.

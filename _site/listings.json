@@ -3,13 +3,19 @@
     "listing": "/projects.html",
     "items": [
       "/projects/pkgs/sysreqs.html",
+      "/projects/pkgs/r-arcgis-bridge.html",
       "/projects/pkgs/genius.html",
       "/projects/pkgs/h3o.html",
+      "/projects/pkgs/rsgeo.html",
       "/projects/pkgs/sfdep.html",
       "/projects/pkgs/spdep.html",
       "/projects/writing/r4campaigns.html",
       "/projects/writing/uitk.html",
-      "/projects/writing/mirr.html"
+      "/projects/writing/mirr.html",
+      "/projects/rust/valve.html",
+      "/projects/rust/arrow-extendr.html",
+      "/projects/rust/serde-esri.html",
+      "/projects/rust/sfconversions.html"
     ]
   },
   {

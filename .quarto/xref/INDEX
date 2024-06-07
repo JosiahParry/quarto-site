@@ -334,5 +334,26 @@
   },
   "posts/2024-06-06-designing-arcgisgeocode.qmd": {
     "2024-06-06-designing-arcgisgeocode.html": "ddfb5f46"
+  },
+  "projects/pkgs/valve.md": {
+    "valve.html": "d44da60c"
+  },
+  "projects/pkgs/rsgeo.md": {
+    "rsgeo.html": "bad52efe"
+  },
+  "projects/pkgs/r-arcgis-bridge.md": {
+    "r-arcgis-bridge.html": "59ab5f6b"
+  },
+  "projects/rust/sfconversions.md": {
+    "sfconversions.html": "fcd4464b"
+  },
+  "projects/rust/arrow-extendr.md": {
+    "arrow-extendr.html": "68f6912f"
+  },
+  "projects/rust/valve.md": {
+    "valve.html": "31b77970"
+  },
+  "projects/rust/serde-esri.md": {
+    "serde-esri.html": "346d040b"
   }
 }

@@ -139,7 +139,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">home</span></a>
+ <span class="menu-text">home&nbsp;</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -162,7 +162,29 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../index.xml" class="sidebar-item-text sidebar-link">
+  <a href="https://github.com/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://linkedin.com/in/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://twitter.com/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text">Twitter</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.xml" class="sidebar-item-text sidebar-link"><i class="bi bi-rss-fill" role="img">
+</i> 
  <span class="menu-text">RSS</span></a>
   </div>
 </li>
@@ -252,7 +274,7 @@ gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html">st_sample</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># convert to H3 index</span></span>
-<span><span class="va">hexs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/h3o/man/H3.html">h3_from_points</a></span><span class="op">(</span><span class="va">pnts</span>, <span class="fl">4</span><span class="op">)</span> </span>
+<span><span class="va">hexs</span> <span class="op">&lt;-</span> <span class="fu">h3_from_points</span><span class="op">(</span><span class="va">pnts</span>, <span class="fl">4</span><span class="op">)</span> </span>
 <span><span class="va">hexs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;H3[25]&gt;
@@ -306,7 +328,7 @@ First 5 geometries:</code></pre>
 <span></span>
 <span><span class="va">hexs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="va">pnts</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>h3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/h3o/man/H3.html">h3_from_points</a></span><span class="op">(</span><span class="va">geometry</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>h3 <span class="op">=</span> <span class="fu">h3_from_points</span><span class="op">(</span><span class="va">geometry</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">hexs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -335,7 +357,7 @@ Geodetic CRS:  WGS 84
 <div class="cell">
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">compact_hexs</span> <span class="op">&lt;-</span> <span class="va">hexs</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    disks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/h3o/man/grid.html">grid_disk</a></span><span class="op">(</span><span class="va">h3</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    disks <span class="op">=</span> <span class="fu">grid_disk</span><span class="op">(</span><span class="va">h3</span>, <span class="fl">3</span><span class="op">)</span>,</span>
 <span>    compact_disks <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">disks</span>, <span class="va">compact_cells</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest_longer.html">unnest_longer</a></span><span class="op">(</span><span class="va">compact_disks</span><span class="op">)</span> <span class="op">|&gt;</span> </span>

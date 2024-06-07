@@ -1,31 +1,31 @@
 ---
 title: "about"
 about:
-  #template: trestles
+  # template: jolla
   template: solana
-  links:
-    - icon: github
-      text: Github
-      href: https://github.com/josiahparry
-    - icon: youtube
-      text: YouTube
-      href: https://www.youtube.com/@josiahparry
-    - icon: mastodon
-      text: Mastodon
-      href: https://mapstodon.space/web/@josiah
-    - icon: twitter
-      text: Twitter
-      href: https://twitter.com/josiahparry
-    - icon: linkedin
-      text: LinkedIn
-      href: https://linkedin.com/in/josiahparry
-
-comments: false
+links:
+  - icon: github
+    text: Github
+    href: https://github.com/josiahparry
+  - icon: youtube
+    text: YouTube
+    href: https://www.youtube.com/@josiahparry
+  - icon: mastodon
+    text: Mastodon
+    href: https://mapstodon.space/web/@josiah
+  - icon: twitter
+    text: Twitter
+    href: https://twitter.com/josiahparry
+  - icon: linkedin
+    text: LinkedIn
+    href: https://linkedin.com/in/josiahparry
 ---
 
-
-
-
+<style>
+  #quarto-sidebar-collapse-item {
+    height: 0px
+  }
+</style>
 
 
 - __employment__: Senior Product Engineer @ Esri

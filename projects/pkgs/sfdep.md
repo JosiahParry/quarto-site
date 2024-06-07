@@ -1,5 +1,5 @@
 ---
-categories: [package, spatial]
+categories: [package, spatial, r]
 ---
 
 # sfdep

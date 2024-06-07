@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://josiahparry.com/projects.html</loc>
-    <lastmod>2023-11-10T21:40:35.050Z</lastmod>
+    <lastmod>2024-06-07T19:37:12.771Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/projects/writing/mirr.html</loc>
@@ -122,7 +122,7 @@
   </url>
   <url>
     <loc>https://josiahparry.com/projects/pkgs/sysreqs.html</loc>
-    <lastmod>2023-11-10T21:40:35.050Z</lastmod>
+    <lastmod>2024-06-07T18:54:38.510Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/projects/writing/uitk.html</loc>
@@ -130,11 +130,11 @@
   </url>
   <url>
     <loc>https://josiahparry.com/index.html</loc>
-    <lastmod>2023-11-10T21:40:34.958Z</lastmod>
+    <lastmod>2024-06-07T19:03:56.299Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/about.html</loc>
-    <lastmod>2023-11-10T21:47:26.483Z</lastmod>
+    <lastmod>2024-06-07T19:44:39.479Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/posts/2023-09-20-sdsl/index.html</loc>
@@ -187,5 +187,45 @@
   <url>
     <loc>https://josiahparry.com/posts/2024-06-06-designing-arcgisgeocode.html</loc>
     <lastmod>2024-06-07T14:24:04.985Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/rsgeo.html</loc>
+    <lastmod>2024-06-07T19:04:14.691Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/spdep.html</loc>
+    <lastmod>2024-06-07T18:54:34.587Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/h3o.html</loc>
+    <lastmod>2024-06-07T19:01:56.723Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/valve.html</loc>
+    <lastmod>2024-06-07T19:03:41.127Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/sfdep.html</loc>
+    <lastmod>2024-06-07T18:54:31.455Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/pkgs/r-arcgis-bridge.html</loc>
+    <lastmod>2024-06-07T19:21:37.157Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/rust/valve.html</loc>
+    <lastmod>2024-06-07T19:03:41.127Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/rust/sfconversions.html</loc>
+    <lastmod>2024-06-07T19:36:22.955Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/rust/arrow-extendr.html</loc>
+    <lastmod>2024-06-07T19:36:13.058Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/projects/rust/serde-esri.html</loc>
+    <lastmod>2024-06-07T19:35:46.878Z</lastmod>
   </url>
 </urlset>

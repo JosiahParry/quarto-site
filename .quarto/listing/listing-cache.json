@@ -5,7 +5,8 @@
     ],
     "projects.qmd": [
       "/projects/pkgs",
-      "/projects/writing"
+      "/projects/writing",
+      "/projects/rust"
     ],
     "index.qmd": [
       "/posts*/!(index).*md",

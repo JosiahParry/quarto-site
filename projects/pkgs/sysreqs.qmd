@@ -2,7 +2,7 @@
 title: "R package system requirements"
 author: "Josiah Parry"
 date: "2022-08-10"
-categories: [package]
+categories: [package, r]
 ---
 
 - [{{< fa brands github >}} GitHub repo](https://github.com/JosiahParry/r-sysreqs)
