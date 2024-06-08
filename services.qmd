@@ -1,0 +1,22 @@
+---
+title: "Want my help?"
+---
+
+Whether you need help with R package development, 
+Shiny app or plumber API deployment, or making your analytics scale better, I'm here to lend a hand.
+
+I've got a small block of time each week that I 
+can dedicate to consulting. It's not a lot, but 
+it's enough to make a big impact on your project. 
+
+- Writing performant R packages for data analysis
+- Planning deployments of Shiny apps and Plumber 
+APIs
+- Scaling analytics code for large datasets and 
+complex calculations
+- Developing bespoke training programs tailored to 
+your team's needs
+- Training developers on Rust and extending R 
+packages with Rust
+
+Have something different in mind? [Email me](mailto:josiah.parry@gmail.com) at `josiah.parry@gmail.com`.

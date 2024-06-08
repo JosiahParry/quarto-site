@@ -355,5 +355,8 @@
   },
   "projects/rust/serde-esri.md": {
     "serde-esri.html": "346d040b"
+  },
+  "services.qmd": {
+    "services.html": "094bfe04"
   }
 }

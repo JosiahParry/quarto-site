@@ -17,15 +17,22 @@ listing:
         - r
 ---
 
-## Letters to a Layperson (myself)
- 
-Welcome to my personal website. I always aspire to keep pumping out content, but I don't. 
- 
-Here you will find my _"recent"_ blog posts, possibly outdated [biographical information](/about.html), my socials, and links to projects I have made or worked on.
+
+:::{.display-2}
+I make R go fast 🏎️💨
+:::
+
+My name is Josiah (pronounced Joe-sigh-uh) and I believe **R belongs in production**. 
+
+I have a penchant for writing R packages that are really fast and efficient. Typically, this involves writing Rust and glueing R them together using [`extendr`](https://extendr.github.io/extendr/extendr_api/).
+
+I also, quite specifically, like solving geospatial problems. I work at [Esri](https://esri.com) doing spatial statistics and—you guessed it—writing R packages. 
+
+Do you and your organization need help?
 
 -----------
 
-### posts
+## posts
 
 ::: {#blog-posts}
 :::

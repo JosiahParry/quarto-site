@@ -130,11 +130,11 @@
   </url>
   <url>
     <loc>https://josiahparry.com/index.html</loc>
-    <lastmod>2024-06-07T19:03:56.299Z</lastmod>
+    <lastmod>2024-06-08T00:04:01.455Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/about.html</loc>
-    <lastmod>2024-06-07T19:44:39.479Z</lastmod>
+    <lastmod>2024-06-07T23:39:44.210Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/posts/2023-09-20-sdsl/index.html</loc>
@@ -227,5 +227,9 @@
   <url>
     <loc>https://josiahparry.com/projects/rust/serde-esri.html</loc>
     <lastmod>2024-06-07T19:35:46.878Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/services.html</loc>
+    <lastmod>2024-06-08T00:40:57.642Z</lastmod>
   </url>
 </urlset>

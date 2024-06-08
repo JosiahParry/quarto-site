@@ -12,24 +12,31 @@ website:
   sidebar:
     style: "docked"
     contents:
-      - href: index.qmd
-        text: home 
+      # - href: index.qmd
+      #   text: home 
+      - text: "*want my help?*"
+        href: services.qmd
       - about.qmd
       - href: posts/index.qmd
         text: "posts"
       - href: projects.qmd
-      - icon: github
-        href: https://github.com/josiahparry
-        text: "GitHub"
-      - icon: "linkedin"
-        href: https://linkedin.com/in/josiahparry
-        text: "LinkedIn"
-      - icon: twitter
-        href: https://twitter.com/josiahparry
-        text: "Twitter"
-      - href: index.xml
-        text: RSS
-        icon: rss-fill
+      - section: socials
+        contents:
+        - icon: github
+          href: https://github.com/josiahparry
+          text: "GitHub"
+        - icon: "linkedin"
+          href: https://linkedin.com/in/josiahparry
+          text: "LinkedIn"
+        - icon: twitter
+          href: https://twitter.com/josiahparry
+          text: "Twitter"
+        - icon: youtube
+          text: YouTube
+          href: https://www.youtube.com/@josiahparry
+        - href: index.xml
+          text: RSS
+          icon: rss-fill
   twitter-card: true
   site-url: "https://josiahparry.com"
 
