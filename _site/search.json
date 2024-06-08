@@ -619,7 +619,7 @@
     "href": "index.html",
     "title": "Josiah Parry",
     "section": "",
-    "text": "I make R go fast 🏎️💨\nMy name is Josiah (pronounced Joe-sigh-uh) and I believe R belongs in production.\nI have a penchant for writing R packages that are really fast and efficient. Typically, this involves writing Rust and glueing R them together using extendr.\nI also, quite specifically, like solving geospatial problems. I work at Esri doing spatial statistics and—you guessed it—writing R packages.\nDo you and your organization need help?"
+    "text": "I make R go fast 🏎️💨\nMy name is Josiah (pronounced Joe-sigh-uh) and I believe R belongs in production.\nI have a penchant for writing R packages that are really fast and efficient. Typically, this involves writing Rust and glueing R them together using extendr.\nI also, quite specifically, like solving geospatial problems. I work at Esri doing spatial statistics and—you guessed it—writing R packages."
   },
   {
     "objectID": "index.html#letters-to-a-layperson-myself",

@@ -28,7 +28,6 @@ I have a penchant for writing R packages that are really fast and efficient. Typ
 
 I also, quite specifically, like solving geospatial problems. I work at [Esri](https://esri.com) doing spatial statistics and—you guessed it—writing R packages. 
 
-Do you and your organization need help?
 
 -----------
 
