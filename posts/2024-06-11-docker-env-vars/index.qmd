@@ -1,0 +1,102 @@
+---
+title: "Docker: keep your secrets secret"
+categories: [production, docker]
+---
+
+You've written a shiny app, plumber API, or an ETL process. Your orchestrating that work with Docker. In order for the application to work, you need to be able to use secret values. 
+
+> How can you use secrets with a Docker image safely? 
+
+
+## Example Dockerfile
+
+
+Here is a very simple Dockerfile. Say the container is called `supersecret`. When we run the Docker container we print a single environment variable. 
+
+```dockerfile
+FROM rhub/r-minimal
+
+CMD [ "R", "--slave", "-e", "cat(Sys.getenv('SECRET_USER'))"]
+```
+
+Run this with `docker run --rm -t supersecret` and you'll see nothing printed to the console. This is because the environment variable is not actually available to the container.
+
+How can you set the environment variables used by a container? 
+
+
+## The `ENV` instruction
+
+The `ENV` Docker instruction is used to specify environment variables You can specify environment variables directly into the Dockerfile like so: 
+
+```dockerfile
+FROM rhub/r-minimal
+ENV SECRET_USER=josiah
+
+CMD [ "R", "--slave", "-e", "cat(Sys.getenv('SECRET_USER'))"]
+```
+
+Running `docker run --rm -t supersecret` will print `josiah` to the console! So that worked.
+
+This is fine for things that dont need to be secret. For example maybe you have something like `ENV DEBUG=true` to specify that this is a debug build. 
+
+But if you have a secret, **you shouldn't place your secrets directly in the code of the Dockerfile**. 
+
+
+## Using `--env`
+
+Another way to specify environment variables is to specify the environment variables at run time using the `--env` flag. This accepts key-value pairs for the environment variables.
+
+For example 
+
+```
+docker run --env SECRET_USER="ricky bobby" --rm -t supersecret
+```
+
+will print `ricky bobby` to the console.
+
+This will work but it requires that you manually specify the environment variables at run time when using `docker run`. And that can be cumbersome and require some finagling.
+
+And again, you dont want to write a bash script that hard codes those values into a `docker run` call.
+
+So what else can you do?
+
+## Using a separate file with `--env-file`
+
+You shouldn't store secrets in your R code. You should use a `.Renviron` file. This looks like 
+
+```shell
+KEY=value
+SECRET_USER=josiah
+SECRET_USER_PASSWORD=super-duper-very-secret
+```
+
+:::{.callout-tip}
+In many other languages and ecosystem, using a `.env` file with the same structure is used to set environment variables.
+:::
+
+This would make the environment variables `KEY`, `SECRET_USER` and `SECRET_USER_PASSWORD` available to your R session by running `Sys.getenv()`.
+
+Now, you don't want to actually copy this file into the docker container. What if you accidentally made the file available? Yikes! 
+
+Instead, you can pass the file directly using the `--env-file` flag. This will capture the environment variables written in a file as a `KEY=value` pair and make them available in your container. 
+
+### docker run with file 
+
+Given the following files which define a Docker image called `supersecret`
+
+::: {layout-ncol=2}
+
+```{.shell filename=".env"}
+SECRET_USER=shhhh-dont-tell
+```
+
+```{.docker filename="Dockerfile"}
+FROM rhub/r-minimal
+
+CMD [ "R", "--slave", "-e", "cat(Sys.getenv('SECRET_USER'))"]
+```
+:::
+
+You will need to run `docker run --env-file .env supersecret` to set your environment variables appropriately. 
+
+

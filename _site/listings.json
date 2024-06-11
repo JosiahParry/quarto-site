@@ -21,6 +21,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-06-11-docker-env-vars/index.html",
       "/posts/2024-06-06-designing-arcgisgeocode.html",
       "/posts/2024-05-27-indexmap-rs.html",
       "/posts/2024-05-24-duckdb-and-r.html",
@@ -98,6 +99,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-06-11-docker-env-vars/index.html",
       "/posts/2024-06-06-designing-arcgisgeocode.html",
       "/posts/2024-05-27-indexmap-rs.html",
       "/posts/2024-05-24-duckdb-and-r.html",
