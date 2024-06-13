@@ -1,0 +1,85 @@
+---
+title: Evaluate strings as code 
+date: "2024-06-13"
+categories: [r]
+---
+
+Prompted by a post on Mastodon, I wanted to explore how to evaluate an R string as code.
+
+<iframe src="https://mastodon.cloud/@nxskok/112610810465402574/embed" width="400" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
+
+This is generally a pretty common pattern that I have myself encountered in the past and had to work through a solution for—many times. 
+
+## The Problem
+
+How can I programatically create and execute valid R code? 
+
+## A solution
+
+In this case, the problem space is quite simple: 
+
+1. given a package name and 
+2. a dataset name
+3. extract the dataset as an object
+
+You can typically extract datasets from a package's namespace. This looks like `{pkgname}::{dataset}`. 
+
+We can create this string simply like so: 
+
+```{r}
+pkg <- "dplyr"
+dataset <- "starwars"
+dataset_str <- paste0(pkg, "::", dataset)
+```
+
+### Evaluating R code 
+
+Then, we need to be able to evaluate this code. I find [`{rlang}`](https://rlang.r-lib.org/reference/) to be very handy. 
+
+To convert a string into an expression, use `rlang::parse_expr()`
+
+
+```{r}
+library(rlang)
+to_eval <- parse_expr(dataset_str)
+to_eval
+```
+
+This creates a `language` type object. 
+
+We can now pass this into `rlang::eval_bare()` to evaluate the string and run the R code and store the result into an R object.
+
+```{r}
+result <- rlang::eval_bare(to_eval)
+result
+```
+
+
+## Alternative solution
+
+Here is an alternative solution which uses the `data()` function. Then, assuming the name of the dataset is created in the environment, fetches it using `get()`.
+
+```{r}
+englue("data({dataset}, package = '{pkg}')") |>
+  parse_expr() |>
+  eval_bare()
+
+res <- get(dataset)
+res
+```
+
+There are issues with this in that you can also end up overwriting things. We can create a new environment if we'd like as well. 
+
+
+```{r}
+# create a custom environment to store stuff
+my_env <- rlang::env()
+
+englue("data({dataset}, package = '{pkg}')") |>
+  parse_expr() |>
+  eval_bare(my_env)
+
+# get it from the environment
+res <- get(dataset, envir = my_env)
+res
+```
