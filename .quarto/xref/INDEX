@@ -361,5 +361,8 @@
   },
   "posts/2024-06-11-docker-env-vars/index.qmd": {
     "index.html": "7049e2a0"
+  },
+  "posts/2024-06-13-caching-webr.md": {
+    "2024-06-13-caching-webr.html": "f287cc9b"
   }
 }

@@ -1,5 +1,6 @@
 ---
 title: "Docker: keep your secrets secret"
+date: "2024-06-11"
 categories: [production, docker]
 ---
 

@@ -90,7 +90,7 @@
   </url>
   <url>
     <loc>https://josiahparry.com/posts/index.html</loc>
-    <lastmod>2023-11-25T16:47:21.809Z</lastmod>
+    <lastmod>2024-06-13T18:46:21.090Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/posts/2020-09-14-what-the-hell-is-critical-race-theory.html</loc>
@@ -130,7 +130,7 @@
   </url>
   <url>
     <loc>https://josiahparry.com/index.html</loc>
-    <lastmod>2024-06-08T01:02:53.059Z</lastmod>
+    <lastmod>2024-06-13T18:45:27.778Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/about.html</loc>
@@ -234,6 +234,10 @@
   </url>
   <url>
     <loc>https://josiahparry.com/posts/2024-06-11-docker-env-vars/index.html</loc>
-    <lastmod>2024-06-11T19:51:03.211Z</lastmod>
+    <lastmod>2024-06-13T18:47:24.921Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2024-06-13-caching-webr.html</loc>
+    <lastmod>2024-06-13T18:46:00.042Z</lastmod>
   </url>
 </urlset>

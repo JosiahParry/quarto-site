@@ -10,7 +10,84 @@
 <atom:link href="https://josiahparry.com/index-r.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Fri, 24 May 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 13 Jun 2024 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Caching WebR from CDN</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-06-13-caching-webr.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>I am developing Rust bindings to <a href="https://webr.r-wasm.org/">WebR</a>. Because WebR is not compiled for WASI and only WebAssembly, native Rust bindings are not possible. Instead, bindings are done through <a href="https://rustwasm.github.io/docs/wasm-bindgen/">wasm-bindgen</a> which creates bindings to JavaScript.</p>
+<p>The WIP Rust crate is called <a href="https://github.com/JosiahParry/webr-js-rs/"><code>webr-js-rs</code></a>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’m building these bindings to support <strong><a href="https://flrsh.dev/">flrsh.dev</a></strong>.</p>
+<p>Sign up for an account to be notified when I launch our first course (a deep dive on DuckDB)!</p>
+</div>
+</div>
+<p><code>webr-js-rs</code> works <em>only</em> on wasm targets.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>See <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">this informative blog post</a> from Mozilla on what WASI is.</li>
+<li>There is an <a href="https://github.com/r-wasm/webr/issues/166">outstanding issue</a> on the WebR GitHub.</li>
+</ul>
+</div>
+</div>
+<p>The problem I was encountering:</p>
+<p><strong>WebR wasn’t caching the binaries!</strong></p>
+<p>Turns out that this is because my code had this:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode rs code-with-copy"><code class="sourceCode rust"><span id="cb1-1"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">#[</span>wasm_bindgen<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">(</span>module <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://webr.r-wasm.org/latest/webr.mjs"</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">)]</span></span></code></pre></div>
+<p>I brought this issue up in a GitHub issue. <a href="https://github.com/georgestagg"><span class="citation" data-cites="GeorgeStagg">@GeorgeStagg</span></a> pointed out</p>
+<blockquote class="blockquote">
+<p>“The webR CDN assets under /latest/ are intentionally served with Cache-Control: no-cache so that the latest commit is always downloaded by the browser.”</p>
+</blockquote>
+<p>This makes sense! It means since there is no cache instruction, it will fetch the binaries every time! Instead he recommended to use a tagged version</p>
+<blockquote class="blockquote">
+<p>“The longer-term builds under e.g.&nbsp;/v0.3.3/ are served with the HTTP header cache-control: max-age=604800, and so the webR assets should automatically be <strong>cached by browsers for 1 week</strong>.”</p>
+</blockquote>
+<p>👆🏼 emphasis mine.</p>
+<p>This works! So I’ve changed webr-js-rs to use a fixed version.</p>
+<p>The one challenge with this, though, is that even though the binaries are cached, the R session will be restarted from scratch if the browser is refreshed. So that is something I need to figure out next!</p>
+
+
+
+ ]]></description>
+  <category>webr</category>
+  <category>rust</category>
+  <category>r</category>
+  <guid>https://josiahparry.com/posts/2024-06-13-caching-webr.html</guid>
+  <pubDate>Thu, 13 Jun 2024 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>{duckdb} or {duckplyr}?</title>
   <dc:creator>Josiah Parry</dc:creator>
