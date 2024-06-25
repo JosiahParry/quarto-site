@@ -510,7 +510,7 @@ CMD [ "R", "--slave", "-e", "cat(Sys.getenv('SECRET_USER'))"]</code></pre>
   <category>production</category>
   <category>docker</category>
   <guid>https://josiahparry.com/posts/2024-06-11-docker-env-vars/</guid>
-  <pubDate>Thu, 13 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Tue, 11 Jun 2024 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Making a Ridiculously Fast™ API Client</title>

@@ -1,0 +1,49 @@
+---
+title: "Static file server in R"
+date: "2024-06-24"
+subtitle: "{plumber} is (always) the answer"
+categories: [r, plumber, api]
+freeze: true
+---
+
+[Plumber](https://www.rplumber.io/articles/routing-and-input.html?q=upload#static-file-handler), [ambiorix](https://ambiorix.dev/), and [opencpu](https://opencpu.r-universe.dev/opencpu) are the keys to putting R into production. 
+
+Sometimes all an API needs to do is statically serve files. Making a static file server with R is insanely easy.
+
+For this example, I have a folder called `/public` which I want to serve files from at the API path `/static`.
+
+To do this we create a plumber API using the `pr_static()` function or `#* @assets` if using the other plumber declaration format. 
+
+## Making the file server
+
+```{r, eval=FALSE}
+library(plumber)
+
+pr() |>
+  pr_static("/static", "./public") |>
+  pr_run()
+```
+
+
+## calling the file server 
+
+We can call this api using a GET request: 
+
+```{r}
+library(httr2)
+
+iris_csv <- request("http://127.0.0.1:3000/static/iris.csv") |>
+  req_perform() |>
+  resp_body_string()
+
+readr::read_csv(iris_csv)
+```
+
+
+
+## Alternative plumber format
+
+```r
+#* @assets ./public /static
+list()
+```
