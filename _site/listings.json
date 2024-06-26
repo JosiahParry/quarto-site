@@ -21,6 +21,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-06-25-handle-files-plumber/index.html",
       "/posts/2024-06-24-file-server/index.html",
       "/posts/2024-06-13-caching-webr.html",
       "/posts/2024-06-13-eval-strings.html",
@@ -102,6 +103,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-06-25-handle-files-plumber/index.html",
       "/posts/2024-06-24-file-server/index.html",
       "/posts/2024-06-13-caching-webr.html",
       "/posts/2024-06-13-eval-strings.html",

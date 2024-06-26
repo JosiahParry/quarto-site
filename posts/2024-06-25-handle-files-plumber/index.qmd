@@ -1,0 +1,190 @@
+---
+title: "Read a CSV in a production API"
+date: "2024-06-25"
+subtile: "{plumber} and multipart request #RinProd"
+categories: [plumber, r, prod]
+---
+
+Deploying RESTful APIs is the way to put any language into production. R is not any different. 
+
+One challenge when making APIs is handling files.
+
+Uploading files is done typically with a [_multipart request_](https://swagger.io/docs/specification/describing-request-body/multipart-requests/).  
+
+> "[they] combine one or more sets of data into a single body…. You typically use these requests for file uploads and for transferring data of several types in a single request (for example, a file along with a JSON object)."
+
+:::{.aside}
+[source: Swagger doc](https://swagger.io/docs/specification/describing-request-body/multipart-requests/)
+:::
+
+## Handling multipart requests in R
+
+You can process them using the [`{mime}`](https://github.com/yihui/mime) package.
+
+:::{.aside}
+Named after ["mime types"](https://en.wikipedia.org/wiki/Media_type) not [Mr. Mime](https://www.pokemon.com/us/pokedex/mr-mime)
+:::
+
+[`{plumber}`](https://rplumber.io) provides access to the body of a request using the `req` argument. 
+
+```r
+#* @post /upload
+upload <- function(req, res) {
+    # body
+}
+```
+
+To access the structure of request use [`mime::parse_multipart(req)`](https://rdrr.io/github/yihui/mime/man/parse_multipart.html). 
+
+Modifying the function like so will return json from the API
+
+```r
+#* @post /upload
+upload <- function(req, res) {
+    mp <- mime::parse_multipart(req)
+    mp
+}
+```
+
+**Save this as plumber.R**
+
+### Run your API
+
+In your terminal (from the same working directory as `plumber.R`) run `R -e 'plumber::plumb("plumber.R")$run(port = 3000)'`
+
+This will give you a background API to call. 
+
+## Making a multipart request
+
+Use [`httr2`](https://httr2.r-lib.org) to create the multipart request. 
+
+- Start the request with `request()`
+- Base the request object to `req_body_multipart()` to add data 
+- Use key-value pairs to `req_body_multipart(...)` to add data
+    - Note that values must be a string so create the json yourself
+- Send the request using `req_perform()`
+
+
+Here we give it a unique ID and add a sample of data 
+
+```{r}
+library(httr2)
+
+resp <- request("http://127.0.0.1:3000/upload") |>
+  req_body_multipart(
+    id = ulid::ulid(),
+    sample = jsonify::to_json(sample(1:100, 10), unbox = TRUE)
+  ) |>
+  req_perform()
+
+resp
+```
+
+We extract the data using `resp_body_string()` and process it using 
+```{r}
+resp_body_string(resp) |>
+  RcppSimdJson::fparse()
+```
+
+## Adding files
+
+We'll create a tempory file containing the `iris` data.frame and send this to the API endpoint.
+
+These two lines: 
+
+1. Create a temporary csv file
+2. Write the data frame to the temporary file 
+
+:::{.callout-tip}
+This is a very handy trick that you might be able to adapt to many other circumstances. Temporary files are _very_ useful. 
+:::
+
+```{r}
+tmp <- tempfile(fileext = ".csv")
+readr::write_csv(head(iris), tmp)
+```
+
+
+Next we need to upload the file to our request. Do this using `curl::form_file()`. You need to provide a path to the file. In this case, it will be the temporary file. 
+
+```{r}
+resp <- request("http://127.0.0.1:3000/upload") |>
+  req_body_multipart(
+    file = curl::form_file(tmp)
+  ) |>
+  req_perform()
+
+resp_body_string(resp) |>
+  jsonify::pretty_json()
+```
+
+In this case `file` is a named list. `mime` stores the file in a temporary path accessible via `datapath`. So let's try adding an API endpoint to read a csv file. 
+
+
+## Read CSV in Plumber API
+
+
+Here we read the csv from the path. We would probably need to add some better checks here. Like checking that the field actually exists in `mp` but the error will be propagates as a 500 status anyways. 
+
+Something is always better than nothing. Just like this blog post. 
+
+```r
+#* @post /read_csv
+function(req, res) {
+  mp <- mime::parse_multipart(req)
+  readr::read_csv(mp$file$datapath)
+}
+```
+
+
+## Send CSV to API
+
+Here is how we can send the csv to the API
+
+```{r}
+resp <- request("http://127.0.0.1:3000/read_csv") |>
+  req_body_multipart(
+    file = curl::form_file(tmp)
+  ) |>
+  req_perform()
+
+resp_body_string(resp) |>
+  jsonify::pretty_json()
+```
+
+Note that the response is just nice json.
+
+We can parse that back doing a full round trip:
+
+
+```{r}
+resp_body_string(resp) |>
+  RcppSimdJson::fparse()
+```
+
+
+# Whole API:
+
+
+```{r, filename="plumber.R", eval = FALSE}
+library(plumber)
+# R -e 'plumber::plumb("plumber.R")$run(port = 3000)'
+#* @post /upload
+upload <- function(req, res) {
+  mp <- mime::parse_multipart(req)
+  mp
+}
+
+#* @post /read_csv
+function(req, res) {
+  mp <- mime::parse_multipart(req)
+  readr::read_csv(mp$file$datapath)
+}
+
+```
+
+##  Scale your APIs
+
+Use [`Valve`](https://valve.josiahparry.com/) to scale and deploy your applications to production. 
+
+It kicks ass tbh. 
