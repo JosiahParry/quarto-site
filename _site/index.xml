@@ -10,7 +10,1183 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Mon, 24 Jun 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 30 Jun 2024 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Type safe(r) R code</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-06-30-type-safety/</link>
+  <description><![CDATA[ <section id="introduction-to-r-lib-type-safety-checks" class="level2"><h2 class="anchored" data-anchor-id="introduction-to-r-lib-type-safety-checks">Introduction to r-lib type safety checks</h2>
+<p>Type safety is all the rage these days. It’s the (one of the many) reason why people love Rust , TypeScript, and Pydantic.</p>
+<p>Knowing what type of data is coming in and going out of a function is critical! It means fewer bugs and more robust code.</p>
+<p>I will introduce you to the r-lib standalone checks. Here is a peek of some code from<a href="https://github.com/r-arcgis/arcgisgeocode">arcgisgeocode</a> that helps make the function more type safe.</p>
+<p><img src="https://josiahparry.com/posts/2024-06-30-type-safety/images/Untitled.png" class="img-fluid" style="width:50.0%"></p>
+</section><section id="what-is-type-safety" class="level2"><h2 class="anchored" data-anchor-id="what-is-type-safety">What is type safety?</h2>
+<p>A type safe language is one where each variable has a known and <em>validated</em> type. R <strong><em>is not type safe.</em></strong></p>
+<p>When you define a function in a type safe language, you have to specify the input types and the output types.</p>
+<p>Here is a function that scales one numeric variable by another.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">scale_by</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">y</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">y</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+<p><strong>This is not type safe</strong>. I can pass in a <strong>character</strong> vector a <strong>list</strong>, <strong>NULL</strong>, or even a <strong>POSIXct</strong> class. Sometimes R will do the appropriate conversions for us. But other times it wont.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_by</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"10"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in x/y: non-numeric argument to binary operator</code></pre>
+</div>
+</div>
+<p><strong>You want to be in control of your function!</strong></p>
+</section><section id="why-type-safety-is-important" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="why-type-safety-is-important">Why type safety is important</h2>
+<p>Type safety allows us to catch and prevent errors early and thus <strong>prevent unintended bugs</strong>. Without type safety, R may perform silent <strong>coercions</strong> or your code may run as R intended—but not <em>as you</em> intended.</p>
+<aside><p>💡 A type <strong>coercion</strong> is a type conversion that occurs because one type does not match the other and is done silently. <strong>Casting</strong> is when you explicitly change the type—e.g.&nbsp;calling <code><a href="https://rdrr.io/r/base/integer.html">as.integer()</a></code> on <code>doubles()</code></p>
+</aside><p>Adding type guarantees ensures that your code functions as intended.</p>
+</section><section id="type-safety-in-other-languages" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="type-safety-in-other-languages">Type safety in other languages</h2>
+<p>Type safety is becoming an increasingly common and more important aspect of programming. People love Rust for its type safety among other things. Rust (and C/++ and Java and Scala etc) is a <strong>statically typed</strong> language.</p>
+<aside><p>💡 A statically typed language requires you to specify the <em>type</em> of object that are used in a function and elsewhere.</p>
+</aside><section id="rusts-static-typing" class="level3"><h3 class="anchored" data-anchor-id="rusts-static-typing">Rust’s static typing</h3>
+<p>In Rust, you define a type and that type is unique.</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb4-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">struct</span> Person <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-2">    name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-3">    age<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">u8</span></span>
+<span id="cb4-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>To create a person you would write <code>Person { name: "Josiah".to_string(), age: 28 }</code> . This is recognized as a <code>Person</code> struct. In Rust, a function must know its argument types, for example:</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> calculate_birth_year(person<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>Person) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// use chrono::DateLike</span></span>
+<span id="cb5-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> now <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">chrono::Utc::</span>now()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-4">    (now<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>year() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> person<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>age <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">as</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span>) </span>
+<span id="cb5-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>This function takes a reference to a <code>Person</code> and calculates (roughly) what year they were born in. If I had another struct called <code>Me</code> with the same exact fields, this wouldn’t work.</p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb6-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">struct</span> Me <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-2">    name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb6-3">    age<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">u8</span></span>
+<span id="cb6-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>Even though <code>Me</code> and <code>Person</code> have the exact same field types, they are recognized as different types.</p>
+<p>This is different than how JavaScript does this.</p>
+</section><section id="typescript-interfaces" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="typescript-interfaces">TypeScript Interfaces</h3>
+<p>The JavaScript folks now have TypeScript which is pseudo-type safety. TypeScript uses <strong>duck typing.</strong></p>
+<aside><p>💡 If it looks like a duck, swims like a duck, and quacks like a duck, this it probably <em>is</em> a duck.</p>
+</aside><p>If I understand TypeScript correctly, they use a type <strong>interface.</strong> These feel similar to struct definitions in Rust.</p>
+<pre class="tsx"><code>interface Person {
+    name: string;
+    age: number;
+}</code></pre>
+<p>In TypeScript, these interfaces are a way to standardizes what a type <em>looks like</em>. But not an actual type themself! This is (I think), the equivalent JavaScript code to calculate the birth year of an individual.</p>
+<pre class="tsx"><code>function calculateBirthYear(person: Person) {
+        Date().getFullYear() - person.age
+}</code></pre>
+<p>With this, though, you don’t actually need to have an instance of <code>Person</code> . Instead, you can have a normal JavaScript object that <em>looks</em> (and quacks) just like the <code>Person</code> type.</p>
+<pre class="tsx"><code>const john: Person = {
+    name: 'John Doe',
+    age: 30
+}
+
+let jane = { name: 'Jane Doe', age: 28 }
+
+console.log(calculateBirthYear(john));
+console.log(calculateBirthYear(jane));</code></pre>
+<p>These both work.</p>
+</section></section><section id="type-safety-in-r" class="level2"><h2 class="anchored" data-anchor-id="type-safety-in-r">Type safety in R</h2>
+<p>Like JavaScript, and Python (yes I know about type hinting, thats opt in and different), R doesn’t do any validation of arguments. TypeScript can add a layer of Duck Typing checks to the functions which is great for them. But what about us?</p>
+<p>How can we make our R functions safer? In R, (almost) everything is a vector. The <code>r-lib</code> team has (very quietly) created what I think is the greatest contribution to the tidyverse ecosystem in a long time in the form of standalone type check functions.</p>
+</section><section id="stand-alone-type-checks" class="level2"><h2 class="anchored" data-anchor-id="stand-alone-type-checks">Stand-alone type checks</h2>
+<p>The standalone functions are quite unique. I’ve never seen anything quite like them. They’re literally standalone R files with a bunch of handy R functions. It’s like adding a package but without adding it as a dependency.</p>
+<p>These are functions prefixed with <code>check_</code> that test inputs for the most common types. They provide beautiful error messages and have commonly needed flexibility.</p>
+<section id="add-type-checks-to-your-project" class="level3"><h3 class="anchored" data-anchor-id="add-type-checks-to-your-project">Add type checks to your project</h3>
+<p>The usethis package has a handy function <code>use_standalone()</code> which will add these functions for you.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">usethis</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://usethis.r-lib.org/reference/use_standalone.html">use_standalone</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"r-lib/rlang"</span>, file <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"types-check"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<p>This is supposed to be used in the context of an R package but can still be used in any R script. THe function requires an R directory to be found at the root.</p>
+</section></section><section id="standalone-type-checks" class="level2"><h2 class="anchored" data-anchor-id="standalone-type-checks">Standalone type checks</h2>
+<p>We can get <em>really far</em> in enhancing type safety</p>
+<p><a href="https://usethis.r-lib.org/reference/use_standalone.html">https://usethis.r-lib.org/reference/use_standalone.html</a></p>
+<p>Since this isn’t an R package, I will source the functions. Otherwise, run <code><a href="https://devtools.r-lib.org/reference/load_all.html">devtools::load_all()</a></code> for the functions to become available.</p>
+<div class="cell">
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/getwd.html">getwd</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "/Users/josiahparry/github/quarto-site/posts/2024-06-30-type-safety"</code></pre>
+</div>
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"R/import-standalone-obj-type.R"</span>, local <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"R/import-standalone-types-check.R"</span>, local <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://rlang.r-lib.org">rlang</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These standalone checks require that <a href="https://rlang.r-lib.org">rlang</a> be an imported package. Use <code>usethis::use_package("rlang")</code>. It is a very small package and has no dependencies. Very little to lose by adding it.</p>
+</div>
+</div>
+</section><section id="scalar-checks" class="level2"><h2 class="anchored" data-anchor-id="scalar-checks">Scalar checks</h2>
+<p>R doesn’t have the concept of a scalar. Though using a scalar is still very useful in R.</p>
+<p>The standalone checks provide helpers for checking scalar values. There a quite a few but the ones I use most commonly are:</p>
+<ul>
+<li><code>check_string()</code></li>
+<li><code>check_bool()</code></li>
+<li><code>check_number_whole()</code></li>
+<li><code>check_number_decimal()</code></li>
+</ul>
+<section id="usage" class="level3"><h3 class="anchored" data-anchor-id="usage">Usage</h3>
+<p>Each of these functions provide the arguments:</p>
+<ul>
+<li><code>allow_na</code></li>
+<li><code>allow_null</code></li>
+</ul>
+<p>This is helpful because using NULL is often used as a default argument for optional arguments.</p>
+<p>For example we can check that something is a string:</p>
+<div class="cell">
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_string</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<p>But when it is a character vector:</p>
+<div class="cell">
+<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_string</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hello"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"world"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! `c("hello", "world")` must be a single string, not a character vector.</code></pre>
+</div>
+</div>
+<p>This gives us an informative error telling the user what type was found and expected.</p>
+<p>In the case of <code>NULL</code>s we can provide the <code>allow_null</code> argument which allows the test to pass.</p>
+<div class="cell">
+<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_string</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_string</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, allow_null <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<div class="cell">
+
+</div>
+</section></section><section id="vector-checks" class="level2"><h2 class="anchored" data-anchor-id="vector-checks">Vector checks</h2>
+<p>In addition to scalar checks, there are many handy vectorized checks.</p>
+<p>There are vector checks these are:</p>
+<ul>
+<li><code>check_character()</code></li>
+<li><code>check_logical()</code></li>
+<li><code>check_data_frame()</code></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_character</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_logical</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"b"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_data_frame</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! `1:2` must be a character vector, not an integer vector.</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! `c("a", "b")` must be a logical vector, not a character vector.</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! `list(a = 1, b = 2)` must be a data frame, not a list.</code></pre>
+</div>
+</div>
+
+
+</section> ]]></description>
+  <category>r</category>
+  <guid>https://josiahparry.com/posts/2024-06-30-type-safety/</guid>
+  <pubDate>Sun, 30 Jun 2024 04:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Read a CSV in a production API</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-06-25-handle-files-plumber/</link>
+  <description><![CDATA[ <p>Deploying RESTful APIs is the way to put any language into production. R is not any different.</p>
+<p>One challenge when making APIs is handling files.</p>
+<p>Uploading files is done typically with a <a href="https://swagger.io/docs/specification/describing-request-body/multipart-requests/"><em>multipart request</em></a>.</p>
+<blockquote class="blockquote">
+<p>“[they] combine one or more sets of data into a single body…. You typically use these requests for file uploads and for transferring data of several types in a single request (for example, a file along with a JSON object).”</p>
+</blockquote>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><a href="https://swagger.io/docs/specification/describing-request-body/multipart-requests/">source: Swagger doc</a></p>
+</div></div><section id="handling-multipart-requests-in-r" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="handling-multipart-requests-in-r">Handling multipart requests in R</h2>
+<p>You can process them using the <a href="https://github.com/yihui/mime"><code>{mime}</code></a> package.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Named after <a href="https://en.wikipedia.org/wiki/Media_type">“mime types”</a> not <a href="https://www.pokemon.com/us/pokedex/mr-mime">Mr.&nbsp;Mime</a></p>
+</div></div><p><a href="https://rplumber.io"><code>{plumber}</code></a> provides access to the body of a request using the <code>req</code> argument.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#* @post /upload</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">upload</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">res</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># body</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p>To access the structure of request use <a href="https://rdrr.io/github/yihui/mime/man/parse_multipart.html"><code>mime::parse_multipart(req)</code></a>.</p>
+<p>Modifying the function like so will return json from the API</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#* @post /upload</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">upload</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">res</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mime</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/mime/man/parse_multipart.html">parse_multipart</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+<p><strong>Save this as plumber.R</strong></p>
+<section id="run-your-api" class="level3"><h3 class="anchored" data-anchor-id="run-your-api">Run your API</h3>
+<p>In your terminal (from the same working directory as <code>plumber.R</code>) run <code>R -e 'plumber::plumb("plumber.R")$run(port = 3000)'</code></p>
+<p>This will give you a background API to call.</p>
+</section></section><section id="making-a-multipart-request" class="level2"><h2 class="anchored" data-anchor-id="making-a-multipart-request">Making a multipart request</h2>
+<p>Use <a href="https://httr2.r-lib.org"><code>httr2</code></a> to create the multipart request.</p>
+<ul>
+<li>Start the request with <code><a href="https://httr2.r-lib.org/reference/request.html">request()</a></code>
+</li>
+<li>Base the request object to <code><a href="https://httr2.r-lib.org/reference/req_body.html">req_body_multipart()</a></code> to add data</li>
+<li>Use key-value pairs to <code>req_body_multipart(...)</code> to add data
+<ul>
+<li>Note that values must be a string so create the json yourself</li>
+</ul>
+</li>
+<li>Send the request using <code><a href="https://httr2.r-lib.org/reference/req_perform.html">req_perform()</a></code>
+</li>
+</ul>
+<p>Here we give it a unique ID and add a sample of data</p>
+<div class="cell">
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org">httr2</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/request.html">request</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"http://127.0.0.1:3000/upload"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/req_body.html">req_body_multipart</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ulid</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/ulid/man/ulid.html">ulid</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>    sample <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">jsonify</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/jsonify/man/to_json.html">to_json</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>, unbox <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/req_perform.html">req_perform</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'jsonify':
+  method     from    
+  print.json jsonlite</code></pre>
+</div>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>&lt;httr2_response&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>POST http://127.0.0.1:3000/upload</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Status: 200 OK</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Content-Type: application/json</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Body: In memory (81 bytes)</code></pre>
+</div>
+</div>
+<p>We extract the data using <code><a href="https://httr2.r-lib.org/reference/resp_body_raw.html">resp_body_string()</a></code> and process it using</p>
+<div class="cell">
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html">resp_body_string</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">RcppSimdJson</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/RcppSimdJson/man/fparse.html">fparse</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$id
+[1] "01J1QF6TA2VN2Z5WSFJ8DMJJ5W"
+
+$sample
+[1] "[42,85,18,65,14,10,9,21,27,93]"</code></pre>
+</div>
+</div>
+</section><section id="adding-files" class="level2"><h2 class="anchored" data-anchor-id="adding-files">Adding files</h2>
+<p>We’ll create a tempory file containing the <code>iris</code> data.frame and send this to the API endpoint.</p>
+<p>These two lines:</p>
+<ol type="1">
+<li>Create a temporary csv file</li>
+<li>Write the data frame to the temporary file</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is a very handy trick that you might be able to adapt to many other circumstances. Temporary files are <em>very</em> useful.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>fileext <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".csv"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readr</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">iris</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<p>Next we need to upload the file to our request. Do this using <code><a href="https://rdrr.io/pkg/curl/man/multipart.html">curl::form_file()</a></code>. You need to provide a path to the file. In this case, it will be the temporary file.</p>
+<div class="cell">
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/request.html">request</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"http://127.0.0.1:3000/upload"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/req_body.html">req_body_multipart</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    file <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">curl</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/curl/man/multipart.html">form_file</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/req_perform.html">req_perform</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html">resp_body_string</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">jsonify</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/jsonify/man/pretty_json.html">pretty_json</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+    "file": [
+        {
+            "name": "filef10c3faec0e9.csv",
+            "size": 192,
+            "type": "application/octet-stream",
+            "datapath": "/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T//RtmphrlFYJ/filef0d54bf0c8ce"
+        }
+    ]
+}</code></pre>
+</div>
+</div>
+<p>In this case <code>file</code> is a named list. <code>mime</code> stores the file in a temporary path accessible via <code>datapath</code>. So let’s try adding an API endpoint to read a csv file.</p>
+</section><section id="read-csv-in-plumber-api" class="level2"><h2 class="anchored" data-anchor-id="read-csv-in-plumber-api">Read CSV in Plumber API</h2>
+<p>Here we read the csv from the path. We would probably need to add some better checks here. Like checking that the field actually exists in <code>mp</code> but the error will be propagates as a 500 status anyways.</p>
+<p>Something is always better than nothing. Just like this blog post.</p>
+<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#* @post /read_csv</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">res</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mime</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/mime/man/parse_multipart.html">parse_multipart</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readr</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">file</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">datapath</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</section><section id="send-csv-to-api" class="level2"><h2 class="anchored" data-anchor-id="send-csv-to-api">Send CSV to API</h2>
+<p>Here is how we can send the csv to the API</p>
+<div class="cell">
+<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/request.html">request</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"http://127.0.0.1:3000/read_csv"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/req_body.html">req_body_multipart</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    file <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">curl</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/curl/man/multipart.html">form_file</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/req_perform.html">req_perform</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html">resp_body_string</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">jsonify</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/jsonify/man/pretty_json.html">pretty_json</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[
+    {
+        "Sepal.Length": 5.1,
+        "Sepal.Width": 3.5,
+        "Petal.Length": 1.4,
+        "Petal.Width": 0.2,
+        "Species": "setosa"
+    },
+    {
+        "Sepal.Length": 4.9,
+        "Sepal.Width": 3,
+        "Petal.Length": 1.4,
+        "Petal.Width": 0.2,
+        "Species": "setosa"
+    },
+    {
+        "Sepal.Length": 4.7,
+        "Sepal.Width": 3.2,
+        "Petal.Length": 1.3,
+        "Petal.Width": 0.2,
+        "Species": "setosa"
+    },
+    {
+        "Sepal.Length": 4.6,
+        "Sepal.Width": 3.1,
+        "Petal.Length": 1.5,
+        "Petal.Width": 0.2,
+        "Species": "setosa"
+    },
+    {
+        "Sepal.Length": 5,
+        "Sepal.Width": 3.6,
+        "Petal.Length": 1.4,
+        "Petal.Width": 0.2,
+        "Species": "setosa"
+    },
+    {
+        "Sepal.Length": 5.4,
+        "Sepal.Width": 3.9,
+        "Petal.Length": 1.7,
+        "Petal.Width": 0.4,
+        "Species": "setosa"
+    }
+]</code></pre>
+</div>
+</div>
+<p>Note that the response is just nice json.</p>
+<p>We can parse that back doing a full round trip:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html">resp_body_string</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">resp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">RcppSimdJson</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/RcppSimdJson/man/fparse.html">fparse</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2  setosa
+3          4.7         3.2          1.3         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa
+6          5.4         3.9          1.7         0.4  setosa</code></pre>
+</div>
+</div>
+</section><section id="whole-api" class="level1"><h1>Whole API:</h1>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>plumber.R</strong></pre>
+</div>
+<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://www.rplumber.io">plumber</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># R -e 'plumber::plumb("plumber.R")$run(port = 3000)'</span></span>
+<span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#* @post /upload</span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">upload</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">res</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mime</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/mime/man/parse_multipart.html">parse_multipart</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span></span>
+<span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#* @post /read_csv</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">res</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mime</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/pkg/mime/man/parse_multipart.html">parse_multipart</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">req</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readr</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">file</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">datapath</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+</div>
+<section id="scale-your-apis" class="level2"><h2 class="anchored" data-anchor-id="scale-your-apis">Scale your APIs</h2>
+<p>Use <a href="https://valve.josiahparry.com/"><code>Valve</code></a> to scale and deploy your applications to production.</p>
+<p>It kicks ass tbh.</p>
+
+
+</section></section> ]]></description>
+  <category>plumber</category>
+  <category>r</category>
+  <category>prod</category>
+  <guid>https://josiahparry.com/posts/2024-06-25-handle-files-plumber/</guid>
+  <pubDate>Tue, 25 Jun 2024 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Static file server in R</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -8489,419 +9665,6 @@ font-style: inherit;">hello_world</span>()</span>
   <category>package-dev</category>
   <guid>https://josiahparry.com/posts/2023-10-28-python-fns/</guid>
   <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Where am I in the sky?</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-10-28/</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>When I was flying back from the Spatial Data Science Across Langauge event from Frankfurt to Atlanta the plane I was bored beyond measure. The plane had no wifi to connect to. I had already watched a movie and couldn’t be bothered by a podcast. I wanted to know where I was.</p>
-<p>When looking at the onboard “About this flight” information, they didn’t show a map even. The gave us our coordinates in degrees and minutes. Helpful right?</p>
-<p>Well, in an attempt to figure out where the hell I was I wrote some code. Here it is.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(sf)</span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(units)</span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>udunits database from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/units/share/udunits/udunits2.xml</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#' Given degrees and minutes calculate the coordinate</span></span>
-<span id="cb5-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#' in degrees</span></span>
-<span id="cb5-3">as_degree <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(degrees, minutes) {</span>
-<span id="cb5-4">  d <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_units</span>(degrees, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arc_degrees"</span>)</span>
-<span id="cb5-5">  m <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_units</span>(minutes, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arc_minutes"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-6">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_units</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arc_degrees"</span>)</span>
-<span id="cb5-7">  d <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> m</span>
-<span id="cb5-8">}</span>
-<span id="cb5-9"></span>
-<span id="cb5-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># get the country shapes</span></span>
-<span id="cb5-11">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> rnaturalearthdata<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>countries50 <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sf</span>() </span>
-<span id="cb5-12"></span>
-<span id="cb5-13"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># filter to North America</span></span>
-<span id="cb5-14">usa <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-15">  dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(continent <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"North America"</span>, </span>
-<span id="cb5-16">                subregion <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Northern America"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_geometry</span>() </span>
-<span id="cb5-18"></span>
-<span id="cb5-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create a bounding box to crop myself to </span></span>
-<span id="cb5-20">crp <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_bbox</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmin =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">128</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmax =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymin =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymax =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">61</span>))</span>
-<span id="cb5-21"></span>
-<span id="cb5-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># plot N. America</span></span>
-<span id="cb5-23">usa <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-24">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_cast</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"POLYGON"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-25">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sf</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-26">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_filter</span>(</span>
-<span id="cb5-27">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sfc</span>(crp) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-28">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sf</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">crs =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_crs</span>(usa))</span>
-<span id="cb5-29">    ) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb5-30">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>()</span>
-<span id="cb5-31"></span>
-<span id="cb5-32"></span>
-<span id="cb5-33"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># add planes location.</span></span>
-<span id="cb5-34"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(</span>
-<span id="cb5-35">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_point</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as_degree</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">61</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19</span>), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as_degree</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">57</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">46</span>))),</span>
-<span id="cb5-36">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">add =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,</span>
-<span id="cb5-37">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>,</span>
-<span id="cb5-38">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span></span>
-<span id="cb5-39">)</span></code></pre></div>
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-10-28/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-
-
-
- ]]></description>
-  <category>r</category>
-  <category>spatial</category>
-  <guid>https://josiahparry.com/posts/2023-10-28/</guid>
-  <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Spatial Data Science Across Languages</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-09-20-sdsl/</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>I feel very fortunate to have been invited to the first Spatial Data Science Across Languages (SDSL) workshop at the University of Münster. I am even more fortunate that I have an employer who sees the value in an event such as this and be my patron for it.</p>
-<p>The event brought together package maintainers from Julia, Python, and R languages to just <em>discuss</em>. The event was loosely framed around a few broad discussion topics that were varied and drifted.</p>
-<p>In general, the theme of the workshop was “standards.” We need standards be able to ensure cohesion not only <em>within</em> languages, but across them. Users should be able to move between languages and be able to expect similar behavior, have similar terminology, and expect the same analysis results.</p>
-<section id="arrow" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="arrow">Arrow</h2>
-<p>We started everything off by discussing Arrow which set the theme of “standards.” Arrow gets conflated at many thing all at once—I do that. At the core Arrow is a memory format specification. It describes how data should be held in memory.</p>
-<p>R holds objects in memory one way, Python another, and Julia another as well. Arrow describes just one way that specific types of object can be held in memory. GeoArrow is an extension of Arrow that specifies the memory layout for geometry arrays.</p>
-<section id="geoarrow" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="geoarrow">GeoArrow</h3>
-<p>Specifications like well-known text (WKT) and well-known binary (WKB) are encodings of a <em>single</em> geometry. GeoArrow recognizes that we almost never work with scalar objects alone. GeoArrow is a memory layout for an array of geometries.</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image.png" class="img-fluid"></p>
-<p>If each language can hold Arrow arrays in memory, they can be passed from one tool to another with 0 cost. Python can create an arrow array and R can pick it up if it knows where it exists.</p>
-<p>The current approach looks something like this. Each tool serializes its data in one way. In order for another tool to use it, the data needs to be copied (memory inefficient) and converted (computationally expensive) into the appropriate format.</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image-2.png" class="img-fluid"></p>
-<p>The Arrow specification would allow data handoff between tools to be much more seamless and look like so:</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image-1.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Maybe we ought to start framing adoption of Arrow as an effort to be more “green.” If we spend less time computing we use less energy which is overall a net positive for the world.</p>
-</div></div><p>This is a massive productivity improvement. There’s no computation cost in converting between one format to another saving time, energy, and money.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>There’s a good chance that in order to adopt Arrow in <code>{sf}</code> there will be breaking changes. I am an advocate for breaking changes when they are for a good reason. Being on the leading edge is how to make a language succeed.</p>
-<p>I also think if we can move towards a “trait-driven” approach to spatial data frames, we can support both GeoArrow geometries as well as current <code>sfc</code> objects.</p>
-<p><a href="https://github.com/JosiahParry/sdf">Read my spatial data frame manifesto.</a></p>
-</div></div><p>The key thing though, is that in order for Arrow to be useful, <strong>it has to be adopted widely</strong>. If GeoPandas uses Arrow and <code>{sf}</code> does not, we have to go through the copy and convert process anyways.</p>
-</section>
-<section id="why-geoarrow-excites-me" class="level3">
-<h3 class="anchored" data-anchor-id="why-geoarrow-excites-me">Why GeoArrow excites me</h3>
-<p>The promise of Arrow and GeoArrow is that memory can be handed off between tools without any additional cost. This (in theory) lowers the bar for what is needed to hand off between tools and languages. Hopefully <a href="https://wesmckinney.com/blog/the-problem-with-the-data-science-language-wars/">ending the language wars</a></p>
-<p><a href="https://github.com/kylebarron">Kyle Barron</a> demonstrated really cool example use-case where he created GeoArrow arrays using <a href="https://github.com/geopolars/geopolars">GeoPolars</a>. That array was then written to a buffer and picked up by javascript. Since there was no serialization or deserialization it was unbelievably fast!</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image-3.png" class="img-fluid"></p>
-<p>Additionally, we are seeing <a href="https://webassembly.org/">WebAssembly</a> proliferate in the data science community. <a href="https://webr.r-wasm.org/">WebR</a> provides R users with the ability to execute R in the browser. This is also possible in Python, Rust, Go, and I’m sure many others. Each language can be compiled to be used in the browser and hand off components between them.</p>
-<p>Client side computation will reduce the need for server side operations. If we can reduce the amount of hours that servers are constantly running by offloading lighter operations into the browser, we may be able to save money, energy, be more green, and create tools that do not necessarily require an active internet connection.</p>
-</section>
-</section>
-<section id="spatial-support" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="spatial-support">Spatial Support</h2>
-<p>We also discussed the more esoteric topic of <strong>spatial support</strong>. This was completely new to me. Support defines the relationship between an attribute to the geometry. There are two kinds:</p>
-<ul>
-<li><strong>point support</strong> - a constant values associated with every location in a geometry
-<ul>
-<li><em>example</em>: temperature measurement at a weather station</li>
-</ul></li>
-<li><strong>block support</strong> - a value derived from aggregating measures over space
-<ul>
-<li><em>example</em>: population count in a census tract</li>
-</ul></li>
-</ul>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Read <a href="https://r-spatial.org/book/01-hello.html#sec-support">chapter 1.6 of Spatial Data Science</a> (SDS) for more on this topic.</p>
-</div>
-</div>
-<p>When geometries are manipulated and the associated attributes come along for the ride, support assumptions are often violated resulting in inaccurate calculations or maps.</p>
-<section id="attribute-geometry-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="attribute-geometry-relationships">Attribute-Geometry Relationships</h3>
-<p>SDS formalizes the relationship between attributes and geometry a bit further in something they call the <strong>Attribute-Geometry Relationship (AGR)</strong>. Attributes of spatial features can have one of 3 types of AGR:</p>
-<ul>
-<li>constant value (i.e.&nbsp;point support)</li>
-<li>aggregate value (i.e.&nbsp;block support)</li>
-<li>identity (i.e.&nbsp;attribute unique to a geometry)</li>
-</ul>
-<p>Knowing the relationships between geometries can be useful in tracking the assumptions of analyses. For example, taking the mean of an <em>aggregate</em> attribute such as median age, creates as assumptions of homogeneity in the aggregated areas and can contribute to the <a href="https://en.wikipedia.org/wiki/Modifiable_areal_unit_problem">modifiable areal unit problem (MAUP)</a>.</p>
-</section>
-<section id="intensive-vs-extensive" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="intensive-vs-extensive">Intensive vs Extensive</h3>
-<p>Spatial intensive vs extensive variables were also discussed in the context of spatial interpolation. I’m still quite unclear on how to conceptualize intensive and extensive variables. <a href="https://github.com/MobiTobi">Tobias G</a> pointed out that these terms come from physics and provided a useful non-geometry motivating example.</p>
-<blockquote class="blockquote">
-<p>“The price of an ingot of gold is an extensive property and its temperature would be intensive.”</p>
-</blockquote>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>The common example is that population is extensive and population density is intensive. This requires the assumption that population is <em>constant</em> across space. So the examples are more confusing than helpful. I have yet to come up with an example of a spatially intensive variable that makes sense.</p>
-<p>If you can think of one, please comment on below!</p>
-</div></div><p><strong>Extensive</strong> variables are one that are associated with the physical geometry itself. <strong>Intensive</strong> ones <em>do not</em> change when a geometry is modified.</p>
-<p>If an ingot of gold is split into half the price changes, each piece is now worth less than the whole. But, assuming the room temperature didn’t change, the temperature of each piece remained the same.</p>
-</section>
-<section id="domains" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="domains">Domains</h3>
-<p>These properties of attributes are quite important but are forgotten about. One of the ideas raised in discussions was adding attribute-geometry relationship and a flag like <code>is_intensive</code> to a field domain.</p>
-<p>A <a href="https://desktop.arcgis.com/en/arcmap/latest/manage-data/geodatabases/an-overview-of-attribute-domains.htm">Domain</a> is a concept that <em>I think</em> originated at Esri. It allows you to specify the field type, range of valid values, as well as policies that determine how fields behave when they are split or merged. <a href="https://github.com/OSGeo/gdal/releases/tag/v3.3.0">Field domains were added to GDAL in version 3.3</a>.</p>
-<p>Is there utility in adding <code>AGR</code> and (ex/in)tensive flags to a field domain?</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Arrow allows for embedded metadata at an array and table level. Perhaps there should be a GeoArrow table (data frame) format spec too? I’d like that. It would fit with my generic spatial data frame manifesto as well.</p>
-</div></div></section>
-</section>
-<section id="geodesic-first" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="geodesic-first">Geodesic first</h2>
-<p>A good amount of attention was paid to geodesic coordinate operations. The conversation was kicked off by this “motivating example.”</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/geopandas-geodesic.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Really, I think this was just an excuse for Edzer to poke fun at the GeoPandas devs! 😵‍💫🤣</p>
-</div></div><p>The example shows an area calculation on a dataset that uses a geographic coordinate system (GCS). Area, though, is typically calculated under the assumption that coordinates are on a plane (rectangle). With GCS, the data is on a circle. So if we calculate the area of angles the result is <em>definitely wrong</em>.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>I think about it like calculating the area but cutting through the Earth like so: <img src="https://josiahparry.com/posts/2023-09-20-sdsl/circle.png" class="img-fluid"></p>
-</div></div><p>The open source ecosystem is behind on support of geodetic calculations. Data more often than not is captured using GCS and users often fail to project their data. It would be nice if tools did this.</p>
-<p>R supports spherical geometries by using <a href="https://r-spatial.github.io/s2/">Google’s S2 library</a>. Python is presently building out support for S2. Some operations like buffering still aren’t made available by S2.</p>
-<section id="the-full-polygon" class="level3">
-<h3 class="anchored" data-anchor-id="the-full-polygon">The “full polygon”</h3>
-<p>One interesting point that was brought up is that in a GCS there is a concept of a <strong>full polygon</strong>. This is the polygon that covers the entire ellipsoid. There is no way to capture this using typical coordinates.</p>
-</section>
-</section>
-<section id="spatial-weights-matrix-serialization" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="spatial-weights-matrix-serialization">Spatial Weights Matrix Serialization</h2>
-<p>Probably the second most interesting topic to me was around how to store spatial weights matrixes. We didn’t really discuss the “how” of holding it memory. Though I think they can be held in memory as a ragged Arrow array of indices or IDs. What was quite interesting was the concept of <em>serializing</em> the spatial weights matrix.</p>
-<p><a href="https://martinfleischmann.net/">Martin</a> mentioned that in Pysal they had moved to serializing spatial weights as a parquet file which greatly improved their speed. In essence, spatial weights are stored in a 3 column table.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<table class="table">
-<caption>Spatial Weights Matrix</caption>
-<thead>
-<tr class="header">
-<th>i</th>
-<th>j</th>
-<th>wij</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>3</td>
-<td>0.5</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>2</td>
-<td>0.75</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>9</td>
-<td>0.3</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>7</td>
-<td>0.2</td>
-</tr>
-</tbody>
-</table>
-</div></div><p>It was noted that additional metadata can be associated at the table level or column level. This can be very handy to keep track of things like the method for identifying neighbors, the weighting mechanism used, storing flags to know if the focal feature is included and maybe even remove weights if there is a constant value.</p>
-<p>Additionally, since this is parquet, it can be handled and stored by a number of databases.</p>
-<p>One benefit of using arrow here, is that we can conceivably have a future where spatial weights matrices are interchangeable between spdep, pysal, geoda, and ArcGIS.</p>
-</section>
-<section id="closing" class="level2">
-<h2 class="anchored" data-anchor-id="closing">Closing</h2>
-<p>I’m about to hop on a flight back to the US now—10 hours without internet is going to be a test of monk-like fortitude. I have left my strongest feels for another time. Chatting with devs from other languages makes is clear how great CRAN is as a package storage and testing mechanism but yet how utterly abysmal it is as a developer. I will write another post soon on the topics of retirement and how I think we can make CRAN a better place for developers.</p>
-</section>
-<section id="links" class="level2">
-<h2 class="anchored" data-anchor-id="links">Additional links</h2>
-<p>I’ll add more here as I can (hopefully).</p>
-<ul>
-<li><a href="https://martinfleischmann.net/a-note-on-spatial-data-science-across-languages-vol.1/">Martin’s SDSL blog post</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>r</category>
-  <category>r-spatial</category>
-  <category>spatial</category>
-  <guid>https://josiahparry.com/posts/2023-09-20-sdsl/</guid>
-  <pubDate>Fri, 22 Sep 2023 04:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

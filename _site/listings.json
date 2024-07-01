@@ -21,6 +21,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-06-30-type-safety/index.html",
       "/posts/2024-06-25-handle-files-plumber/index.html",
       "/posts/2024-06-24-file-server/index.html",
       "/posts/2024-06-13-caching-webr.html",
@@ -103,6 +104,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-06-30-type-safety/index.html",
       "/posts/2024-06-25-handle-files-plumber/index.html",
       "/posts/2024-06-24-file-server/index.html",
       "/posts/2024-06-13-caching-webr.html",

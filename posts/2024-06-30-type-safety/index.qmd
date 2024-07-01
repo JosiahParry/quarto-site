@@ -1,0 +1,252 @@
+---
+title: "Type safe(r) R code"
+subtitle: "Robust type checking with r-lib"
+date: "2024-07-01"
+categories: [r]
+---
+
+
+## Introduction to r-lib type safety checks
+
+Type safety is all the rage these days. It’s the (one of the many) reason why people love Rust , TypeScript, and Pydantic.
+
+Knowing what type of data is coming in and going out of a function is critical! It means fewer bugs and more robust code.  
+
+I will introduce you to the r-lib standalone checks. Here is a peek of some code from`{arcgisgeocode}` that helps make the function more type safe.  
+
+![](images/Untitled.png){width="50%"}
+
+## What is type safety?
+
+A type safe language is one where each variable has a known  and *validated* type. R ***is not type safe.*** 
+
+When you define a function in a type safe language, you have to specify the input types and the output types. 
+
+Here is a function that scales one numeric variable by another.
+
+```{r}
+scale_by <- function(x, y) {
+  x / y
+}
+```
+
+**This is not type safe**. I can pass in a **character** vector a **list**, **NULL**, or even a **POSIXct** class. Sometimes R will do the appropriate conversions for us. But other times it wont. 
+
+```{r error=TRUE}
+scale_by(100, "10")
+```
+
+**You want to be in control of your function!** 
+
+## Why type safety is important
+
+Type safety allows us to catch and prevent errors early and thus **prevent unintended bugs**. Without type safety, R may perform silent **coercions** or your code may run as R intended—but not *as you* intended. 
+
+<aside>
+💡 A type **coercion** is a type conversion that occurs because one type does not match the other and is done silently. **Casting** is when you explicitly change the type—e.g. calling `as.integer()` on `doubles()`
+
+</aside>
+
+Adding type guarantees ensures that your code functions as intended. 
+
+## Type safety in other languages
+
+Type safety is becoming an increasingly common and more important aspect of programming. People love Rust for its type safety among other things. Rust (and C/++ and Java and Scala etc) is a **statically typed** language.
+
+<aside>
+💡 A statically typed language requires you to specify the *type* of object that are used in a function and elsewhere.
+
+</aside>
+
+### Rust’s static typing
+
+In Rust, you define a type and that type is unique. 
+
+```rust
+struct Person {
+	name: String,
+	age: u8
+}
+```
+
+To create a person you would write `Person { name: "Josiah".to_string(), age: 28 }` . This is recognized as a `Person` struct. In Rust, a function must know its argument types, for example: 
+
+```rust
+fn calculate_birth_year(person: &Person) -> i32 {
+	// use chrono::DateLike
+	let now = chrono::Utc::now();
+	(now.year() - person.age as i32) 
+}
+```
+
+This function takes a reference to a `Person` and calculates (roughly) what year they were born in. If I had another struct called `Me` with the same exact fields, this wouldn’t work. 
+
+```rust
+struct Me {
+	name: String,
+	age: u8
+}
+```
+
+Even though `Me` and `Person` have the exact same field types, they are recognized as different types. 
+
+This is different than how JavaScript does this.
+
+### TypeScript Interfaces
+
+The JavaScript folks now have TypeScript which is pseudo-type safety. TypeScript uses **duck typing.**
+
+<aside>
+💡 If it looks like a duck, swims like a duck, and quacks like a duck, this it probably *is* a duck.
+
+</aside>
+
+If I understand TypeScript correctly, they use a type **interface.** These feel similar to struct definitions in Rust. 
+
+```tsx
+interface Person {
+	name: string;
+	age: number;
+}
+```
+
+In TypeScript, these interfaces are a way to standardizes what a type *looks like*. But not an actual type themself! This is (I think), the equivalent JavaScript code to calculate the birth year of an individual.
+
+```tsx
+function calculateBirthYear(person: Person) {
+		Date().getFullYear() - person.age
+}
+```
+
+With this, though, you don’t actually need to have an instance of `Person` . Instead, you can have a normal JavaScript object that *looks* (and quacks) just like the `Person` type. 
+
+```tsx
+const john: Person = {
+    name: 'John Doe',
+    age: 30
+}
+
+let jane = { name: 'Jane Doe', age: 28 }
+
+console.log(calculateBirthYear(john));
+console.log(calculateBirthYear(jane));
+```
+
+These both work. 
+
+## Type safety in R
+
+Like JavaScript, and Python (yes I know about type hinting, thats opt in and different), R doesn’t do any validation of arguments. TypeScript can add a layer of Duck Typing checks to the functions which is great for them. But what about us? 
+
+How can we make our R functions safer? In R, (almost) everything is a vector.  The `r-lib` team has (very quietly) created what I think is the greatest contribution to the tidyverse ecosystem in a long time in the form of standalone type check functions. 
+
+## Stand-alone type checks
+
+The standalone functions are quite unique. I’ve never seen anything quite like them. They’re literally standalone R files with a bunch of handy R functions. It’s like adding a package but without adding it as a dependency. 
+
+These are functions prefixed with `check_`  that test inputs for the most common types. They provide beautiful error messages and have commonly needed flexibility. 
+
+### Add type checks to your project
+
+The usethis package has a handy function `use_standalone()` which will add these functions for you. 
+
+```{r eval = FALSE}
+usethis::use_standalone("r-lib/rlang", file = "types-check")
+```
+
+This is supposed to be used in the context of an R package but can still be used in any R script. THe function requires an R directory to be found at the root. 
+
+## Standalone type checks
+
+We can get *really far* in enhancing type safety 
+
+[https://usethis.r-lib.org/reference/use_standalone.html](https://usethis.r-lib.org/reference/use_standalone.html)
+
+Since this isn't an R package, I will source the functions. Otherwise, run `devtools::load_all()` for the functions to become available. 
+
+```{r}
+getwd()
+source("R/import-standalone-obj-type.R", local = TRUE)
+source("R/import-standalone-types-check.R", local = TRUE)
+library(rlang)
+```
+
+:::{.callout-note}
+These standalone checks require that `{rlang}` be an imported package. Use `usethis::use_package("rlang")`. It is a very small package and has no dependencies. Very little to lose by adding it. 
+:::
+
+
+## Scalar checks 
+
+R doesn't have the concept of a scalar. Though using a scalar is still very useful in R. 
+
+The standalone checks provide helpers for checking scalar values. There a quite a few but the ones I use most commonly are:
+
+- `check_string()`
+- `check_bool()`
+- `check_number_whole()`
+- `check_number_decimal()`
+
+### Usage
+
+Each of these functions provide the arguments: 
+
+- `allow_na`
+- `allow_null`
+
+This is helpful because using NULL is often used as a default argument for optional arguments. 
+
+For example we can check that something is a string: 
+
+```{r}
+check_string("a")
+```
+
+But when it is a character vector: 
+
+
+```{r eval = FALSE}
+check_string(c("hello", "world"))
+```
+
+```{r, echo = FALSE, error = TRUE}
+check_string(c("hello", "world"), call = rlang::caller_env())
+```
+
+This gives us an informative error telling the user what type was found and expected.
+
+In the case of `NULL`s we can provide the `allow_null` argument which allows the test to pass. 
+
+
+```{r eval = FALSE}
+check_string(NULL)
+check_string(NULL, allow_null = TRUE)
+```
+
+```{r echo = FALSE, error=TRUE}
+check_string(NULL, allow_null = TRUE, call = rlang::caller_env())
+```
+
+## Vector checks
+
+In addition to scalar checks, there are many handy vectorized checks.
+
+There are vector checks these are: 
+
+- `check_character()`
+- `check_logical()`
+- `check_data_frame()`
+
+
+```{r eval = FALSE}
+check_character(1:2)
+check_logical(c("a", "b"))
+check_data_frame(list(a = 1, b = 2))
+```
+
+```{r echo=FALSE, error = TRUE}
+check_character(1:2, , call = rlang::caller_call())
+check_logical(c("a", "b"), call = rlang::caller_call())
+check_data_frame(list(a = 1, b = 2), , call = rlang::caller_call())
+```
+
