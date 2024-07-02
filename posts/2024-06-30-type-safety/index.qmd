@@ -12,7 +12,7 @@ Type safety is all the rage these days. It’s the (one of the many) reason why 
 
 Knowing what type of data is coming in and going out of a function is critical! It means fewer bugs and more robust code.  
 
-I will introduce you to the r-lib standalone checks. Here is a peek of some code from`{arcgisgeocode}` that helps make the function more type safe.  
+I will introduce you to the r-lib standalone checks. Here is a peek of some code from `{arcgisgeocode}` that helps make the function more type safe.  
 
 ![](images/Untitled.png){width="50%"}
 
