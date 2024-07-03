@@ -5,7 +5,7 @@ categories: [rust, r, production]
 ---
 
 
-There's this new [blog post](https://matthewrkaye.com/posts/2023-06-29-lessons-learned-from-running-r-in-production/lessons-learned-from-running-r-in-production.html) making the rounds making some claims about why they won't put R into production. Most notably they're wheeling the whole "R is slow thing" again. And there are few things that grind my gears more than that type of sentiment. It's almost always ill informed. I find that to be the case here too. 
+There's this new [blog post](https://matthewrkaye.com/blog/lessons-learned-from-running-r-in-production) making the rounds making some claims about why they won't put R into production. Most notably they're wheeling the whole "R is slow thing" again. And there are few things that grind my gears more than that type of sentiment. It's almost always ill informed. I find that to be the case here too. 
 
 I wouldn't have known about this had it 1) not mentioned my own Rust project [Valve](https://github.com/JosiahParry/valve/) and 2) a kind stranger inform me about it on mastodon. 
 
