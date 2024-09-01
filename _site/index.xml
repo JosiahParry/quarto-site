@@ -10,7 +10,201 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Sun, 30 Jun 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 01 Sep 2024 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Get notified of CRAN checks</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-09-01-cran-checks.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<ul>
+<li>CRAN performs checks on all CRAN packages quite frequently.</li>
+<li>If a package has a warning or an error you have a week or two to fix it.</li>
+<li>Unfixed packages get removed.</li>
+<li>If your package depends on the removed package it also gets removed.</li>
+<li>You will not be notified if your package is removed.</li>
+<li>That <strong><em>sucks</em></strong>.</li>
+</ul>
+</section>
+<section id="get-informed-cran-checks-github-action" class="level2">
+<h2 class="anchored" data-anchor-id="get-informed-cran-checks-github-action">Get informed: CRAN checks GitHub Action</h2>
+<p>There is a new GitHub Action that you can use with your CRAN package. It will run once a day. If there are any <code>WARN</code> or <code>ERROR</code> statuses in any of the check flavors, then the GitHub Action will fail.</p>
+<section id="add-the-action" class="level3">
+<h3 class="anchored" data-anchor-id="add-the-action">Add the action</h3>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">usethis<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_github_action</span>(</span>
+<span id="cb1-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">url =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://github.com/flrsh-dev/cran-checks/blob/main/check-pkg/cran-checks.yaml"</span>,</span>
+<span id="cb1-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">open =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb1-4">)</span></code></pre></div>
+<p>This will open a yaml file for you with the following:</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Check CRAN status</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">on</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">schedule</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">    # Runs daily at 4:00 PM UTC (9:00 AM PST)</span></span>
+<span id="cb2-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cron</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'0 16 * * *'</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">  # allows for manually running of the check</span></span>
+<span id="cb2-8"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">workflow_dispatch</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">jobs</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-11"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_cran_status</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-12"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runs-on</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> ubuntu-latest</span></span>
+<span id="cb2-13"></span>
+<span id="cb2-14"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">steps</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-15"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Get CRAN checks</span></span>
+<span id="cb2-16"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">uses</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> flrsh-dev/cran-checks/check-pkg@main</span></span>
+<span id="cb2-17"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-18"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">          </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pkg</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> YOUR-PKG-NAME</span></span></code></pre></div>
+<p>Replace <code>YOUR-PKG-NAME</code> with the name of your package (no quotes). Commit the file to GitHub and voilá.</p>
+</section>
+<section id="how-this-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-this-works">How this works</h3>
+<p>Since CRAN can’t be bothered to email us when they remove a package, we can utilized GitHub Actions to be our messenger.</p>
+<p>Whenever a GitHub Action fails, an email is sent to you so you know. Isn’t that nice?</p>
+<p>The <a href="https://github.com/flrsh-dev/cran-checks"><code>flrsh-dev/cran-checks</code></a> repository fetches the status of all packages daily. Then stores them as a json file that is hosted on GitHub pages. They can be accessed from url <a href="https://flrsh-dev.github.io/cran-checks/b64.json"><code>https://flrsh-dev.github.io/cran-checks/b64.json</code></a>.</p>
+<p>The GitHub Action checks for your package’s json file and looks at all of the statuses. If the package isn’t found or if there is a single warning or error, it fails.</p>
+</section>
+</section>
+<section id="motivation-packages-removed-without-warning" class="level2">
+<h2 class="anchored" data-anchor-id="motivation-packages-removed-without-warning">Motivation: packages removed without warning</h2>
+<p>On August 19th, 2024, CRAN removed 3 of my packages without so much as an email. I was notified by a colleague who was giving a live workshop to the US Forest Service on August 21st. When the attendants tried to install the packages, they weren’t on CRAN. It was a very bad look.</p>
+<p>How were they supposed to know the packages we’re gone? They were there when they tested. I didn’t get any warning so I couldn’t help them find a way to provide a work around.</p>
+</section>
+<section id="solution-always-check-your-cran-checks" class="level2">
+<h2 class="anchored" data-anchor-id="solution-always-check-your-cran-checks">Solution: always check your CRAN checks</h2>
+<p>I’ve been told that I should check the status of my CRAN package checks on every flavor every day. CRAN tests on r-devel, so frequently there are false positives. Also, I’ve got a lot going on and I can hardly remember to talk myself on a walk some days. Other package managers will let you know if your package is failing, why doesn’t CRAN?</p>
+</section>
+<section id="a-future-of-cran-check-messaging" class="level2">
+<h2 class="anchored" data-anchor-id="a-future-of-cran-check-messaging">A future of CRAN check messaging?</h2>
+<p>Ideally, I would like to have an opt-in service that provides these checks daily and will email you directly if any of your R packages are failing. However, this would require funding which I don’t have.</p>
+<p>If you are interested in sponsoring this project further, email me at <code>josiah.parry at gmail dot com</code> and we can discuss this. I think the R community could benefit quite greatly.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>cran</category>
+  <category>r</category>
+  <category>pkg-dev</category>
+  <guid>https://josiahparry.com/posts/2024-09-01-cran-checks.html</guid>
+  <pubDate>Sun, 01 Sep 2024 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Type safe(r) R code</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -441,7 +635,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-06-30-type-safety/</guid>
-  <pubDate>Sun, 30 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Mon, 01 Jul 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Read a CSV in a production API</title>
@@ -1185,7 +1379,7 @@ font-style: inherit;">}</span></span></code></pre></div>
   <category>r</category>
   <category>prod</category>
   <guid>https://josiahparry.com/posts/2024-06-25-handle-files-plumber/</guid>
-  <pubDate>Tue, 25 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Tue, 25 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Static file server in R</title>
@@ -1340,7 +1534,7 @@ font-style: inherit;">)</span></span></code></pre></div>
   <category>plumber</category>
   <category>api</category>
   <guid>https://josiahparry.com/posts/2024-06-24-file-server/</guid>
-  <pubDate>Mon, 24 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Mon, 24 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Caching WebR from CDN</title>
@@ -1417,7 +1611,7 @@ font-style: inherit;">)]</span></span></code></pre></div>
   <category>rust</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-06-13-caching-webr.html</guid>
-  <pubDate>Thu, 13 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 13 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Evaluate strings as code</title>
@@ -1710,7 +1904,7 @@ font-style: inherit;">res</span></span></code></pre></div>
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-06-13-eval-strings.html</guid>
-  <pubDate>Thu, 13 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 13 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Docker: keep your secrets secret</title>
@@ -1841,7 +2035,7 @@ CMD [ "R", "--slave", "-e", "cat(Sys.getenv('SECRET_USER'))"]</code></pre>
   <category>production</category>
   <category>docker</category>
   <guid>https://josiahparry.com/posts/2024-06-11-docker-env-vars/</guid>
-  <pubDate>Tue, 11 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Tue, 11 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Making a Ridiculously Fast™ API Client</title>
@@ -2094,7 +2288,7 @@ Learn how to parse json with Rust
 
  ]]></description>
   <guid>https://josiahparry.com/posts/2024-06-06-designing-arcgisgeocode.html</guid>
-  <pubDate>Thu, 06 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 06 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>IndexMap instead of BTreeMap</title>
@@ -2296,7 +2490,7 @@ font-style: inherit;">]</span></span></code></pre></div>
  ]]></description>
   <category>rust</category>
   <guid>https://josiahparry.com/posts/2024-05-27-indexmap-rs.html</guid>
-  <pubDate>Mon, 27 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Mon, 27 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>{duckdb} or {duckplyr}?</title>
@@ -2678,7 +2872,7 @@ font-style: inherit;">avg_price_df</span></span></code></pre></div>
   <category>prod</category>
   <category>duckdb</category>
   <guid>https://josiahparry.com/posts/2024-05-24-duckdb-and-r.html</guid>
-  <pubDate>Fri, 24 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Fri, 24 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Spatial ML: Predicting on out-of-sample data</title>
@@ -3181,7 +3375,7 @@ font-style: inherit;">)</span></span></code></pre></div>
   <category>spatial</category>
   <category>ml</category>
   <guid>https://josiahparry.com/posts/2024-05-23-spatial-ml-prediction.html</guid>
-  <pubDate>Thu, 23 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 23 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Univariate Spatial Dimensionality Reduction</title>
@@ -4862,7 +5056,7 @@ font-style: inherit;">)</span></span></code></pre></div>
   <category>spatial</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-05-22-univariate-mem.html</guid>
-  <pubDate>Wed, 22 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Wed, 22 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Encoding spatial patterns as variables</title>
@@ -5701,7 +5895,7 @@ Moran I statistic       Expectation          Variance
   <category>spatial</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-05-17-moran-eigenvectors.html</guid>
-  <pubDate>Fri, 17 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Fri, 17 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Databases for Data Scientist</title>
@@ -5748,7 +5942,7 @@ Moran I statistic       Expectation          Variance
   <category>arrow</category>
   <category>duckdb</category>
   <guid>https://josiahparry.com/posts/2024-05-16-databases-for-ds.html</guid>
-  <pubDate>Thu, 16 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 16 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Why do we sleep on factors?</title>
@@ -5953,7 +6147,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-02-15-factor-finagling.html</guid>
-  <pubDate>Thu, 15 Feb 2024 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 15 Feb 2024 08:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Shared segment of parallel lines</title>
@@ -7057,7 +7251,7 @@ font-style: inherit;">]</span></span></code></pre></div>
   <category>r-spatial</category>
   <category>spatial</category>
   <guid>https://josiahparry.com/posts/2024-01-27-shared-segments.html</guid>
-  <pubDate>Sat, 27 Jan 2024 05:00:00 GMT</pubDate>
+  <pubDate>Sat, 27 Jan 2024 08:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Leptos &amp; wasm-bindgen</title>
@@ -7289,7 +7483,7 @@ font-style: inherit;">;</span></span></code></pre></div>
  ]]></description>
   <category>rust</category>
   <guid>https://josiahparry.com/posts/2024-01-15.html</guid>
-  <pubDate>Mon, 15 Jan 2024 05:00:00 GMT</pubDate>
+  <pubDate>Mon, 15 Jan 2024 08:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Writing S3 head() methods</title>
@@ -7371,7 +7565,7 @@ font-style: inherit;">collect_layer</span>(x, n, token)</span>
  ]]></description>
   <category>pkg-dev</category>
   <guid>https://josiahparry.com/posts/2023-11-27-custom-head-method/</guid>
-  <pubDate>Mon, 27 Nov 2023 05:00:00 GMT</pubDate>
+  <pubDate>Mon, 27 Nov 2023 08:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Building a DataFusion CSV reader with arrow-extendr</title>
@@ -8751,7 +8945,7 @@ font-style: inherit;">"1.34.0"</span></span></code></pre></div>
   <category>extendr</category>
   <category>arrow</category>
   <guid>https://josiahparry.com/posts/2023-11-24-dfusionrdr/</guid>
-  <pubDate>Sat, 25 Nov 2023 05:00:00 GMT</pubDate>
+  <pubDate>Sat, 25 Nov 2023 08:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Enums in R: towards type safe R</title>
@@ -9549,122 +9743,7 @@ font-style: inherit;">#&gt; Your RGB (0, 155, 200)</span></span></code></pre></d
   <category>package-dev</category>
   <category>rust</category>
   <guid>https://josiahparry.com/posts/2023-11-10-enums-in-r/</guid>
-  <pubDate>Fri, 10 Nov 2023 05:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Export Python functions in R packages</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-10-28-python-fns/</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>I was asked a really interesting question by <a href="https://github.com/benyamindsmith"><span class="citation" data-cites="benyamindsmith">@benyamindsmith</span></a> yesterday. The question was essentially:</p>
-<blockquote class="blockquote">
-<p><em>How can one export a python 🐍 function in an R package 📦?</em></p>
-</blockquote>
-<p>I proposed my solution as a very minimal R package called <a href="https://github.com/JosiahParry/pyfns"><code>{pyfns}</code></a>.</p>
-<p>It is an R package with one function: <code>hello_world()</code>.</p>
-<section id="how-it-works" class="level2">
-<h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>
-<p>The process is <em>fairly</em> simple.</p>
-<ul>
-<li>We create an environment inside of our package</li>
-<li>On package start-up we source python scripts using <code>reticulate::source_python()</code> into the new environment</li>
-<li>We create R wrapper functions that call the reticulated function.</li>
-</ul>
-<p>Example usage:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">pyfns<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">hello_world</span>()</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Helloooo world"</code></pre>
-</div>
-</div>
-</section>
-<section id="storing-python-scripts" class="level2">
-<h2 class="anchored" data-anchor-id="storing-python-scripts">Storing Python Scripts</h2>
-<p>Store python scripts inside of <code>inst/</code>. These files can be read using <code>system.file()</code>. In this example <code>inst/helloworld.py</code> contains</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">def</span> hello_world():</span>
-<span id="cb3-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">return</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Helloooo world"</span></span></code></pre></div>
-</section>
-<section id="creating-an-environment" class="level2">
-<h2 class="anchored" data-anchor-id="creating-an-environment">Creating an environment</h2>
-<p>Before we can source python scripts, we must create an environment to soure them into. This is done in <code>R/env.R</code> like so</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">pyfn_env <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> rlang<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">env</span>()</span></code></pre></div>
-</section>
-<section id="sourcing-scripts" class="level2">
-<h2 class="anchored" data-anchor-id="sourcing-scripts">Sourcing scripts</h2>
-<p>Scripts are sourced in <code>R/zzz.R</code> in which there is an <code>.onLoad()</code> function call. This gets called only once when the package is loaded.</p>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">.onLoad <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(libname, pkgname){</span>
-<span id="cb5-2">  reticulate<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">source_python</span>(</span>
-<span id="cb5-3">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system.file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"helloworld.py"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pyfns"</span>),</span>
-<span id="cb5-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">envir =</span> pyfn_env</span>
-<span id="cb5-5">  )</span>
-<span id="cb5-6">}</span></code></pre></div>
-<p>In this chunk we use <code>reticulate::source_python()</code> to bring the python function into scope. The function needs a path to the python script that we want to source. This is where <code>system.file()</code> comes into play. It can access files stored in <code>inst</code>. <em>Note that it does not include <code>inst</code></em>. And most importantly we set <code>envir = pyfn_env</code> which is the environment we created in <code>R/env.R</code></p>
-</section>
-<section id="wrapper-functions" class="level2">
-<h2 class="anchored" data-anchor-id="wrapper-functions">Wrapper functions</h2>
-<p>Since the functions are being sourced into <code>pyfn_env</code> they can be called from the environment directly. In <code>R/env.R</code>, the R function <code>hello_world()</code> is just calling the <code>hello_world()</code> python function from the <code>pyfn_env</code>. If there were arguments we can pass them in using <code>...</code> in the outer function or recreating the same function arguments.</p>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#'@export</span></span>
-<span id="cb6-2">hello_world <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>() {</span>
-<span id="cb6-3">  pyfn_env<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">hello_world</span>()</span>
-<span id="cb6-4">}</span></code></pre></div>
-
-
-</section>
-
- ]]></description>
-  <category>r</category>
-  <category>python</category>
-  <category>package-dev</category>
-  <guid>https://josiahparry.com/posts/2023-10-28-python-fns/</guid>
-  <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
+  <pubDate>Fri, 10 Nov 2023 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

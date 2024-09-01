@@ -10,7 +10,201 @@
 <atom:link href="https://josiahparry.com/index-r.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Sun, 30 Jun 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 01 Sep 2024 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Get notified of CRAN checks</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-09-01-cran-checks.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<ul>
+<li>CRAN performs checks on all CRAN packages quite frequently.</li>
+<li>If a package has a warning or an error you have a week or two to fix it.</li>
+<li>Unfixed packages get removed.</li>
+<li>If your package depends on the removed package it also gets removed.</li>
+<li>You will not be notified if your package is removed.</li>
+<li>That <strong><em>sucks</em></strong>.</li>
+</ul>
+</section>
+<section id="get-informed-cran-checks-github-action" class="level2">
+<h2 class="anchored" data-anchor-id="get-informed-cran-checks-github-action">Get informed: CRAN checks GitHub Action</h2>
+<p>There is a new GitHub Action that you can use with your CRAN package. It will run once a day. If there are any <code>WARN</code> or <code>ERROR</code> statuses in any of the check flavors, then the GitHub Action will fail.</p>
+<section id="add-the-action" class="level3">
+<h3 class="anchored" data-anchor-id="add-the-action">Add the action</h3>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">usethis<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_github_action</span>(</span>
+<span id="cb1-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">url =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://github.com/flrsh-dev/cran-checks/blob/main/check-pkg/cran-checks.yaml"</span>,</span>
+<span id="cb1-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">open =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb1-4">)</span></code></pre></div>
+<p>This will open a yaml file for you with the following:</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Check CRAN status</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">on</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">schedule</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">    # Runs daily at 4:00 PM UTC (9:00 AM PST)</span></span>
+<span id="cb2-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cron</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'0 16 * * *'</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">  # allows for manually running of the check</span></span>
+<span id="cb2-8"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">workflow_dispatch</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">jobs</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-11"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_cran_status</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-12"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runs-on</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> ubuntu-latest</span></span>
+<span id="cb2-13"></span>
+<span id="cb2-14"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">steps</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-15"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Get CRAN checks</span></span>
+<span id="cb2-16"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">uses</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> flrsh-dev/cran-checks/check-pkg@main</span></span>
+<span id="cb2-17"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-18"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">          </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pkg</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> YOUR-PKG-NAME</span></span></code></pre></div>
+<p>Replace <code>YOUR-PKG-NAME</code> with the name of your package (no quotes). Commit the file to GitHub and voilá.</p>
+</section>
+<section id="how-this-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-this-works">How this works</h3>
+<p>Since CRAN can’t be bothered to email us when they remove a package, we can utilized GitHub Actions to be our messenger.</p>
+<p>Whenever a GitHub Action fails, an email is sent to you so you know. Isn’t that nice?</p>
+<p>The <a href="https://github.com/flrsh-dev/cran-checks"><code>flrsh-dev/cran-checks</code></a> repository fetches the status of all packages daily. Then stores them as a json file that is hosted on GitHub pages. They can be accessed from url <a href="https://flrsh-dev.github.io/cran-checks/b64.json"><code>https://flrsh-dev.github.io/cran-checks/b64.json</code></a>.</p>
+<p>The GitHub Action checks for your package’s json file and looks at all of the statuses. If the package isn’t found or if there is a single warning or error, it fails.</p>
+</section>
+</section>
+<section id="motivation-packages-removed-without-warning" class="level2">
+<h2 class="anchored" data-anchor-id="motivation-packages-removed-without-warning">Motivation: packages removed without warning</h2>
+<p>On August 19th, 2024, CRAN removed 3 of my packages without so much as an email. I was notified by a colleague who was giving a live workshop to the US Forest Service on August 21st. When the attendants tried to install the packages, they weren’t on CRAN. It was a very bad look.</p>
+<p>How were they supposed to know the packages we’re gone? They were there when they tested. I didn’t get any warning so I couldn’t help them find a way to provide a work around.</p>
+</section>
+<section id="solution-always-check-your-cran-checks" class="level2">
+<h2 class="anchored" data-anchor-id="solution-always-check-your-cran-checks">Solution: always check your CRAN checks</h2>
+<p>I’ve been told that I should check the status of my CRAN package checks on every flavor every day. CRAN tests on r-devel, so frequently there are false positives. Also, I’ve got a lot going on and I can hardly remember to talk myself on a walk some days. Other package managers will let you know if your package is failing, why doesn’t CRAN?</p>
+</section>
+<section id="a-future-of-cran-check-messaging" class="level2">
+<h2 class="anchored" data-anchor-id="a-future-of-cran-check-messaging">A future of CRAN check messaging?</h2>
+<p>Ideally, I would like to have an opt-in service that provides these checks daily and will email you directly if any of your R packages are failing. However, this would require funding which I don’t have.</p>
+<p>If you are interested in sponsoring this project further, email me at <code>josiah.parry at gmail dot com</code> and we can discuss this. I think the R community could benefit quite greatly.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>cran</category>
+  <category>r</category>
+  <category>pkg-dev</category>
+  <guid>https://josiahparry.com/posts/2024-09-01-cran-checks.html</guid>
+  <pubDate>Sun, 01 Sep 2024 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Type safe(r) R code</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -441,7 +635,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-06-30-type-safety/</guid>
-  <pubDate>Sun, 30 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Mon, 01 Jul 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Read a CSV in a production API</title>
@@ -1185,7 +1379,7 @@ font-style: inherit;">}</span></span></code></pre></div>
   <category>r</category>
   <category>prod</category>
   <guid>https://josiahparry.com/posts/2024-06-25-handle-files-plumber/</guid>
-  <pubDate>Tue, 25 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Tue, 25 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Static file server in R</title>
@@ -1340,7 +1534,7 @@ font-style: inherit;">)</span></span></code></pre></div>
   <category>plumber</category>
   <category>api</category>
   <guid>https://josiahparry.com/posts/2024-06-24-file-server/</guid>
-  <pubDate>Mon, 24 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Mon, 24 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Caching WebR from CDN</title>
@@ -1417,7 +1611,7 @@ font-style: inherit;">)]</span></span></code></pre></div>
   <category>rust</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-06-13-caching-webr.html</guid>
-  <pubDate>Thu, 13 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 13 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Evaluate strings as code</title>
@@ -1710,7 +1904,7 @@ font-style: inherit;">res</span></span></code></pre></div>
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-06-13-eval-strings.html</guid>
-  <pubDate>Thu, 13 Jun 2024 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 13 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>{duckdb} or {duckplyr}?</title>
@@ -2092,7 +2286,7 @@ font-style: inherit;">avg_price_df</span></span></code></pre></div>
   <category>prod</category>
   <category>duckdb</category>
   <guid>https://josiahparry.com/posts/2024-05-24-duckdb-and-r.html</guid>
-  <pubDate>Fri, 24 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Fri, 24 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Univariate Spatial Dimensionality Reduction</title>
@@ -3773,7 +3967,7 @@ font-style: inherit;">)</span></span></code></pre></div>
   <category>spatial</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-05-22-univariate-mem.html</guid>
-  <pubDate>Wed, 22 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Wed, 22 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Encoding spatial patterns as variables</title>
@@ -4612,7 +4806,7 @@ Moran I statistic       Expectation          Variance
   <category>spatial</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-05-17-moran-eigenvectors.html</guid>
-  <pubDate>Fri, 17 May 2024 04:00:00 GMT</pubDate>
+  <pubDate>Fri, 17 May 2024 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Why do we sleep on factors?</title>
@@ -4817,7 +5011,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-02-15-factor-finagling.html</guid>
-  <pubDate>Thu, 15 Feb 2024 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 15 Feb 2024 08:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Enums in R: towards type safe R</title>
@@ -5615,7 +5809,7 @@ font-style: inherit;">#&gt; Your RGB (0, 155, 200)</span></span></code></pre></d
   <category>package-dev</category>
   <category>rust</category>
   <guid>https://josiahparry.com/posts/2023-11-10-enums-in-r/</guid>
-  <pubDate>Fri, 10 Nov 2023 05:00:00 GMT</pubDate>
+  <pubDate>Fri, 10 Nov 2023 08:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Export Python functions in R packages</title>
@@ -5730,7 +5924,7 @@ font-style: inherit;">hello_world</span>()</span>
   <category>python</category>
   <category>package-dev</category>
   <guid>https://josiahparry.com/posts/2023-10-28-python-fns/</guid>
-  <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
+  <pubDate>Sat, 28 Oct 2023 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Where am I in the sky?</title>
@@ -5957,7 +6151,7 @@ font-style: inherit;">16</span></span>
   <category>r</category>
   <category>spatial</category>
   <guid>https://josiahparry.com/posts/2023-10-28/</guid>
-  <pubDate>Sat, 28 Oct 2023 04:00:00 GMT</pubDate>
+  <pubDate>Sat, 28 Oct 2023 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Spatial Data Science Across Languages</title>
@@ -6143,7 +6337,7 @@ Tip
   <category>r-spatial</category>
   <category>spatial</category>
   <guid>https://josiahparry.com/posts/2023-09-20-sdsl/</guid>
-  <pubDate>Fri, 22 Sep 2023 04:00:00 GMT</pubDate>
+  <pubDate>Fri, 22 Sep 2023 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Valve: putting R in production</title>
@@ -6645,7 +6839,7 @@ Note
   <category>r</category>
   <category>production</category>
   <guid>https://josiahparry.com/posts/2023-08-22-valve-for-production/2023-08-22-valve-for-production.html</guid>
-  <pubDate>Tue, 22 Aug 2023 04:00:00 GMT</pubDate>
+  <pubDate>Tue, 22 Aug 2023 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>R is still fast: a salty reaction to a salty blog post</title>
@@ -7082,7 +7276,7 @@ font-style: inherit;">#&gt; Mean runtime: 1.2629 milliseconds</span></span></cod
   <category>r</category>
   <category>production</category>
   <guid>https://josiahparry.com/posts/2023-07-06-r-is-still-fast.html</guid>
-  <pubDate>Thu, 06 Jul 2023 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 06 Jul 2023 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>What’s so special about arrays?</title>
@@ -7480,7 +7674,7 @@ ATTRIB:
 </section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2023-06-11-matrix-bug.html</guid>
-  <pubDate>Sun, 11 Jun 2023 04:00:00 GMT</pubDate>
+  <pubDate>Sun, 11 Jun 2023 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Feeling rusty: counting characters</title>
@@ -8823,7 +9017,7 @@ font-style: inherit;">)</span></span></code></pre></div>
   <category>rust</category>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2023-04-13-counting-chars/</guid>
-  <pubDate>Thu, 13 Apr 2023 04:00:00 GMT</pubDate>
+  <pubDate>Thu, 13 Apr 2023 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Rust traits for R users</title>
@@ -10816,7 +11010,7 @@ font-style: inherit;">summarise.sdf</span></span></code></pre></div>
   <category>package-development</category>
   <category>tutorial</category>
   <guid>https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/</guid>
-  <pubDate>Thu, 02 Mar 2023 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 02 Mar 2023 08:00:00 GMT</pubDate>
   <media:content url="https://josiahparry.com/posts/2023-03-01-rust-traits-for-r-programmers/feRris.svg" medium="image" type="image/svg+xml"/>
 </item>
 <item>
@@ -10902,668 +11096,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </section></section> ]]></description>
   <category>r</category>
   <guid>https://josiahparry.com/posts/2023-01-19-raw-strings-in-r.html</guid>
-  <pubDate>Thu, 19 Jan 2023 05:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Fishnets and overlapping polygons</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2022-11-17-overlapping-polys/post.html</link>
-  <description><![CDATA[ <p>Today a question was asked in the geocompr discord. I wanted to share part of the solution as I think it covers 2 helpful things:</p>
-<ul>
-<li>making a fishnet grid</li>
-<li>calculating the area of overlap between two polygons</li>
-</ul>
-<p>For this example I’m using data from the <a href="http://gis.atlantaga.gov/?page=OPEN-DATA-HUB">Atlanta GIS Open Data Portal</a>. Specifically using the <a href="https://dpcd-coaplangis.opendata.arcgis.com/maps/future-land-use-">future land use polygons</a>.</p>
-<p>I’ve downloaded a local copy of the data as a geojson. But you can read it using the ArcGIS Feature Server it is hosted on.</p>
-<section id="objective" class="level3"><h3 class="anchored" data-anchor-id="objective">Objective</h3>
-<p>Create a map of Atlanta, visualized as a hexagon grid, that displays the amount of planned mixed use zoning. This will be done in the following sequence:</p>
-<ol type="1">
-<li>Creating a fishnet (hexagon) grid over the city</li>
-<li>Creating intersected polygons</li>
-<li>Calculate the area of intersected polygons</li>
-<li>Join back to the original fishnet grid</li>
-<li>visualized.</li>
-</ol></section><section id="mixed-use-zoning" class="level3"><h3 class="anchored" data-anchor-id="mixed-use-zoning">Mixed-use zoning</h3>
-<p>Start by loading sf, dplyr, and ggplot2. sf for our spatial work, dplyr for making our lives easier, and ggplot2 for a bad map later.</p>
-<div class="cell">
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-</div>
-<p>We read in our data (mine is local). You can use the commented out code to read directly from the ArcGIS feature server.</p>
-<div class="cell">
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># read from the ArcGIS feature server</span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># st_read("https://services5.arcgis.com/5RxyIIJ9boPdptdo/arcgis/rest/services/Land_Use_Future/FeatureServer/0/query?outFields=*&amp;where=1%3D1&amp;f=geojson")</span></span>
-<span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">future_land_use</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Future_Land_Use_.geojson"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>geometry <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/valid.html">st_make_valid</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">geometry</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-</div>
-<p>Let’s look at the different land use descriptions.</p>
-<div class="cell">
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">future_land_use</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">LANDUSEDESC</span>, sort <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">reactable</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://glin.github.io/reactable/reference/reactable.html">reactable</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output-display">
-<div id="htmlwidget-3e3e55b8cb15dc83d1c2" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-3e3e55b8cb15dc83d1c2">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"LANDUSEDESC":["Open Space","Low-Density Commercial","Medium-Density Residential","Low-Density Residential","Mixed-Use","Single-Family Residential","High-Density Residential","Community Facilities","Industrial","Office/Institutional","Mixed-Use Medium-Density","Mixed-Use Low-Density","Mixed-Use High-Density","High-Density Commercial","Very High-Density Residential","Mixed Use-High Density","Transportation/Communications/Utilities","Mixed Use-Low Density","Office/Institutional/Residential","Private Open Space","High-Density Mixed-Use","Mixed Use-Medium Density","Business Park","Industrial-Mixed Use",null],"n":[385,275,266,179,137,115,112,89,81,50,34,33,23,22,22,8,7,6,4,4,3,2,1,1,1]},"columns":[{"accessor":"LANDUSEDESC","name":"LANDUSEDESC","type":"character"},{"accessor":"n","name":"n","type":"numeric"}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"4a1d8d25069ae7bd8fdfc3bff4613cb0","key":"4a1d8d25069ae7bd8fdfc3bff4613cb0"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p>To see a disgusting map with a bad legend run the following.</p>
-<div class="cell">
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">future_land_use</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">LANDUSEDESC</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>lwd <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>, color <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"black"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-</div>
-<p>We can see that there are a bunch of different descriptions for different types of mixed use zoning. Let’s filter down to descriptions that have <code>"Mixed-Use"</code> or <code>"Mixed Use"</code> and visualize them.</p>
-<div class="cell">
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># how much area of mixed use land use?</span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">mixed_use</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">future_land_use</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Mixed-Use|Mixed Use"</span> , <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">LANDUSEDESC</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> </span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>data <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">mixed_use</span>, fill <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"blue"</span>, color <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2022-11-17-overlapping-polys/post_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section><section id="making-a-fishnet-grid" class="level3"><h3 class="anchored" data-anchor-id="making-a-fishnet-grid">Making a fishnet grid</h3>
-<p>Having made a fishnet grid quite a few times, I’ve got this handy function. In essence we create a grid over our target geometry and we keep only those locations from the grid that intersect eachother. If we dont’, we have a square shaped grid.</p>
-<p>It is important that you create an ID for the grid, otherwise when we intersect later you’ll not know what is being intersected.</p>
-<div class="cell">
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">make_fishnet</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">geometry</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">n</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">hex</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">g</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html">st_make_grid</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">geometry</span>, square <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">hex</span>, n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">n</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">g</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/lengths.html">lengths</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">st_intersects</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">g</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">geometry</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> </span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span></span>
-<span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">grd</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">make_fishnet</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">future_land_use</span>, n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>hex_id <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/row_number.html">row_number</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">grd</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2022-11-17-overlapping-polys/post_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Man, I love maps of sequential IDs.</p>
-<p>Next, we split our mixed use polygons based on the hexagons.</p>
-<div class="cell">
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># how much area in each hexagon</span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">lu_intersects</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html">st_intersection</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">mixed_use</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">grd</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: attribute variables are assumed to be spatially constant throughout all
-geometries</code></pre>
-</div>
-</div>
-<p>Then we calculate the area of each resultant shape.</p>
-<div class="cell">
-<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">overlap_area</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">lu_intersects</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>area <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_area</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">geometry</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> </span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">overlap_area</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"area"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2022-11-17-overlapping-polys/post_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>The next step here is to take the split polygons, and join the data back to the hexagons. I use a right join because they don’t get enough love. And also because if you try to do a join with two sf objects they’ll scream!!.</p>
-<div class="cell">
-<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># join it back to the grid</span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">hex_area_overlap</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">overlap_area</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">hex_id</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">area</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">right_join</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">grd</span>, by <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hex_id"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> </span>
-<span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">hex_area_overlap</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 1381 features and 2 fields
-Geometry type: POLYGON
-Dimension:     XY
-Bounding box:  xmin: -84.55738 ymin: 33.64417 xmax: -84.28635 ymax: 33.88926
-Geodetic CRS:  WGS 84
-# A tibble: 1,381 × 3
-   hex_id    area                                                              x
-    &lt;int&gt;   [m^2]                                                  &lt;POLYGON [°]&gt;
- 1     72 160485. ((-84.5182 33.65548, -84.52146 33.65737, -84.52146 33.66114, …
- 2     84  44538. ((-84.51493 33.64983, -84.5182 33.65171, -84.5182 33.65548, -…
- 3     85 176134. ((-84.51493 33.66114, -84.5182 33.66302, -84.5182 33.66679, -…
- 4     87   5049. ((-84.51493 33.68376, -84.5182 33.68565, -84.5182 33.68942, -…
- 5     97 380145. ((-84.51167 33.65548, -84.51493 33.65737, -84.51493 33.66114,…
- 6    100 110821. ((-84.51167 33.68942, -84.51493 33.6913, -84.51493 33.69507, …
- 7    106   8232. ((-84.51167 33.75729, -84.51493 33.75917, -84.51493 33.76294,…
- 8    110 109249. ((-84.5084 33.64983, -84.51167 33.65171, -84.51167 33.65548, …
- 9    111 150687. ((-84.5084 33.66114, -84.51167 33.66302, -84.51167 33.66679, …
-10    113 141654. ((-84.5084 33.68376, -84.51167 33.68565, -84.51167 33.68942, …
-# … with 1,371 more rows
-# ℹ Use `print(n = ...)` to see more rows</code></pre>
-</div>
-</div>
-<p>Now plot it!</p>
-<div class="cell">
-<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">hex_area_overlap</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">area</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>color <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"black"</span>, lwd <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>    option <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"plasma"</span>, </span>
-<span>    na.value <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>,</span>
-<span>    labels <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scales</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;"><a href="https://scales.r-lib.org/reference/comma.html">comma</a></span></span>
-<span>    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Area of mixed-use zoning (m)"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2022-11-17-overlapping-polys/post_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-
-
-</section> ]]></description>
-  <category>r</category>
-  <category>spatial</category>
-  <category>tutorial</category>
-  <guid>https://josiahparry.com/posts/2022-11-17-overlapping-polys/post.html</guid>
-  <pubDate>Thu, 17 Nov 2022 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 19 Jan 2023 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
