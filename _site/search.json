@@ -1444,42 +1444,42 @@
   {
     "objectID": "posts/2024-09-01-cran-checks.html",
     "href": "posts/2024-09-01-cran-checks.html",
-    "title": "Get notified of CRAN checks",
+    "title": "Get notified of failing CRAN checks",
     "section": "",
     "text": "CRAN performs checks on all CRAN packages quite frequently.\nIf a package has a warning or an error you have a week or two to fix it.\nUnfixed packages get removed.\nIf your package depends on the removed package it also gets removed.\nYou will not be notified if your package is removed.\nThat sucks."
   },
   {
     "objectID": "posts/2024-09-01-cran-checks.html#background",
     "href": "posts/2024-09-01-cran-checks.html#background",
-    "title": "Get notified of CRAN checks",
+    "title": "Get notified of failing CRAN checks",
     "section": "",
     "text": "CRAN performs checks on all CRAN packages quite frequently.\nIf a package has a warning or an error you have a week or two to fix it.\nUnfixed packages get removed.\nIf your package depends on the removed package it also gets removed.\nYou will not be notified if your package is removed.\nThat sucks."
   },
   {
     "objectID": "posts/2024-09-01-cran-checks.html#get-informed-cran-checks-github-action",
     "href": "posts/2024-09-01-cran-checks.html#get-informed-cran-checks-github-action",
-    "title": "Get notified of CRAN checks",
+    "title": "Get notified of failing CRAN checks",
     "section": "Get informed: CRAN checks GitHub Action",
     "text": "Get informed: CRAN checks GitHub Action\nThere is a new GitHub Action that you can use with your CRAN package. It will run once a day. If there are any WARN or ERROR statuses in any of the check flavors, then the GitHub Action will fail.\n\nAdd the action\nusethis::use_github_action(\n  url = \"https://github.com/flrsh-dev/cran-checks/blob/main/check-pkg/cran-checks.yaml\",\n  open = TRUE\n)\nThis will open a yaml file for you with the following:\nname: Check CRAN status\n\non:\n  schedule:\n    # Runs daily at 4:00 PM UTC (9:00 AM PST)\n    - cron: '0 16 * * *'  \n  # allows for manually running of the check\n  workflow_dispatch:\n\njobs:\n  check_cran_status:\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Get CRAN checks\n        uses: flrsh-dev/cran-checks/check-pkg@main\n        with:\n          pkg: YOUR-PKG-NAME\nReplace YOUR-PKG-NAME with the name of your package (no quotes). Commit the file to GitHub and voilá.\n\n\nHow this works\nSince CRAN can’t be bothered to email us when they remove a package, we can utilized GitHub Actions to be our messenger.\nWhenever a GitHub Action fails, an email is sent to you so you know. Isn’t that nice?\nThe flrsh-dev/cran-checks repository fetches the status of all packages daily. Then stores them as a json file that is hosted on GitHub pages. They can be accessed from url https://flrsh-dev.github.io/cran-checks/b64.json.\nThe GitHub Action checks for your package’s json file and looks at all of the statuses. If the package isn’t found or if there is a single warning or error, it fails."
   },
   {
     "objectID": "posts/2024-09-01-cran-checks.html#motivation-packages-removed-without-warning",
     "href": "posts/2024-09-01-cran-checks.html#motivation-packages-removed-without-warning",
-    "title": "Get notified of CRAN checks",
+    "title": "Get notified of failing CRAN checks",
     "section": "Motivation: packages removed without warning",
     "text": "Motivation: packages removed without warning\nOn August 19th, 2024, CRAN removed 3 of my packages without so much as an email. I was notified by a colleague who was giving a live workshop to the US Forest Service on August 21st. When the attendants tried to install the packages, they weren’t on CRAN. It was a very bad look.\nHow were they supposed to know the packages we’re gone? They were there when they tested. I didn’t get any warning so I couldn’t help them find a way to provide a work around."
   },
   {
     "objectID": "posts/2024-09-01-cran-checks.html#solution-always-check-your-cran-checks",
     "href": "posts/2024-09-01-cran-checks.html#solution-always-check-your-cran-checks",
-    "title": "Get notified of CRAN checks",
+    "title": "Get notified of failing CRAN checks",
     "section": "Solution: always check your CRAN checks",
     "text": "Solution: always check your CRAN checks\nI’ve been told that I should check the status of my CRAN package checks on every flavor every day. CRAN tests on r-devel, so frequently there are false positives. Also, I’ve got a lot going on and I can hardly remember to talk myself on a walk some days. Other package managers will let you know if your package is failing, why doesn’t CRAN?"
   },
   {
     "objectID": "posts/2024-09-01-cran-checks.html#a-future-of-cran-check-messaging",
     "href": "posts/2024-09-01-cran-checks.html#a-future-of-cran-check-messaging",
-    "title": "Get notified of CRAN checks",
+    "title": "Get notified of failing CRAN checks",
     "section": "A future of CRAN check messaging?",
     "text": "A future of CRAN check messaging?\nIdeally, I would like to have an opt-in service that provides these checks daily and will email you directly if any of your R packages are failing. However, this would require funding which I don’t have.\nIf you are interested in sponsoring this project further, email me at josiah.parry at gmail dot com and we can discuss this. I think the R community could benefit quite greatly."
   }

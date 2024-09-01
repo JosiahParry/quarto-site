@@ -12,7 +12,7 @@
 <generator>quarto-1.4.489</generator>
 <lastBuildDate>Sun, 01 Sep 2024 07:00:00 GMT</lastBuildDate>
 <item>
-  <title>Get notified of CRAN checks</title>
+  <title>Get notified of failing CRAN checks</title>
   <dc:creator>Josiah Parry</dc:creator>
   <link>https://josiahparry.com/posts/2024-09-01-cran-checks.html</link>
   <description><![CDATA[ 

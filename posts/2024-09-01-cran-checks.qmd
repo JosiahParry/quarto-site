@@ -1,5 +1,5 @@
 ---
-title: Get notified of CRAN checks
+title: Get notified of failing CRAN checks
 subtitle: A GitHub Action for package developers
 date: "2024-09-01"
 categories: [cran, r, pkg-dev]
