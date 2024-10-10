@@ -1,0 +1,104 @@
+---
+title: Add syntax highlighting to leptos
+date: "2024-10-10"
+categories: [rust, leptos]
+---
+
+I've been building a _thing_ with [Leptos](https://leptos.dev/) and [Tailwind CSS](https://tailwindcss.com/) for a while.
+
+One challenge I've had is adding syntax highlighting to my code chunks.
+
+:::{.callout-note}
+I am using [`pulldown-cmark`](https://github.com/pulldown-cmark/pulldown-cmark) to take a `README.md` to process it in `html`. Then adding the contents to a div. Something like: 
+
+
+```rust
+fn md_to_html(content: &str) -> String {
+    let parser = pulldown_cmark::Parser::new(content);
+    // Write to a new String buffer.
+    let mut html_output = String::new();
+    pulldown_cmark::html::push_html(&mut html_output, parser);
+    html_output
+}
+
+#[server]
+async fn fetch_readme(fp: String) -> Result<String, ServerFnError> {
+    let file = std::fs::File::open(fp)?;
+    let reader = std::io::BufReader::new(file)?;
+    Ok(std::io::read_to_string(reader)?)
+}
+
+#[component]
+fn MyRenderedReadMe(
+    let readme_content = create_resource(move || (), move |_| {
+        fetch_readme("/path/to/README.md")
+    });
+
+    view! {
+        <Transition>
+            if let Some(item) = readme_content.get() {
+                if let Ok(it) = item {
+                    view! { <div inner_html={md_to_html(&it)}/> }.into_view()
+                } else {
+                    ().into_view()
+                }
+            } else {
+                ().into_view()
+            }
+        </Transition>
+    }
+)
+```
+
+:::
+
+At first I thought adding syntax highlighting to leptos was going to involve `wasm-bindgen` and other pain, but it doesn't. 
+
+- Go to [https://highlightjs.org/](https://highlightjs.org/) 
+- Click `Download`
+- Select the languages you want to support
+- Click `Download` 
+
+Once you've downloaded the `highlight` folder. Move it into your leptos project at `{leptos-root}/public` so the path is `{leptos-root}/public/highlight` with everything in there.
+
+Then add the following to your App component just below your router
+
+
+```html
+<script src="/highlight/highlight.min.js"></script>
+<link rel="stylesheet" href="/highlight/styles/nord.css"/> 
+<script>hljs.highlightAll();</script>
+```
+:::{.aside}
+Note 👈🏼 that I chose the `nord.css` file. You can choose ant of the ones provided or just use `default.css`.
+:::
+
+This will look like
+
+```rust
+#[component]
+pub fn App() -> impl IntoView {
+
+    view! {
+        <Stylesheet id="leptos" href="/pkg/your-project-name.css"/>
+        <Title text="Welcome to Leptos"/>
+
+        <Router fallback=|| {
+            let mut outside_errors = Errors::default();
+            outside_errors.insert_with_default_key(AppError::NotFound);
+            view! { <ErrorTemplate outside_errors/> }.into_view()
+        }>
+            <main>
+                <Routes>
+                 // your routes here
+                </Routes>
+            </main>
+        </Router>
+
+        // add syntax highlighting here: 
+        <script src="/highlight/highlight.min.js"></script>
+        <link rel="stylesheet" href="/highlight/styles/nord.css"/>
+        <script>hljs.highlightAll();</script>
+    }
+}
+```

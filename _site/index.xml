@@ -10,7 +10,500 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Sun, 01 Sep 2024 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 10 Oct 2024 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Add syntax highlighting to leptos</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-10-10-leptos-highlight-js.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>I’ve been building a <em>thing</em> with <a href="https://leptos.dev/">Leptos</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a> for a while.</p>
+<p>One challenge I’ve had is adding syntax highlighting to my code chunks.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I am using <a href="https://github.com/pulldown-cmark/pulldown-cmark"><code>pulldown-cmark</code></a> to take a <code>README.md</code> to process it in <code>html</code>. Then adding the contents to a div. Something like:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> md_to_html(content<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> parser <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">pulldown_cmark::Parser::</span>new(content)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-3">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Write to a new String buffer.</span></span>
+<span id="cb1-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> html_output <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-5">    <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">pulldown_cmark::html::</span>push_html(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> html_output<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> parser)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-6">    html_output</span>
+<span id="cb1-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">#[</span>server<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb1-10"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">async</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> fetch_readme(fp<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">String</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> ServerFnError<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-11">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> file <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::fs::File::</span>open(fp)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb1-12">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> reader <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::io::BufReader::</span>new(file)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb1-13">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::io::</span>read_to_string(reader)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span>)</span>
+<span id="cb1-14"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-15"></span>
+<span id="cb1-16"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">#[</span>component<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb1-17"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> MyRenderedReadMe(</span>
+<span id="cb1-18">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> readme_content <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> create_resource(<span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">move</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">||</span> ()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">move</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span>_<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-19">        fetch_readme(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/path/to/README.md"</span>)</span>
+<span id="cb1-20">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-21"></span>
+<span id="cb1-22">    <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">view!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-23">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>Transition<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb1-24">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Some</span>(item) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> readme_content<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>get() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-25">                <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(it) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> item <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-26">                    <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">view!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>div inner_html<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">={</span>md_to_html(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>it)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}/&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}.</span>into_view()</span>
+<span id="cb1-27">                <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-28">                    ()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>into_view()</span>
+<span id="cb1-29">                <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-30">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-31">                ()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>into_view()</span>
+<span id="cb1-32">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-33">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;/</span>Transition<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb1-34">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-35">)</span></code></pre></div>
+</div>
+</div>
+<p>At first I thought adding syntax highlighting to leptos was going to involve <code>wasm-bindgen</code> and other pain, but it doesn’t.</p>
+<ul>
+<li>Go to <a href="https://highlightjs.org/">https://highlightjs.org/</a></li>
+<li>Click <code>Download</code></li>
+<li>Select the languages you want to support</li>
+<li>Click <code>Download</code></li>
+</ul>
+<p>Once you’ve downloaded the <code>highlight</code> folder. Move it into your leptos project at <code>{leptos-root}/public</code> so the path is <code>{leptos-root}/public/highlight</code> with everything in there.</p>
+<p>Then add the following to your App component just below your router</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode html code-with-copy"><code class="sourceCode html"><span id="cb2-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">script</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"> src</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/highlight/highlight.min.js"</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&gt;&lt;/</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">script</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb2-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">link</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"> rel</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stylesheet"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;"> href</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/highlight/styles/nord.css"</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">/&gt;</span> </span>
+<span id="cb2-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">script</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&gt;</span>hljs<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">highlightAll</span>()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&lt;/</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">script</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">&gt;</span></span></code></pre></div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Note 👈🏼 that I chose the <code>nord.css</code> file. You can choose ant of the ones provided or just use <code>default.css</code>.</p>
+</div></div><p>This will look like</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb3-1"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">#[</span>component<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb3-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> App() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">impl</span> IntoView <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4">    <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">view!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-5">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>Stylesheet id<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"leptos"</span> href<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/pkg/your-project-name.css"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/&gt;</span></span>
+<span id="cb3-6">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>Title text<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Welcome to Leptos"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/&gt;</span></span>
+<span id="cb3-7"></span>
+<span id="cb3-8">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>Router fallback<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=||</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-9">            <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> outside_errors <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Errors::</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">default</span>()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-10">            outside_errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>insert_with_default_key(<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">AppError::</span>NotFound)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-11">            <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">view!</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>ErrorTemplate outside_errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}.</span>into_view()</span>
+<span id="cb3-12">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}&gt;</span></span>
+<span id="cb3-13">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb3-14">                <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>Routes<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb3-15">                 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// your routes here</span></span>
+<span id="cb3-16">                <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;/</span>Routes<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb3-17">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;/</span>main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb3-18">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;/</span>Router<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb3-19"></span>
+<span id="cb3-20">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// add syntax highlighting here: </span></span>
+<span id="cb3-21">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>script src<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/highlight/highlight.min.js"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&lt;/</span>script<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb3-22">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>link rel<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stylesheet"</span> href<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/highlight/styles/nord.css"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/&gt;</span></span>
+<span id="cb3-23">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>script<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>hljs<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>highlightAll()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;&lt;/</span>script<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span>
+<span id="cb3-24">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-25"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+
+
+
+ ]]></description>
+  <category>rust</category>
+  <category>leptos</category>
+  <guid>https://josiahparry.com/posts/2024-10-10-leptos-highlight-js.html</guid>
+  <pubDate>Thu, 10 Oct 2024 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Get notified of failing CRAN checks</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -8946,804 +9439,6 @@ font-style: inherit;">"1.34.0"</span></span></code></pre></div>
   <category>arrow</category>
   <guid>https://josiahparry.com/posts/2023-11-24-dfusionrdr/</guid>
   <pubDate>Sat, 25 Nov 2023 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Enums in R: towards type safe R</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-11-10-enums-in-r/</link>
-  <description><![CDATA[ <p>Hadley Wickham has recently dropped a new draft section of his book <a href="https://design.tidyverse.org/">Tidy Design Principles</a> on <a href="https://design.tidyverse.org/boolean-strategies.html">enumerations and their use in R</a>.</p>
-<p>In short, <strong>enumerations</strong> enumerate (list out) the possible values that something might take on. In R we see this most often in function signatures where an argument takes a scalar value but all possible values are listed out.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>I will refer to enumerations as enums from here on.</p>
-</div></div><section id="enums-in-r" class="level2"><h2 class="anchored" data-anchor-id="enums-in-r">Enums in R</h2>
-<p>A good example is the <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code> function from the base package <code>stats</code>.</p>
-<div class="cell">
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/args.html">args</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">cor</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>function (x, y = NULL, use = "everything", method = c("pearson", 
-    "kendall", "spearman")) 
-NULL</code></pre>
-</div>
-</div>
-<p>The possible values for <code>method</code> are <code>"pearson"</code>, <code>"kendall"</code>, or <code>"spearman"</code> but all values are listed inside of the function definition.</p>
-<p>Inside of the function, though, <code>match.arg(method)</code> is used to ensure that the provided value to the <code>method</code> argument is one of the provided values.</p>
-<p>Hadley makes the argument that we should prefer an enumeration to a boolean flag such as <code>TRUE</code> or <code>FALSE</code>. I agree!</p>
-<section id="a-real-world-example" class="level3"><h3 class="anchored" data-anchor-id="a-real-world-example">A real world example</h3>
-<p>A post on mastodon makes a point that the function <code><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html">sf::st_make_grid()</a></code> has an argument <code>square = TRUE</code> where when set to <code>FALSE</code> hexagons are returned.</p>
-<iframe src="https://mastodon.social/@eliocamp/111387155503851033/embed" width="100%" height="300px" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms">
-</iframe>
-<p>In this case, it’s very clear that an enum would be better! For example we can improve the signature like so:</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">st_make_grid</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">grid_shape</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"square"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hexagon"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">...</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ensure only one of the provided grid shapes are used</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/match.arg.html">match.arg</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">grid_shape</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ... rest of function </span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-</section></section><section id="enums-in-rust" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="enums-in-rust">Enums in Rust</h2>
-<p>When I first started using rust enums made no sense to me. In Rust, enums are a first class citizen that are treated as their own <em>thing</em>.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>I’m not really sure what to call <em>things</em> in Rust. Are they all objects?</p>
-</div></div><p>We make them by defining the name of the enum and the <strong><em>variants</em></strong> they may take on.</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb4-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">enum</span> GridShape <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-2">  Square<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb4-3">  Hexagon</span>
-<span id="cb4-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-<p>Now you can use this enum <code>GridShape</code> to specify one of two types: <code>Square</code> or <code>Hexagon</code>. Syntactically, this is written <code>GridShape::Square</code> and <code>GridShape::Hexagon</code>.</p>
-<p>Enums are very nice because we can match on the variants and do different things based on them. For example we can have a function like so:</p>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">fn</span> which_shape(x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> GridShape) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">match</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-3">        <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">GridShape::</span>Square <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=&gt;</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"We have a square!"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb5-4">        <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">GridShape::</span>Hexagon <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=&gt;</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Hexagons are the bestagons"</span>)</span>
-<span id="cb5-5">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb5-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-<p>It takes an argument <code>x</code> which is a <code>GridShape</code> enum. We <a href="https://doc.rust-lang.org/book/ch06-02-match.html">match</a> on the possible variants and then <em>do something</em>.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Inside of the match statement each of the possible variants of the enum have to be written out. These are called <strong>match arms</strong>. The left side lists the variant where as the right portion (after <code>=&gt;</code>) indicates what will be executed if the left side is matched (essentially if the condition is true).</p>
-</div></div><p>With this function we can pass in specific variants and get different behavior.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs">
-<li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true">GridShape::Hexagon</a></li>
-<li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false">GridShape::Square</a></li>
-</ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">which_shape</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">GridShape</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Hexagon</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#&gt; Hexagons are the bestagons</span></span></code></pre></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">which_shape</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">GridShape</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Square</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#&gt; We have a square!</span></span></code></pre></div>
-</div>
-</div>
-</div>
-</section><section id="making-an-s7-enum-object-in-r" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="making-an-s7-enum-object-in-r">Making an S7 enum object in R</h2>
-<p>I think R would benefit from having a <em>“real”</em> enum type object. Having a character vector of valid variants and checking against them using <code><a href="https://rdrr.io/r/base/match.arg.html">match.arg()</a></code> or <code><a href="https://rlang.r-lib.org/reference/arg_match.html">rlang::arg_match()</a></code> is great but I think we can go further.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Since learning Rust, I think having more strictness can make our code much better and more robust. I think adding enums would be a good step towards that</p>
-</div></div><p>I’ve prototyped an <code>Enum</code> type in R using the new <code>S7</code> object system that might point us towards what an enum object in the future might look like for R users.</p>
-<section id="design-of-an-enum" class="level3"><h3 class="anchored" data-anchor-id="design-of-an-enum">Design of an Enum</h3>
-<p>For an enum we need to know what the valid <strong>variants</strong> are and what the current <strong>value</strong> of the enum is. These would be the two properties.</p>
-<p>An enum S7 object must also make sure that a value of an Enum is one of the valid variants. Using the <code>GridShape</code> enum the valid variants would be <code>"Square"</code> and <code>"Hexagon"</code>. A GridShape enum could not take, for example, <code>"Circle"</code> since it is not a listed variant.</p>
-</section><section id="using-an-abstract-class" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="using-an-abstract-class">Using an abstract class</h3>
-<p>To start, we will create an abstract S7 class called <code>Enum</code>.</p>
-<blockquote class="blockquote">
-<p>“_an abstract class is a generic class (or type of object) used as a basis for creating specific objects that conform to its protocol, or the set of operations it supports” — <a href="https://www.techopedia.com/definition/17408/abstract-class">Source</a></p>
-</blockquote>
-<p>The <code>Enum</code> class will be used to create other <code>Enum</code> objects.</p>
-<div class="cell">
-<div class="sourceCode" id="annotated-cell-5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;"><a href="https://github.com/rconsortium/S7/">S7</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># create a new Enum abstract class</span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Enum</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rconsortium.github.io/S7/reference/new_class.html">new_class</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Enum"</span>,</span>
-<span>  properties <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>    Value <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">class_character</span>,</span>
-<span>    Variants <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">class_character</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>  validator <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">self</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> </span>
-<span>    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">self</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">@</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Value</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1L</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>      <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"enum value's are length 1"</span></span>
-<span>    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">else</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">self</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">@</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Value</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">self</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">@</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Variants</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>      <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"enum value must be one of possible variants"</span></span>
-<span>    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span>, </span>
-<span>  abstract <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-</div>
-<p>In this code chunk we specify that there are 2 properties: <code>Value</code> and <code>Variant</code> each must be a character type. <code>Value</code> will be the value of the enum. It would be the right hand side of <code>GridShape::Square</code> in Rust’s enum, for example. <code>Variants</code> is a character vector of all of the possible values it may be able to take on. The validator ensures that <code>Value</code> must only have 1 value. It also ensures that <code>Value</code> is one of the enumerated <code>Variants</code>. This <code>Enum</code> class will be used to generate other enums and cannot be instantiated by itself.</p>
-<p>We can create a new enum factory function with the arguments:</p>
-<ul>
-<li>
-<code>enum_class</code> the class of the enum we are creating</li>
-<li>
-<code>variants</code> a character vector of the valid variant values</li>
-</ul>
-<div class="cell">
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># create a new enum constructor </span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">new_enum_class</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">enum_class</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">variants</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rconsortium.github.io/S7/reference/new_class.html">new_class</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>    <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">enum_class</span>,</span>
-<span>    parent <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Enum</span>,</span>
-<span>    properties <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>      Value <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">class_character</span>,</span>
-<span>      Variants <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">class_character</span>, default <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">variants</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    constructor <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Value</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rconsortium.github.io/S7/reference/new_class.html">new_object</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rconsortium.github.io/S7/reference/S7_object.html">S7_object</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, Value <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Value</span>, Variants <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">variants</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Note that the <code>constructor</code> here only takes a <code>Value</code> argument. We do this so that users cannot circumvent the pre-defined <strong>variants</strong>.</p>
-</div></div><p>With this we can now create a <code>GridShape</code> enum in R!</p>
-<div class="cell">
-<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">GridShape</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">new_enum_class</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"GridShape"</span>,</span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Square"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Hexagon"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">GridShape</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;GridShape&gt; class
-@ parent     : &lt;Enum&gt;
-@ constructor: function(Value) {...}
-@ validator  : &lt;NULL&gt;
-@ properties :
- $ Value   : &lt;character&gt;
- $ Variants: &lt;character&gt;</code></pre>
-</div>
-</div>
-<p>This new object will construct new <code>GridShape</code> enums for us.</p>
-<div class="cell">
-<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">GridShape</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Square"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;GridShape&gt;
- @ Value   : chr "Square"
- @ Variants: chr [1:2] "Square" "Hexagon"</code></pre>
-</div>
-</div>
-<p>When we try to create a GridShape that is not one of the valid variants we will get an error.</p>
-<div class="cell">
-<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">GridShape</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Triangle"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error: &lt;GridShape&gt; object is invalid:
-- enum value must be one of possible variants</code></pre>
-</div>
-</div>
-</section><section id="making-a-print-method" class="level3"><h3 class="anchored" data-anchor-id="making-a-print-method">Making a print method</h3>
-<p>For fun, I would like <code>Enum</code> objects to print like how I would use them in Rust. To do this we can create a custom print method</p>
-<div class="cell">
-<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># print method for enums</span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># since this is an abstract class we get the first class (super)</span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># to print</span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">print.Enum</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">...</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"::"</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">@</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">Value</span>, sep <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-</div>
-<p>Since <code>Enum</code>s will only ever be a sub-class we can confidently grab the first element of the <code>class(enum_obj)</code> which is the super-class of the enum. We paste that together with the value of the enum.</p>
-<div class="cell">
-<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">square</span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">GridShape</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Square"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">square</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>GridShape::Square</code></pre>
-</div>
-</div>
-</section></section><section id="drawing-even-more-from-rust" class="level2"><h2 class="anchored" data-anchor-id="drawing-even-more-from-rust">Drawing even more from Rust</h2>
-<p>Rust enums are even more powerful than what I briefly introduced. Each variant of an enum can actually be <em>typed</em>!!! Take a look at the example from <a href="https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html">The Book™</a>.</p>
-<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb18-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">enum</span> Message <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb18-2">    Quit<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb18-3">    Move <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">i32</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">},</span></span>
-<span id="cb18-4">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">Write</span>(<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">String</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb18-5">    ChangeColor(<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">i32</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb18-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-<p>In this enum there are 4 variants. The first <code>Quit</code> doesn’t have any associated data with it. But the other three do! The second one <code>Move</code> has two fields <code>x</code> and <code>y</code> which contain integer values. <code>Write</code> is a tuple with a string in it and <code>ChangeColor</code> has 3 integer values in its tuple. These can be extracted.</p>
-<p>A silly example function that illustrates how each value can be used can be</p>
-<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb19-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">fn</span> which_msg(x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> Message) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb19-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">match</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb19-3">        <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">Message::</span>Quit <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=&gt;</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"I'm a quitter"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb19-4">        <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">Message::</span>Move <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=&gt;</span>  <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Move over {x} and up {y}"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb19-5">        <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">Message::</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">Write</span>(msg) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=&gt;</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"your message is: {msg}"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb19-6">        <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">Message::</span>ChangeColor(r<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> g<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> b) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=&gt;</span>  <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Your RGB ({r}, {g}, {b})"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb19-7">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb19-8"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-<p>When a variant with data is passed in the values can be used. For example</p>
-<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">which_msg</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Message</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ChangeColor</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">155</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">200</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>;</span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#&gt; Your RGB (0, 155, 200)</span></span></code></pre></div>
-<section id="extending-it-to-r" class="level3"><h3 class="anchored" data-anchor-id="extending-it-to-r">Extending it to R</h3>
-<p>What would this look like if we extended it to an R based enum object? I suspect the <code>Variants</code> would be a list of prototypes such as those from <a href="https://vctrs.r-lib.org/"><code>{vctrs}</code></a>. The <code>Value</code> would have to be validated against all of the provided prototypes to ensure that it is one of the provided types.</p>
-<p>I’m not sure how I would code this up, but I think that would be a great thing to have.</p>
-
-
-</section></section> ]]></description>
-  <category>r</category>
-  <category>package-dev</category>
-  <category>rust</category>
-  <guid>https://josiahparry.com/posts/2023-11-10-enums-in-r/</guid>
-  <pubDate>Fri, 10 Nov 2023 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
