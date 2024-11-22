@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.489">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2024-11-21">
+<title>Josiah Parry - S7 &amp; Options objects</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script><script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
+</script><script async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9842567530621468" crossorigin="anonymous"></script><link rel="stylesheet" href="../styles.css">
+<meta name="twitter:title" content="Josiah Parry - S7 &amp; Options objects">
+<meta name="twitter:description" content="reimagining readr::read_csv()">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body class="nav-sidebar docked slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      Josiah Parry
+      </li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Josiah Parry</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../services.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><em>want my help?</em></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">about</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../posts/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">posts</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">projects</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">socials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://github.com/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://linkedin.com/in/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://twitter.com/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text">Twitter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.youtube.com/@josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-youtube" role="img">
+</i> 
+ <span class="menu-text">YouTube</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.xml" class="sidebar-item-text sidebar-link"><i class="bi bi-rss-fill" role="img">
+</i> 
+ <span class="menu-text">RSS</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#scenario-1-has-headers-give-it-different-once" id="toc-scenario-1-has-headers-give-it-different-once" class="nav-link active" data-scroll-target="#scenario-1-has-headers-give-it-different-once">Scenario 1: has headers give it different once</a></li>
+  <li><a href="#scenario-2-has-no-headers-give-it-names" id="toc-scenario-2-has-no-headers-give-it-names" class="nav-link" data-scroll-target="#scenario-2-has-no-headers-give-it-names">Scenario 2: has no headers give it names</a></li>
+  <li><a href="#rethinking-the-arguments" id="toc-rethinking-the-arguments" class="nav-link" data-scroll-target="#rethinking-the-arguments">Rethinking the arguments</a></li>
+  <li><a href="#options-objects-with-s7" id="toc-options-objects-with-s7" class="nav-link" data-scroll-target="#options-objects-with-s7">Options objects with S7</a></li>
+  <li>
+<a href="#s7-object-properties" id="toc-s7-object-properties" class="nav-link" data-scroll-target="#s7-object-properties">S7 object properties</a>
+  <ul class="collapse">
+<li><a href="#property-validation" id="toc-property-validation" class="nav-link" data-scroll-target="#property-validation">Property validation</a></li>
+  </ul>
+</li>
+  <li><a href="#s7-readr_opts-class" id="toc-s7-readr_opts-class" class="nav-link" data-scroll-target="#s7-readr_opts-class">S7 <code>readr_opts</code> class</a></li>
+  <li><a href="#simplifying-readrread_csv" id="toc-simplifying-readrread_csv" class="nav-link" data-scroll-target="#simplifying-readrread_csv">Simplifying <code>readr::read_csv()</code></a></li>
+  </ul></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">S7 &amp; Options objects</h1>
+<p class="subtitle lead">reimagining <code><a href="https://readr.tidyverse.org/reference/read_delim.html">readr::read_csv()</a></code></p>
+  <div class="quarto-categories">
+    <div class="quarto-category">pkg-dev</div>
+    <div class="quarto-category">r</div>
+    <div class="quarto-category">s7</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 21, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header><p>One scenario I have encountered is the case case of <code><a href="https://readr.tidyverse.org/reference/read_delim.html">readr::read_delim()</a></code>. The argument <code>col_names = TRUE</code> by default, can be <code>FALSE</code>, or it can be a character vector of the names to provide to the columns it is reading.</p>
+<p>This is a bit stinky 😷. But it actually makes a lot of sense.</p>
+<ul>
+<li>
+<code>col_names = TRUE</code> (default): the file provides you with headers and you should use them</li>
+<li>
+<code>col_names = FALSE</code>: there are no column names we should make some placeholders for the data frame (because column names are necessary)</li>
+<li>
+<code>col_names = character()</code>: we want to provide column names directly (makes the most sense when there are no headers in the file)</li>
+</ul>
+<p>This is a little confusing when we think deeply about the character vector option.</p>
+<p>There are two scenarios here:</p>
+<ol type="1">
+<li>the file has column headers but we want to give it different ones</li>
+<li>the file has no column headers but we want to give it different ones</li>
+</ol>
+<p>Lets explore how this works in practice a bit. Here we write <code>iris</code> to a temporary file.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span><span class="va">iris</span>, <span class="va">tmp</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="scenario-1-has-headers-give-it-different-once" class="level3"><h3 class="anchored" data-anchor-id="scenario-1-has-headers-give-it-different-once">Scenario 1: has headers give it different once</h3>
+<p>In the first scenario we can provide a character vector to <code>col_names</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">tmp</span>, col_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>, <span class="st">"d"</span>, <span class="st">"e"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 151 × 5
+   a            b           c            d           e      
+   &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;  
+ 1 Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+ 2 5.1          3.5         1.4          0.2         setosa 
+ 3 4.9          3           1.4          0.2         setosa 
+ 4 4.7          3.2         1.3          0.2         setosa 
+ 5 4.6          3.1         1.5          0.2         setosa 
+ 6 5            3.6         1.4          0.2         setosa 
+ 7 5.4          3.9         1.7          0.4         setosa 
+ 8 4.6          3.4         1.4          0.3         setosa 
+ 9 5            3.4         1.5          0.2         setosa 
+10 4.4          2.9         1.4          0.2         setosa 
+# ℹ 141 more rows</code></pre>
+</div>
+</div>
+<p>Here we can see that <code>col_names = character()</code> assumes that there isn’t any header. To accomplish this we need to set <code>skip = 1</code> to not read the first line where the header actually is.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span></span>
+<span>    <span class="va">tmp</span>,</span>
+<span>    col_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>, <span class="st">"d"</span>, <span class="st">"e"</span><span class="op">)</span>,</span>
+<span>    skip <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 150 × 5
+       a     b     c     d e     
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+ 1   5.1   3.5   1.4   0.2 setosa
+ 2   4.9   3     1.4   0.2 setosa
+ 3   4.7   3.2   1.3   0.2 setosa
+ 4   4.6   3.1   1.5   0.2 setosa
+ 5   5     3.6   1.4   0.2 setosa
+ 6   5.4   3.9   1.7   0.4 setosa
+ 7   4.6   3.4   1.4   0.3 setosa
+ 8   5     3.4   1.5   0.2 setosa
+ 9   4.4   2.9   1.4   0.2 setosa
+10   4.9   3.1   1.5   0.1 setosa
+# ℹ 140 more rows</code></pre>
+</div>
+</div>
+</section><section id="scenario-2-has-no-headers-give-it-names" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="scenario-2-has-no-headers-give-it-names">Scenario 2: has no headers give it names</h3>
+<p>Create a csv without the headers:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span><span class="va">iris</span>, <span class="va">tmp</span>, col_names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>In the case of <code>write_csv()</code> the argument <code>col_names</code> is <em>always</em> a logical scalar</p>
+</div></div><p>In this case, the <code>col_names = character()</code> works well!</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span></span>
+<span>    <span class="va">tmp</span>,</span>
+<span>    col_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>, <span class="st">"d"</span>, <span class="st">"e"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 150 × 5
+       a     b     c     d e     
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+ 1   5.1   3.5   1.4   0.2 setosa
+ 2   4.9   3     1.4   0.2 setosa
+ 3   4.7   3.2   1.3   0.2 setosa
+ 4   4.6   3.1   1.5   0.2 setosa
+ 5   5     3.6   1.4   0.2 setosa
+ 6   5.4   3.9   1.7   0.4 setosa
+ 7   4.6   3.4   1.4   0.3 setosa
+ 8   5     3.4   1.5   0.2 setosa
+ 9   4.4   2.9   1.4   0.2 setosa
+10   4.9   3.1   1.5   0.1 setosa
+# ℹ 140 more rows</code></pre>
+</div>
+</div>
+<p>Here are the other two scenarios:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">tmp</span>, col_names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code># A tibble: 149 × 5
+   `5.1` `3.5` `1.4` `0.2` setosa
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+ 1   4.9   3     1.4   0.2 setosa
+ 2   4.7   3.2   1.3   0.2 setosa
+ 3   4.6   3.1   1.5   0.2 setosa
+ 4   5     3.6   1.4   0.2 setosa
+ 5   5.4   3.9   1.7   0.4 setosa
+ 6   4.6   3.4   1.4   0.3 setosa
+ 7   5     3.4   1.5   0.2 setosa
+ 8   4.4   2.9   1.4   0.2 setosa
+ 9   4.9   3.1   1.5   0.1 setosa
+10   5.4   3.7   1.5   0.2 setosa
+# ℹ 139 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<pre><code># A tibble: 150 × 5
+      X1    X2    X3    X4 X5    
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+ 1   5.1   3.5   1.4   0.2 setosa
+ 2   4.9   3     1.4   0.2 setosa
+ 3   4.7   3.2   1.3   0.2 setosa
+ 4   4.6   3.1   1.5   0.2 setosa
+ 5   5     3.6   1.4   0.2 setosa
+ 6   5.4   3.9   1.7   0.4 setosa
+ 7   4.6   3.4   1.4   0.3 setosa
+ 8   5     3.4   1.5   0.2 setosa
+ 9   4.4   2.9   1.4   0.2 setosa
+10   4.9   3.1   1.5   0.1 setosa
+# ℹ 140 more rows</code></pre>
+</div>
+</div>
+</div>
+</section><section id="rethinking-the-arguments" class="level2"><h2 class="anchored" data-anchor-id="rethinking-the-arguments">Rethinking the arguments</h2>
+<p>To me, I think these arguments can be made less <a href="https://www.infoq.com/presentations/Simple-Made-Easy/">complected</a>.</p>
+<p>To me, there are two arguments burried in <code>col_names</code>:</p>
+<ol type="1">
+<li><code>header = TRUE</code></li>
+<li><code>col_names = NULL</code></li>
+</ol>
+<p>The imaginary <code>header</code> argument should be used to determine if there is a header line to be used.</p>
+<p>The <code>col_names</code>, which defaults to <code>NULL</code> can be used to provide an alternative set of column names.</p>
+<p>This approach would reduce the cognitive overload of <code>col_names</code> argument.</p>
+<p>However, there are</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html">formals</a></span><span class="op">(</span><span class="fu">readr</span><span class="fu">::</span><span class="va"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 20</code></pre>
+</div>
+</div>
+<p>arguments already….so… additional ones? That could be quite a bit.</p>
+</section><section id="options-objects-with-s7" class="level2"><h2 class="anchored" data-anchor-id="options-objects-with-s7">Options objects with S7</h2>
+<p>One alternative to having every option as a function argument is to create an options object.</p>
+<p>This is very common in the Rust ecosystem. There is a struct that is used to define common settings. That object is then passed into methods and functions.</p>
+<p>We could consider doing something similar for the <code><a href="https://readr.tidyverse.org/reference/read_delim.html">readr::read_csv()</a></code> function.</p>
+<p>Lets take a look at the arguments for <code><a href="https://readr.tidyverse.org/reference/read_delim.html">readr::read_csv()</a></code></p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/fn_fmls.html">fn_fmls_names</a></span><span class="op">(</span><span class="fu">readr</span><span class="fu">::</span><span class="va"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "file"            "col_names"       "col_types"       "col_select"     
+ [5] "id"              "locale"          "na"              "quoted_na"      
+ [9] "quote"           "comment"         "trim_ws"         "skip"           
+[13] "n_max"           "guess_max"       "name_repair"     "num_threads"    
+[17] "progress"        "show_col_types"  "skip_empty_rows" "lazy"           </code></pre>
+</div>
+</div>
+<p>Many of these are booleans or scalars. I think we can improve this by using S7 to store our options as a standalone object.</p>
+<p>Looking at the arguments for <code>read_csv()</code> I think our options object can be used for the following options:</p>
+<ul>
+<li><code>locale</code></li>
+<li><code>na</code></li>
+<li><code>quote</code></li>
+<li><code>comment</code></li>
+<li><code>trim_ws</code></li>
+<li><code>skip</code></li>
+<li><code>n_max</code></li>
+<li><code>guess_max</code></li>
+<li><code>name_repair</code></li>
+<li><code>num_threads</code></li>
+<li><code>progress</code></li>
+<li><code>show_col_types</code></li>
+<li><code>skip_empty_rows</code></li>
+<li><code>lazy</code></li>
+</ul>
+<p>This will take 14 of the less commonly used arguments out of the function!</p>
+<p>The first thing we will do is define properties for each of these values. It looks like a lot of code, but it is not so bad! This boilerplate is going to give us a strongly typed object that will catch errors early!</p>
+</section><section id="s7-object-properties" class="level2"><h2 class="anchored" data-anchor-id="s7-object-properties">S7 object properties</h2>
+<p>For each of the arguments we want to ensure that we:</p>
+<ul>
+<li>have a good default</li>
+<li>validate any input</li>
+</ul>
+<p>First we’re looking at the <code>locale</code>. This one is quite a lot of checking.</p>
+<section id="property-validation" class="level3"><h3 class="anchored" data-anchor-id="property-validation">Property validation</h3>
+<p>Ideally, the <code>locale</code> would be an S7 object so we could provide a <code>class_locale</code> as our propery but we don’t have that luxury. So here, we validate each of the components of the locale object.</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rconsortium/S7/">S7</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.locale</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_list</span>,</span>
+<span>  default <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/locale.html">default_locale</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dnames</span> <span class="op">&lt;-</span> <span class="va">value</span><span class="op">$</span><span class="va">date_names</span></span>
+<span>    <span class="va">invalid</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/type-predicates.html">is_character</a></span><span class="op">(</span><span class="va">dnames</span><span class="op">$</span><span class="va">mon</span>, n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">||</span></span>
+<span>      <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/type-predicates.html">is_character</a></span><span class="op">(</span><span class="va">dnames</span><span class="op">$</span><span class="va">mon_ab</span>, n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">||</span></span>
+<span>      <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/type-predicates.html">is_character</a></span><span class="op">(</span><span class="va">dnames</span><span class="op">$</span><span class="va">day</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> <span class="op">||</span></span>
+<span>      <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/type-predicates.html">is_character</a></span><span class="op">(</span><span class="va">dnames</span><span class="op">$</span><span class="va">day_ab</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> <span class="op">||</span></span>
+<span>      <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/type-predicates.html">is_character</a></span><span class="op">(</span><span class="va">dnames</span><span class="op">$</span><span class="va">am_pm</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">$</span><span class="va">date_format</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">$</span><span class="va">time_format</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">$</span><span class="va">decimal_mark</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">$</span><span class="va">grouping_mark</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">$</span><span class="va">tz</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">$</span><span class="va">encoding</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">invalid</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="st">"expected `locale` object"</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Similarly, the argument for <code>name_repair</code> is not at all straight forward. It can be one of any known strategy <em>or</em> it can be a function that is applied to the names via <code><a href="https://vctrs.r-lib.org/reference/vec_as_names.html">vctrs::vec_as_names()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">.name_repair</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_any</span>,</span>
+<span>  default <span class="op">=</span> <span class="st">"unique"</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">known_strategies</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"minimal"</span>, <span class="st">"unique"</span>, <span class="st">"check_unique"</span>, <span class="st">"unique_quiet"</span>, <span class="st">"universal"</span>, <span class="st">"universal_quiet"</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_function.html">is_function</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">fmls</span> <span class="op">&lt;-</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/fn_fmls.html">fn_fmls</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">fmls</span>,<span class="va">inherits</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,  <span class="st">"name"</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="st">"name repair function must only have one required argument"</span></span>
+<span>      <span class="op">}</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="st">"`name_repair` must be one of minimal, unique, check_unique, unique_quiet, universal, universal_quiet or a function"</span></span>
+<span>    <span class="op">}</span></span>
+<span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">value</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">known_strategies</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%s is not a valid `name_repair` value"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here we define the validators for the rest of the options. These are all quite straight forward and are mostly scalars.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">.na</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_character</span>,</span>
+<span>  default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.quote</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_logical</span>, </span>
+<span>  default <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_logical</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`quote` must be a scalar character"</span></span>
+<span>      <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">.comment</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_character</span>,</span>
+<span>  default <span class="op">=</span> <span class="st">"\""</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_character</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="st">"`comment` must be a scalar character"</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">.trim_ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_logical</span>, </span>
+<span>  default <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_logical</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`trim_ws` must be a scalar character"</span></span>
+<span>      <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.skip</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_numeric</span>,</span>
+<span>  default <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_integerish.html">is_scalar_integerish</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`skip` must be a scalar numeric"</span></span>
+<span>      <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.n_max</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_numeric</span>,</span>
+<span>  default <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_integerish.html">is_scalar_integerish</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`n_max` must be a scalar numeric"</span></span>
+<span>      <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.guess_max</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_numeric</span>,</span>
+<span>  default <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_integerish.html">is_scalar_integerish</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`guess_max` must be a scalar numeric"</span></span>
+<span>      <span class="op">}</span></span>
+<span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.n_max</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_numeric</span>,</span>
+<span>  default <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_integerish.html">is_scalar_integerish</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`n_max` must be a scalar numeric"</span></span>
+<span>      <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.num_threads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>  <span class="va">class_numeric</span>,</span>
+<span>  default <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/readr_threads.html">readr_threads</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_integerish.html">is_scalar_integerish</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`num_threads` must be a scalar numeric"</span></span>
+<span>      <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.progress</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>    <span class="va">class_logical</span>, </span>
+<span>    default <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/show_progress.html">show_progress</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>         <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_logical</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`progress` must be a scalar logical"</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.show_col_types</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>    <span class="va">class_logical</span>, </span>
+<span>    default <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/should_show_types.html">should_show_types</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Control.html">%||%</a></span> <span class="cn">TRUE</span>,</span>
+<span>    validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>         <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_logical</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`show_col_types` must be a scalar logical"</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.skip_empty_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>    <span class="va">class_logical</span>, </span>
+<span>    default <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>         <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_logical</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`skip_empty_rows` must be a scalar logical"</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">.lazy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_property.html">new_property</a></span><span class="op">(</span></span>
+<span>    <span class="va">class_logical</span>, </span>
+<span>    default <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/should_read_lazy.html">should_read_lazy</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    validator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>         <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/scalar-type-predicates.html">is_scalar_logical</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="st">"`lazy` must be a scalar logical"</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section></section><section id="s7-readr_opts-class" class="level2"><h2 class="anchored" data-anchor-id="s7-readr_opts-class">S7 <code>readr_opts</code> class</h2>
+<p>Now can actually define the S7 object class by passing in all of our new property objects to the <code>properties</code> argument. Because we defined defaults for every property we can construct a default option object.</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">class_readr_opts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rconsortium.github.io/S7/reference/new_class.html">new_class</a></span><span class="op">(</span></span>
+<span>  <span class="st">"readr_opts"</span>,</span>
+<span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    locale <span class="op">=</span> <span class="va">.locale</span>,</span>
+<span>    na <span class="op">=</span> <span class="va">.na</span>,</span>
+<span>    quote <span class="op">=</span> <span class="va">.quote</span>,</span>
+<span>    comment <span class="op">=</span> <span class="va">.comment</span>,</span>
+<span>    trim_ws <span class="op">=</span> <span class="va">.trim_ws</span>,</span>
+<span>    skip <span class="op">=</span> <span class="va">.skip</span>,</span>
+<span>    n_max <span class="op">=</span> <span class="va">.n_max</span>,</span>
+<span>    guess_max <span class="op">=</span> <span class="va">.guess_max</span>,</span>
+<span>    name_repair <span class="op">=</span> <span class="va">.name_repair</span>,</span>
+<span>    num_threads <span class="op">=</span> <span class="va">.num_threads</span>,</span>
+<span>    progress <span class="op">=</span> <span class="va">.progress</span>,</span>
+<span>    show_col_types <span class="op">=</span> <span class="va">.show_col_types</span>,</span>
+<span>    skip_empty_rows <span class="op">=</span> <span class="va">.skip_empty_rows</span>,</span>
+<span>    lazy <span class="op">=</span> <span class="va">.lazy</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">opts</span> <span class="op">&lt;-</span> <span class="fu">class_readr_opts</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">opts</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;readr_opts&gt;
+ @ locale         :List of 7
+ .. $ date_names   :List of 5
+ ..  ..$ mon   : chr [1:12] "January" "February" "March" "April" ...
+ ..  ..$ mon_ab: chr [1:12] "Jan" "Feb" "Mar" "Apr" ...
+ ..  ..$ day   : chr [1:7] "Sunday" "Monday" "Tuesday" "Wednesday" ...
+ ..  ..$ day_ab: chr [1:7] "Sun" "Mon" "Tue" "Wed" ...
+ ..  ..$ am_pm : chr [1:2] "AM" "PM"
+ ..  ..- attr(*, "class")= chr "date_names"
+ .. $ date_format  : chr "%AD"
+ .. $ time_format  : chr "%AT"
+ .. $ decimal_mark : chr "."
+ .. $ grouping_mark: chr ","
+ .. $ tz           : chr "UTC"
+ .. $ encoding     : chr "UTF-8"
+ .. - attr(*, "class")= chr "locale"
+ @ na             : chr [1:2] "" "NA"
+ @ quote          : logi TRUE
+ @ comment        : chr "\""
+ @ trim_ws        : logi TRUE
+ @ skip           : int 0
+ @ n_max          : num Inf
+ @ guess_max      : int 1000
+ @ name_repair    : chr "unique"
+ @ num_threads    : int 8
+ @ progress       : logi FALSE
+ @ show_col_types : logi FALSE
+ @ skip_empty_rows: logi TRUE
+ @ lazy           : logi FALSE</code></pre>
+</div>
+</div>
+<p>We can access each of these properties using the <code>@</code> accessor. For example, if we want the <code>locale</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">opts</span><span class="op">@</span><span class="va">locale</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;locale&gt;
+Numbers:  123,456.78
+Formats:  %AD / %AT
+Timezone: UTC
+Encoding: UTF-8
+&lt;date_names&gt;
+Days:   Sunday (Sun), Monday (Mon), Tuesday (Tue), Wednesday (Wed), Thursday
+        (Thu), Friday (Fri), Saturday (Sat)
+Months: January (Jan), February (Feb), March (Mar), April (Apr), May (May),
+        June (Jun), July (Jul), August (Aug), September (Sep), October
+        (Oct), November (Nov), December (Dec)
+AM/PM:  AM/PM</code></pre>
+</div>
+</div>
+</section><section id="simplifying-readrread_csv" class="level2"><h2 class="anchored" data-anchor-id="simplifying-readrread_csv">Simplifying <code>readr::read_csv()</code>
+</h2>
+<p>Now, imagine if we can use this as a way to simplify the <code><a href="https://readr.tidyverse.org/reference/read_delim.html">readr::read_csv()</a></code> function. The function definition can now look like:</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">read_csv</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">file</span>,</span>
+<span>  <span class="va">col_names</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">col_types</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">col_select</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">id</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">options</span> <span class="op">=</span> <span class="fu">class_readr_opts</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="co"># function logic</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This greatly reduces the cognitive load for end users and it consolides options specification into a single object.</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
