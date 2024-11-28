@@ -130,7 +130,7 @@
   </url>
   <url>
     <loc>https://josiahparry.com/index.html</loc>
-    <lastmod>2024-06-13T18:45:27.778Z</lastmod>
+    <lastmod>2024-11-28T19:21:39.318Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/about.html</loc>
@@ -267,5 +267,9 @@
   <url>
     <loc>https://josiahparry.com/posts/2024-11-21-s7-options-objects.html</loc>
     <lastmod>2024-11-22T15:26:21.724Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2024-11-28-httr2-oidc.html</loc>
+    <lastmod>2024-11-28T19:20:59.553Z</lastmod>
   </url>
 </urlset>

@@ -21,6 +21,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2024-11-28-httr2-oidc.html",
       "/posts/2024-11-21-s7-options-objects.html",
       "/posts/2024-10-10-leptos-highlight-js.html",
       "/posts/2024-09-01-cran-checks.html",
@@ -107,6 +108,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-11-28-httr2-oidc.html",
       "/posts/2024-11-21-s7-options-objects.html",
       "/posts/2024-10-10-leptos-highlight-js.html",
       "/posts/2024-09-01-cran-checks.html",

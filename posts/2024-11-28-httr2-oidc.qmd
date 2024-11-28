@@ -1,0 +1,308 @@
+---
+title: "Implementing OpenID Connect (OIDC) in R"
+date: 2024-11-28
+author: Josiah Parry
+categories: [r,  httr2, auth, oidc]
+---
+
+I am working on a rust project that I want to use OpenID Connect for. I'm struggling to wrap my head around it, so naturally, I implemented it in R to understand it better. 
+
+## What is OIDC? 
+
+[OpenID Connect (OIDC)](https://openid.net/developers/how-connect-works/) is an authentication standard based on OAuth 2.0. The hope is that most identity providers (IDP) can have an implementation of OIDC so that plugging in their authentication system is pretty straight forward.
+
+## OIDC discovery
+
+Each OIDC provider has an `{issuer_url}/.well-known/openid-configuration` URL which contains information about the authentication provider. This is a public facing document that can be used to find endpoints and other information
+
+For this example, I've created a free account at [Auth0](https://auth0.com/) and made an application. I'll store the url in a variable called `issuer_url` 
+
+```{r}
+issuer_url <- "https://dev-2ts7ytkts28hfj4o.us.auth0.com"
+```
+
+Accessing the `openid-configuration` is a simple get request. We'll create an `oidc_discovery()` function. This will return a list and we will give it a class `oidc_provider`
+
+
+```{r}
+library(httr2)
+
+oidc_discovery <- function(issuer_url) {
+  res <- request(issuer_url) |>
+    req_url_path_append(".well-known", "openid-configuration") |> 
+    req_perform() |>
+    resp_body_json()
+  structure(res, class = c("oidc_provider", "list"))
+}
+```
+
+:::{.callout-tip collapse="true"}
+I've also given this object a nicer print method based on the `httr2_oauth_client` class in [`{httr2}`](https://httr2.r-lib.org).
+
+```{r}
+print.oidc_provider <- function(x, ...) {
+    # adapted from httr2:::print.httr2_request
+    cli::cli_text(cli::style_bold("<", paste(class(x)[1], collapse = "/"), ">"))
+    lines <- vapply(
+        x,
+        \(.x) {
+        if (is.atomic(.x) && length(.x) == 1) {
+            if (is.character(.x)) {
+                paste0("'", .x, "'")
+            }
+            else {
+                format(.x)
+            }
+        }
+        else {
+            class(.x)[1]
+        }
+        },
+        character(1)
+    )
+    cli::cli_dl(lines)
+    invisible(x)
+}
+```
+
+:::
+
+Using this gives us a very informative list that we will use for identifying our authorization endpoints.
+
+```{r}
+provider <- oidc_discovery(issuer_url)
+```
+```
+<oidc_provider>
+issuer: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/'
+authorization_endpoint: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/authorize'
+token_endpoint: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/oauth/token'
+device_authorization_endpoint: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/oauth/device/code'
+userinfo_endpoint: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/userinfo'
+mfa_challenge_endpoint: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/mfa/challenge'
+jwks_uri: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/.well-known/jwks.json'
+registration_endpoint: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/oidc/register'
+revocation_endpoint: 'https://dev-2ts7ytkts28hfj4o.us.auth0.com/oauth/revoke'
+scopes_supported: list
+response_types_supported: list
+code_challenge_methods_supported: list
+response_modes_supported: list
+subject_types_supported: list
+token_endpoint_auth_methods_supported: list
+claims_supported: list
+request_uri_parameter_supported: FALSE
+request_parameter_supported: FALSE
+id_token_signing_alg_values_supported: list
+token_endpoint_auth_signing_alg_values_supported: list
+end_session_endpoint:
+'https://dev-2ts7ytkts28hfj4o.us.auth0.com/oidc/logout'
+```
+
+The information in this object will be used for our oauth flows with `httr2`.
+
+## OIDC Client Object
+
+In httr2, we create an `httr2_oauth_client` object to be used for our authentication flows. We will generalize that approac and create `oidc_client()`.
+
+In this function, we will store the `redirect_uri` into the client itself as well as tack on the `oidc_client` subclass. This will give us a nicer print method and prevent us from having to put in the `redirect_uri` multiple times. 
+
+```{r}
+oidc_client <- function(
+  oidc_provider,
+  client_id = Sys.getenv("OIDC_CLIENT"),
+  client_secret = Sys.getenv("OIDC_SECRET"),
+  redirect_uri = oauth_redirect_uri()
+) {
+  client <- oauth_client(
+    id = client_id,
+    secret = client_secret,
+    token_url = oidc_provider[["token_endpoint"]]
+  )
+  client[["redirect_uri"]] <- redirect_uri
+  class(client) <- c("oidc_client", class(client))
+  client
+}
+```
+
+This function fetches the client id and secret from environment variables. This is because we do not want to store these variables directly in our code. 
+
+:::{.callout-tip}
+Use `usethis::edit_r_environ()` to set these variables globally. 
+Alternatively, you can use something like `config` to have a `config.yml` file or an alternative environment management system. But at the end of the day just please do not store your credentials in your code!!!!
+:::
+
+For Auth0, you have to specify which redirect URIs can be trusted. In my case I set it to `http://localhost:3000/oauth/callback` in my application settings. 
+
+
+```{r}
+client <- oidc_client(
+    provider,
+    redirect_uri = "http://localhost:3000/oauth/callback"
+)
+```
+```
+<oidc_client/httr2_oauth_client>
+name: bf83aacb811320e5da430601736f1286
+id:
+secret: <REDACTED>
+token_url: https://dev-2ts7ytkts28hfj4o.us.auth0.com/oauth/token
+auth: oauth_client_req_auth_body
+redirect_uri: http://localhost:3000/oauth/callback
+```
+
+This client will now be used for our authentication steps.
+
+## OAuth2 Code Flow
+
+The most secure method of authentication with OAuth2 is the code flow. This is also the most common when building web applications. It will send you to the external provider to authenticate there, then return you to the app when complete with an `access_token` and an `id_token`.
+
+Here we create the `oidc_flow_auth_code()` function. The authorization endpoint will likely be different for providers. This is why we fetch it from the provider itself.
+
+```{r}
+oidc_flow_auth_code <- function(
+  client,
+  provider,
+  scope = "openid profile email"
+) {
+  oauth_flow_auth_code(
+    client,
+    provider$authorization_endpoint,
+    scope = scope,
+    redirect_uri = client$redirect_uri
+  )
+}
+```
+
+:::{.callout-note}
+Now that I'm looking at this again, it may be worth storing the the authorization endpoint into the client too...
+:::
+
+When we authenticate with OIDC we most also provide the `openid` scope. This indicates to the provider that the OIDC protocol will be used. Additionally, OIDC uses something called json web-tokens (JWT). 
+
+JWTs have "claims" associated with them. This is basic informations about the user that is authenticated. These get stored alongside the `access_token` as an `id_token`. 
+
+The [standard claim](https://openid.net/specs/openid-connect-basic-1_0.html#StandardClaims) `profile` will give you a lot of basic information about an end-user. It wraps up the name, family_name, given_name, middle_name, nickname, preferred_username, profile, picture, website, gender, birthdate, zoneinfo, and locale claims. 
+
+Specify the claim you want after `openid` in the `scope` argument
+
+```{r, eval=FALSE}
+token <- oidc_flow_auth_code(
+  client, provider,
+  scope = "openid profile"
+)
+```
+```
+<httr2_token>
+token_type: Bearer
+access_token: <REDACTED>
+expires_at: 2024-11-29 11:07:12
+id_token: <REDACTED>
+scope: openid profile
+```
+
+With this you've now authenticated using OIDC. Though you may want to access the user information in the token. We can do that by decoding the `id_token`.
+
+## Accessing Claims
+
+Here we create a function `parse_id_token()` which takes the contents of `token$id_token` and parses it into something human representable. 
+
+```{r, eval=FALSE}
+token$id_token
+```
+```
+"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImV0WWVUTjhseGJ6VENZblBMNnhxSyJ9.eyJnaXZlbl9uYW1lIjoiSm9zaWFoIiwiZmFtaWx5X25hbWUiOiJQYXJyeSIsIm5pY2tuYW1lIjoiam9zaWFoLnBhcnJ5IiwibmFtZSI6Ikpvc2lhaCBQYXJyeSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5...truncate"
+```
+
+This is base64 encoded nonsense. Below is an opinionated way to decode this. I utilize the [`{b64}`](https://extendr.github.io/b64/) package for fast decoding. Then use [`{yyjsonr}`](https://coolbutuseless.github.io/package/yyjsonr/index.html) for fast json parsing. 
+```{r}
+parse_id_token <- function(token) {
+  parts <- strsplit(token$id_token, "\\.")[[1]][1:2]
+  b64::decode(parts, eng = b64::engine("url_safe_no_pad")) |> 
+    lapply(rawToChar) |> 
+    rlang::set_names(c("header", "payload")) |> 
+    lapply(yyjsonr::read_json_str)
+}
+```
+```
+$header
+$header$alg
+[1] "RS256"
+
+$header$typ
+[1] "JWT"
+
+$header$kid
+[1] "redacted"
+
+$payload
+$payload$given_name
+[1] "Josiah"
+
+$payload$family_name
+[1] "Parry"
+
+$payload$nickname
+[1] "josiah.parry"
+
+$payload$name
+[1] "Josiah Parry"
+
+$payload$picture
+[1] "redacted"
+
+$payload$updated_at
+[1] "2024-11-28T00:46:24.934Z"
+
+$payload$iss
+[1] "https://dev-2ts7ytkts28hfj4o.us.auth0.com/"
+
+$payload$aud
+[1] "mi3FRXJuJarrM7rFBDr0N270l84ANSXo"
+
+$payload$iat
+[1] 1732820832
+
+$payload$exp
+[1] 1732856832
+
+$payload$sub
+[1] "redacted"
+
+$payload$sid
+[1] "redacted"
+```
+
+
+## Authenticating requests with OIDC
+
+However, you may want to wrap your requests with your OIDC auth provider.
+
+```{r}
+req_auth_oidc <- function(req, provider, client, scope = "openid profile email") {
+  req |> 
+    req_oauth_auth_code(
+      client = client,
+      auth_url = provider$authorization_endpoint,
+      scope = scope,
+      redirect_uri = client$redirect_uri
+    )
+}
+```
+
+
+## Accessing `UserInfo` 
+
+Each OIDC provider also has a `UserInfo` endpoint that can be accessed for user-level claims. 
+
+We can wrap this up as well:
+
+```{r}
+oidc_user_info <- function(provider, token) {
+  request(provider[["userinfo_endpoint"]]) |> 
+    req_auth_bearer_token(token$access_token) |> 
+    req_perform() |> 
+    resp_body_json()
+}
+```
+
+Note that this will only give you the user information that is associated with the claims used to authenticate with as well.
