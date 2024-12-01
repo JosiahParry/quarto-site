@@ -10,7 +10,1927 @@
 <atom:link href="https://josiahparry.com/index-r.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.489</generator>
-<lastBuildDate>Thu, 28 Nov 2024 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 01 Dec 2024 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>🎄dvent Day 1: Rust and R solutions</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2024-12-01-advent-day-1/</link>
+  <description><![CDATA[ <section id="tldr" class="level2"><h2 class="anchored" data-anchor-id="tldr">TL;DR</h2>
+<p>I give you the solutions to Day 1 of Advent of Code in R, Rust, and Rust in R for part 2 using <a href="https://extendr.github.io/user-guide/complete-example.html"><code>{extendr}</code></a>.</p>
+<hr>
+<p>I tend to always do just the first day of the advent of code. It is not my cup of tea. I don’t enjoy word problems, or sudoku, or the like. But I do like it when people learn. I find many people use this as a time to learn a new language.</p>
+<p>This morning I did the <a href="https://adventofcode.com/2024/day/1">Advent of Code Day 1</a> in both R and Rust. I’ll discuss my approaches to the challenges.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you care a lot about the Advent of Code and want to do it yourself, do not read any further. I am giving away the answers.</p>
+</div>
+</div>
+</section><section id="part-1" class="level2"><h2 class="anchored" data-anchor-id="part-1">Part 1</h2>
+<p>The objective of part one is to calculate the distance between column 1 and column 2 in acending order. Note that the distance is in <strong>absolute</strong> values. This is not mentioned but I figured it out after my first submission was wrong.</p>
+<p>The approach:</p>
+<ul>
+<li>read input</li>
+<li>sort each column independently</li>
+<li>calculate the different from column 2 and column 1</li>
+<li>calculate the absolute value</li>
+<li>sum it all up</li>
+</ul>
+<section id="r" class="level3"><h3 class="anchored" data-anchor-id="r">R</h3>
+<p>This was a one liner:</p>
+<div class="cell">
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">`-`</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"day1.txt"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sort</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2057374</code></pre>
+</div>
+</div>
+<p>Let’s try rewriting it using a pipe so it can be a bit easier to process:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"day1.txt"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sort</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">`-`</span>, args <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">_</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2057374</code></pre>
+</div>
+</div>
+<p>There are two things here that may be novel to you. The first is that we can use <code><a href="https://rdrr.io/r/base/lapply.html">lapply()</a></code> with a <code>data.frame</code>.</p>
+<p>To quote myself:</p>
+<blockquote class="blockquote">
+<p>“Data frames are actually just lists masquerading as rectangles.”</p>
+</blockquote>
+<p>Source: <a href="https://josiahparry.com/posts/2019-12-14-spss-haven">Finding and SPSS {haven}</a></p>
+<p>This returns a list where each element is the sorted input vector.</p>
+<p>Next, we can compute the different between the two columns by using <code><a href="https://rdrr.io/r/base/do.call.html">do.call()</a></code> with the function being <code>-</code>. <code><a href="https://rdrr.io/r/base/do.call.html">do.call()</a></code> takes a list of arguments and splices them into the function call.</p>
+<p>Since our funciton, <code>-</code>, has two arguments it works perfectly. Then we wrap the results in <code>sum(abs())</code> and voila.</p>
+</section><section id="rust" class="level3"><h3 class="anchored" data-anchor-id="rust">Rust</h3>
+<p>The hardest part of the rust solution is reading the file to be completely honest. I’m still terrible with using readers in Rust so I used ChatGPTs help. I’m not going to lie about it.</p>
+<section id="reading-the-input" class="level4"><h4 class="anchored" data-anchor-id="reading-the-input">Reading the input</h4>
+<p>The first thing to note is that we are returning <code>Result&lt;(Vec&lt;i32&gt;, Vec&lt;i32&gt;), Box&lt;dyn Error&gt;&gt;</code> from the function. We return a <code>Result&lt;&gt;</code> because there are multiple places where the function can error. Using a <code>Result&lt;&gt;</code> gives us the ability to unwrap anything inside of the body of the function that is in a <code>Result&lt;&gt;</code> itself. If there is an error, it will be returned—thus, “gracefully” handling the errors.</p>
+<p>Typically, if you’re a Rust hardo, you will define your own custom <code>Error</code> type. That is too much work for me—and I’m not good at knowing all of the types of errors that I may want. Instead we use <code>Box&lt;dyn Error&gt;</code>. <code>Box&lt;dyn Error&gt;</code> is a fancy way of saying we can accept anything that implements the <code>Error</code> trait.</p>
+<p>Next it is important to use a <code>BufReader</code> which allows us to read the file line by line. <em>Always</em> use a <code>BufReader</code> when possible. It will make your code so much faster.</p>
+<p>Next, we are going to instantiate two vectors that we will use to store the results. Then we iterate through the lines of the reader and parse the contents and shove them into the vector. Voila.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::error::</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::fs::</span>File<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::io::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">BufRead</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> BufReader<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb5-4"></span>
+<span id="cb5-5"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_day1(path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>(<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-6">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> file <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">File::</span>open(path)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb5-7">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> reader <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">BufReader::</span>new(file)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-8"></span>
+<span id="cb5-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Create two vectors to hold the integers</span></span>
+<span id="cb5-10">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> vec1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-11">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> vec2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-12"></span>
+<span id="cb5-13">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Read the file line by line</span></span>
+<span id="cb5-14">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> line <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> reader<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>lines() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-15">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> line <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> line<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb5-16">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> nums <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> line</span>
+<span id="cb5-17">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>split_whitespace() <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Split by whitespace</span></span>
+<span id="cb5-18">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>map(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span>s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">parse::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Parse each number into i32</span></span>
+<span id="cb5-19"></span>
+<span id="cb5-20">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Collect the numbers into the two vectors</span></span>
+<span id="cb5-21">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> (<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Some</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(num1))<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Some</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(num2))) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (nums<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>next()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> nums<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>next()) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-22">            vec1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>push(num1)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-23">            vec2<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>push(num2)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-24">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-25">            <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">eprintln!</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Skipping malformed line: {}"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> line)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-26">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-27">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-28"></span>
+<span id="cb5-29">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>((vec1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> vec2))</span>
+<span id="cb5-30"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+</section><section id="sorting-and-summing" class="level4"><h4 class="anchored" data-anchor-id="sorting-and-summing">Sorting and summing</h4>
+<p>Next, we define a little handy wrapper function. We can use destructuring assignment here to put the results of <code>read_day1()</code> into two items at once. If you’re an R user, this is like using <a href="https://kevinushey.github.io/dotty/"><code>{dotty}</code></a> or <a href="https://github.com/r-lib/zeallot"><code>{zeallot}</code></a>. My preference is for dotty, personally.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb6-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> day_one_part_one(path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// read the input. needs to be mutable to sort</span></span>
+<span id="cb6-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> (<span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> y) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> read_day1(path)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb6-4"></span>
+<span id="cb6-5">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// sort the input</span></span>
+<span id="cb6-6">    x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>sort()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-7">    y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>sort()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-8"></span>
+<span id="cb6-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// calculate the sum</span></span>
+<span id="cb6-10">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>iter()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>zip(y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>iter())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>fold(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> (xx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> yy)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-11">        acc <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> (yy <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> xx)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>abs()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-12">        acc</span>
+<span id="cb6-13">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-14"></span>
+<span id="cb6-15">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(res)</span>
+<span id="cb6-16"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+<p>We iterate through x <strong>and</strong> why by creating a <code>zipped</code> iterator. When you zip an iterator you get a tuple of elements. We will iterate through these two items together and calculate the absolute difference and accumulate it along the way.</p>
+<p>We accumulate the results using <code>.fold()</code> which takes two arguments :</p>
+<ol type="1">
+<li>The initial value to accumulate</li>
+<li>A closure that has two arguments:</li>
+<li>The accumulating value</li>
+<li>The current value of the iterator</li>
+</ol>
+<p>A closure is like an anonymous function in R that is defined like <code>\(.x, .y)</code> or using the <code>purrr</code> tilde syntax like <code>~ .x + .y</code>.</p>
+<p>It is also important that the closure must return the same type as the initial value.</p>
+<p>In our closure we say that the <code>acc</code> (you can choose any name you’d like here, it is just a function argument) must be mutable so we can change its value at each step. We use the shortcut <code>+=</code> operator so that we dont have to write <code>acc = acc + (yy - xx).abs()</code>.</p>
+</section><section id="all-together" class="level4"><h4 class="anchored" data-anchor-id="all-together">All together</h4>
+<p>Since these are just functions, we need to wrap them all up in our <code>main.rs</code> file.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>main.rs</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb7-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::error::</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> main() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb7-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> d1p1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> day_one_part_one(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"input/day1.txt"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb7-5">    <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Part 1: {d1p1}"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-6">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(())</span>
+<span id="cb7-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+</div>
+</section></section></section><section id="part-2" class="level2"><h2 class="anchored" data-anchor-id="part-2">Part 2</h2>
+<p>Part two was quite fun to do, actually. For it, we want to count the number of times that each value in the second column occurs. Each of these values correspond to a value in the first column. Our sum is now the value in column 1 multiplied by the number of times it occurs in column two. To approach this we will do the following:</p>
+<ul>
+<li>read the input</li>
+<li>count the number of times each value in column 2 occurs</li>
+<li>calculate the “score” for each value in column 1</li>
+<li>sum up the scores</li>
+</ul>
+<section id="r-1" class="level3"><h3 class="anchored" data-anchor-id="r-1">R</h3>
+<p>The R solution is quite straight forward as well but again, might use techniques you’re not familiar with. Here is the solution in all of its (surprisingly fast) glory.</p>
+<p>You may think it is ugly but I <em>assure you</em>, it is very fast.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"day1.txt"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span>, na.rm <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 23177084</code></pre>
+</div>
+</div>
+<p>Let’s break it up. The most important part is the <code><a href="https://rdrr.io/r/base/table.html">table()</a></code> call. This calculates how many times each value in <code>x$V2</code> occurs. We can use this table as a lookup vector.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">lookup</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<p>Using a lookup vector is a very efficient approach that people tend to not think about. Since this is a named vector, we can extract it’s elements by name.</p>
+<div class="cell">
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">lookup</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"92252"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>92252 
+   19 </code></pre>
+</div>
+</div>
+<p>Now, all we need to do is do this for <em>every</em> value in <code>x$V1</code>. We have to cast <code>x$V1</code> as a character vector otherwise it will attempt to do the lookup by position.</p>
+<div class="cell">
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x_counts</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">lookup</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x_counts</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 61539 
+                                 11 </code></pre>
+</div>
+</div>
+<p>If there is not any occurrences in <code>x$V2</code> the value is <code>NA</code> which is very handy because an <code>NA</code> just like a <code>0</code> will propagate in multiplication. All we need to do now is multiple and sum!</p>
+<div class="cell">
+<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x_counts</span>, na.rm <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 23177084</code></pre>
+</div>
+</div>
+</section><section id="rust-1" class="level3"><h3 class="anchored" data-anchor-id="rust-1">Rust</h3>
+<p>I quite enjoyed writing this rust solution—frankly more than either R or Rust solution. Any time I get to use a <code>BtreeMap</code> I’m giddy.</p>
+<p>Counting unique values in Rust is a little bit different. We typically use a <code>Map</code> of some variety. Think of these as named lists. Typically you will hear reference about a <code>HashMap</code>. <code>HashMap</code> are key-value stores that do not have any sense of order in the key. <code>BTreeMap</code> is different because the key <em>must</em> be ordered. Since we will be performing a lookup based on an integer value, I feel BTreeMap may be better here—though only bench marks can prove it one way or another.</p>
+<p>Here is the solution:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb17-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> day_one_part_two(path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb17-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// read the inputs</span></span>
+<span id="cb17-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> (x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> y) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> read_day1(path)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb17-4"></span>
+<span id="cb17-5">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Create an empty BTreeMap to count the occurrences</span></span>
+<span id="cb17-6">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">BTreeMap::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-7"></span>
+<span id="cb17-8">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Iterate through Y to populate the BTreeMap and increment</span></span>
+<span id="cb17-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// each time we see an entry</span></span>
+<span id="cb17-10">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> yi <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb17-11">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> entry <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>entry(yi)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>or_insert(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-12">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>entry <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-13">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb17-14"></span>
+<span id="cb17-15">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Iterate through x and get the value from the btreemap.</span></span>
+<span id="cb17-16">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// if it doesn't exist we get use the default value of 0</span></span>
+<span id="cb17-17">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// that is what the unwrap_or() is for</span></span>
+<span id="cb17-18">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>iter()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>fold(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> next<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb17-19">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> multiplier <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>get(next)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap_or(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-20">        acc <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> next <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> multiplier<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-21">        acc</span>
+<span id="cb17-22">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-23"></span>
+<span id="cb17-24">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(res)</span>
+<span id="cb17-25"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+<p>We instantiate an empty <code>BTreeMap</code> then we populate it. We do this using the below code. This will grab the entry with the key <code>yi</code> from the map. If it doesn’t exist, it will insert the value <code>0</code>. Then we add the value <code>1</code> to it. Notice that <code>*entry</code>. We do this because we are assinging to a mutable reference. This lets the value inside of the <code>counts</code> <code>BTreeMap</code> be updated.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb18-1">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> yi <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb18-2">      <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> entry <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>entry(yi)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>or_insert(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb18-3">      <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>entry <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb18-4">  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+<p>The next part is quite like our part 1 solution. We use <code>.fold()</code> to perform the sum for us. We iterate through each value of <code>x</code>—stored in the value of <code><a href="https://rdrr.io/r/base/Control.html">next</a></code> in the closure. We then try and get the lookup value from our <code>counts</code> map. If there is no associated value, we provide a value of <code>0</code> and store it in our <code>multiplier</code> variable. Then we multiply <code>xi</code> (or <code><a href="https://rdrr.io/r/base/Control.html">next</a></code> in the closure) and add it the the accumulator!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb19-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>iter()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>fold(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> next<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb19-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> multiplier <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>get(next)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap_or(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb19-3">    acc <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> next <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> multiplier<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb19-4">    acc</span>
+<span id="cb19-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div>
+</div>
+<p>That’s it. While it is much more code, it feels much easier to read and a bit <em>cleaner</em> than the R solution.</p>
+</section></section><section id="rextendr" class="level2"><h2 class="anchored" data-anchor-id="rextendr">Bonus: R + Rust via <code>{rextendr}</code>
+</h2>
+<p>We can take the part 2 solution and tidy it up into a Rust function that can be called from R using rextendr.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This isn’t optimized to be fast code and we’re not even using R native types so we will incur an overhead cost to go from <code><a href="https://rdrr.io/r/base/integer.html">integer()</a></code> vector to <code>Vec&lt;i32&gt;</code>.</p>
+</div>
+</div>
+<p>To do this you will need <a href="https://extendr.github.io/rextendr/">rextendr</a> installed. Do so with <code>pak::pak("extendr/rextendr")</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tally_code</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r"-{</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">  fn tally_day1(x: Vec&lt;i32&gt;, y: Vec&lt;i32&gt;) -&gt; Result&lt;i32&gt; {</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    let mut counts = std::collections::BTreeMap::new();</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    for yi in y {</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        let entry = counts.entry(yi).or_insert(0);</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        *entry += 1;</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    }</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"></span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    let res = x.iter().fold(0, |mut acc, next| {</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        let multiplier = counts.get(next).unwrap_or(&amp;0);</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        acc += next * multiplier;</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        acc</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    });</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"></span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    Ok(res)</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"></span></span>
+<span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}-"</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rextendr</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tally_code</span>, </span>
+<span>  profile <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"release"</span>,</span>
+<span>  quiet <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+<p>Now we can call this code directly from R:</p>
+<div class="cell">
+<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tally_day1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 23177084</code></pre>
+</div>
+</div>
+<p>Let’s perform a small bench mark between this and the R solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb23" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bench</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>  r <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span>, na.rm <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>  rust_simple <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tally_day1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V1</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">V2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  expression       min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt;  &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 r            353.1µs  376.5µs     2453.  226.78KB     10.5
+2 rust_simple   51.6µs   62.4µs    14025.    4.84KB      0  </code></pre>
+</div>
+</div>
+</section><section id="rust-solution-code" class="level2"><h2 class="anchored" data-anchor-id="rust-solution-code">Rust solution code</h2>
+<p>Below is all of the code I used for the rust solution.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs">
+<li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" aria-current="page"><code>main.rs</code></a></li>
+<li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false"><code>day1.rs</code></a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>main.rs</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb25-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::error::</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb25-2"></span>
+<span id="cb25-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mod</span> day1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb25-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">day1::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*;</span></span>
+<span id="cb25-5"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> main() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb25-6">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> d1p1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> day_one_part_one(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"input/day1.txt"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb25-7">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> d1p2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> day_one_part_two(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"input/day1.txt"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb25-8"></span>
+<span id="cb25-9">    <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">println!</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Day 1 results:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">  Part 1: {d1p1}</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">  Part 2: {d1p2}"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb25-10">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(())</span>
+<span id="cb25-11"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>day1.rs</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb26-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::collections::</span>BTreeMap<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::error::</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::fs::</span>File<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">std::io::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">BufRead</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> BufReader<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb26-5"></span>
+<span id="cb26-6"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> read_day1(path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>(<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-7">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> file <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">File::</span>open(path)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb26-8">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> reader <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">BufReader::</span>new(file)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-9"></span>
+<span id="cb26-10">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Create two vectors to hold the integers</span></span>
+<span id="cb26-11">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> vec1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-12">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> vec2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Vec</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-13"></span>
+<span id="cb26-14">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Read the file line by line</span></span>
+<span id="cb26-15">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> line <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> reader<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>lines() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-16">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> line <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> line<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb26-17">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> nums <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> line</span>
+<span id="cb26-18">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>split_whitespace() <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Split by whitespace</span></span>
+<span id="cb26-19">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>map(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span>s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">parse::</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Parse each number into i32</span></span>
+<span id="cb26-20"></span>
+<span id="cb26-21">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Collect the numbers into the two vectors</span></span>
+<span id="cb26-22">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> (<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Some</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(num1))<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Some</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(num2))) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (nums<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>next()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> nums<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>next()) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-23">            vec1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>push(num1)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-24">            vec2<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>push(num2)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-25">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-26">            <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">eprintln!</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Skipping malformed line: {}"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> line)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-27">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb26-28">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb26-29"></span>
+<span id="cb26-30">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>((vec1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> vec2))</span>
+<span id="cb26-31"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb26-32"></span>
+<span id="cb26-33"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> day_one_part_one(path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-34">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// read the input. needs to be mutable to sort</span></span>
+<span id="cb26-35">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> (<span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> y) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> read_day1(path)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb26-36"></span>
+<span id="cb26-37">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// sort the input</span></span>
+<span id="cb26-38">    x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>sort()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-39">    y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>sort()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-40"></span>
+<span id="cb26-41">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// calculate the sum</span></span>
+<span id="cb26-42">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>iter()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>zip(y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>iter())<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>fold(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> (xx<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> yy)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-43">        acc <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> (yy <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> xx)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>abs()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-44">        acc</span>
+<span id="cb26-45">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-46"></span>
+<span id="cb26-47">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(res)</span>
+<span id="cb26-48"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb26-49"></span>
+<span id="cb26-50"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fn</span> day_one_part_two(path<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Result</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">i32</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">dyn</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-51">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// read the inputs</span></span>
+<span id="cb26-52">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> (x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> y) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> read_day1(path)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?;</span></span>
+<span id="cb26-53"></span>
+<span id="cb26-54">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Create an empty BTreeMap to count the occurrences</span></span>
+<span id="cb26-55">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">BTreeMap::</span>new()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-56"></span>
+<span id="cb26-57">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Iterate through Y to populate the BTreeMap and increment</span></span>
+<span id="cb26-58">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// each time we see an entry</span></span>
+<span id="cb26-59">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> yi <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-60">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> entry <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>entry(yi)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>or_insert(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-61">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>entry <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-62">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb26-63"></span>
+<span id="cb26-64">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Iterate through x and get the value from the btreemap.</span></span>
+<span id="cb26-65">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// if it doesn't exist we get use the default value of 0</span></span>
+<span id="cb26-66">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// that is what the unwrap_or() is for</span></span>
+<span id="cb26-67">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>iter()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>fold(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> next<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb26-68">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">let</span> multiplier <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>get(next)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>unwrap_or(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-69">        acc <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> next <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> multiplier<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-70">        acc</span>
+<span id="cb26-71">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb26-72"></span>
+<span id="cb26-73">    <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">Ok</span>(res)</span>
+<span id="cb26-74"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section> ]]></description>
+  <category>r</category>
+  <category>rust</category>
+  <category>aoc</category>
+  <guid>https://josiahparry.com/posts/2024-12-01-advent-day-1/</guid>
+  <pubDate>Sun, 01 Dec 2024 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Implementing OpenID Connect (OIDC) in R</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -10818,1349 +12738,6 @@ ATTRIB:
   <category>r</category>
   <guid>https://josiahparry.com/posts/2023-06-11-matrix-bug.html</guid>
   <pubDate>Sun, 11 Jun 2023 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Feeling rusty: counting characters</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-04-13-counting-chars/</link>
-  <description><![CDATA[ <p>I’m working on a new video for you all on GeoHashes. As I keep working on my slides and script I keep finding new things I want to explore or that I need to write. Recently, that was to compare multiple geohashes to a known geohash. The goal of that is to count how many of the first characters matched a reference. If there are matching leading characters between a geohashes that means that they are in the same geohash at some level of precision. Knowing that number of shared characters tells us at what level of precision they coexist. The challenge is that there isn’t any easy way to do that in base R or packages I could find. So, what do we do when we can’t find something to do a task for us? We make it.</p>
-<p>For these small tasks that require a lot of iteration and counting, I’ve been leaning on Rust a lot more. I find it actually <em>easier</em> for the more computer sciency type tasks.</p>
-<p>Here’s how I solved it.</p>
-<p>Define two geohashes to compare:</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb1-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">let</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"drt2yyy1cxwy"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-2"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">let</span> y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"drt2yywg71qc"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span></code></pre></div>
-<p>Next we want to iterate over each of these string slices (represented as <code>&amp;str</code>). Typically we’d use the <code>.iter()</code> or <code>.into_iter()</code> methods to iterate over objects but these are slices and not a vector or array.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p><code>.into_iter()</code> consumes the object you’re iterating over whereas <code>.iter()</code> iterates over it without consuming. The former provides “owned” objects at each iteration while the latter provides references”</p>
-</div></div><p>We iterate through the characters of a slice using <code>.chars()</code>. We’ll want to iterate through both of them at the same time. Then, for each iteration, we check to see if they’re the same.</p>
-<p>This will instantiate an iterator over each of the strings where each element is a <code>char</code></p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">x.chars</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">y.chars</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This will not compile, it’s for illustration</p>
-</div>
-</div>
-<p>These iterators will only be able to be iterated over one at a time using <code>.map()</code> and the like. We can combine them into one iterator using the <code>.zip()</code> method which <em>zips</em> them together into one iterator.</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb3-1">x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>zip(y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars())</span></code></pre></div>
-<p>This is good! Now we have a single iterator to work through. Each element in the resultant iterator will be a tuple with the first element <code>.0</code> being the first character of <code>x</code> and <code>.1</code> being the first character of <code>y</code>.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Tuple’s look like <code>let z = (x, y);</code> and are accessed by position like <code>z.0</code> and <code>z.1</code>.</p>
-</div></div><p>The approach I took here is to use the <code>.take_while()</code> method which takes a closure that returns a <code>bool</code> (<code>true</code> or <code>false</code>). It’ll return another iterator that contains only the elements where that statement was true.</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb4-1">x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>zip(y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars())</span>
-<span id="cb4-2">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>take_while(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span></code></pre></div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>A closure is like an anonymous function. It’s arguments are defined between <code>| |</code> and the evaluated expression is to the right of it.</p>
-</div></div><p>Here, the closure has the argument <code>|a|</code> which is the tuple from <code>x</code> and <code>y</code>. It checks to see if the characters are equal. The resultant iterator now only has elements for matching characters. We don’t really need to iterate over it, but rather we just need to count how many items are in the iterator.</p>
-<p>We can use the <code>.count()</code> method for that. Shouts out to the Rust discord for helping me with this one.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Previously I used a <code>fold()</code> method that looked like <code>.fold(0, |acc, _| acc + 1)</code> which worked but was less “elegant”</p>
-</div></div><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>zip(y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars())</span>
-<span id="cb5-2">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>take_while(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb5-3">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>count()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span></code></pre></div>
-<p>Let’s wrap this into a function:</p>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb6-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">fn</span> count_seq_chars(x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">str</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">usize</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb6-2">  x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>zip(y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars())</span>
-<span id="cb6-3">      <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>take_while(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb6-4">      <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>count()</span>
-<span id="cb6-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-<p>We can make it available in R using <a href="https://extendr.github.io/rextendr/reference/rust_source.html"><code>rextendr::rust_function()</code></a>.</p>
-<div class="cell">
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rextendr</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">fn count_seq_chars(x: &amp;str, y: &amp;str) -&gt; usize {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  x.chars().zip(y.chars())</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">      .take_while(|a| a.0 == a.1)</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">      .count()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">}"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"drt2yyy1cxwy"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"drt2yywg71qc"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 6</code></pre>
-</div>
-</div>
-<p>But this isn’t vectorized yet. It only works on two scalars. We can improve it by changing the <code>x</code> argument to take a vector of strings <code>Vec&lt;String&gt;</code>.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>We have to use <code>Vec&lt;String&gt;</code> instead of <code>Vec&lt;&amp;str&gt;</code> because <code>rextendr</code> does not know how to take a vector of string slices.</p>
-</div></div><p>Essentially, what we do next is take this vector of strings, iterate over it, convert the string to a <code>&amp;str</code> then just do what we did before!</p>
-<p>We use <code>.map()</code> to apply an expression over each element of <code>x</code>. The closure takes a single argument <code>xi</code> which represents the ith element of <code>x</code>. We convert it to a slice, then iterate over it’s characters and the rest should be similar in there!</p>
-<p>Lastly, we collect the resultant <code>usize</code> objects into a vector of them <code>Vec&lt;usize&gt;</code>.</p>
-<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb9-1">  <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">fn</span> count_seq_chars_to_ref(x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">Vec</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">String</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;,</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">str</span>) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">Vec</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">usize</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb9-2">    x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>into_iter()</span>
-<span id="cb9-3">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>map(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span>xi<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span> </span>
-<span id="cb9-4">            xi<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>as_str()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>zip(y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>chars())</span>
-<span id="cb9-5">            <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>take_while(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb9-6">            <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>count()</span>
-<span id="cb9-7">        )</span>
-<span id="cb9-8">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>collect()</span>
-<span id="cb9-9">  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Note that the function definition has <code>-&gt; Vec&lt;usize&gt;</code> this defines what the ouput object type will be. Something definitely unfamiliar for Rusers!</p>
-</div></div><p>Again, we can use <code>rextendr</code> to wrap this into a single R function that we can use.</p>
-<div class="cell">
-<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rextendr</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  fn count_seq_chars_to_ref(x: Vec&lt;String&gt;, y: &amp;str) -&gt; Vec&lt;usize&gt; {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    x.into_iter()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .map(|xi| </span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            xi.as_str().chars().zip(y.chars())</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .take_while(|a| a.0 == a.1)</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .count()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        )</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .collect()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  }</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"drt2yyy1cxwy"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"drt2yywg71qc"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 6</code></pre>
-</div>
-</div>
-<p>Let’s test this and see how it works with a larger dataset of 100,000 strings. We create a bunch of sample strings that sample a-e and 1-5, are sorted, then pasted together. We then can compare them to the reference string <code>"abcd123"</code>.</p>
-<div class="cell">
-<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100000</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">letters</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, collapse <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, collapse <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>  collapse <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "acde423" "abce234" "abcd341" "abde124" "abce124" "bcde312"</code></pre>
-</div>
-<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1 3 4 2 3 0</code></pre>
-</div>
-</div>
-<p><a href="https://www.pmassicotte.com/">Philippe Massicotte</a> was kind enough to provide an R only example in a reply to a tweet of mine. We can compare the speed of the two implementations. A pure Rust implementation and an R native implementation.</p>
-{{}}
-<p>Here we wrap his implementation into a function <code>count_seq_lapply()</code>. I’ve modified this implementation to handle the scenario where the first element is not true so we don’t get a run length of <code>FALSE</code> elements.</p>
-<div class="cell">
-<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">count_seq_lapply</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">res</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span>, \<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>    <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">a</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/strsplit.html">strsplit</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>    <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/strsplit.html">strsplit</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">ref</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>    </span>
-<span>    <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">comparison</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">a</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span></span>
-<span>    </span>
-<span>    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">comparison</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>    </span>
-<span>    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/rle.html">rle</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">comparison</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">lengths</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>  </span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">res</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_lapply</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1 3 4 2 3 0</code></pre>
-</div>
-</div>
-<p>As you can see his works just as well and frankly, better. That’s because he inherits the NA handling of the base R functions he is using. If any NA are introduced into a pure Rust implementation without using <a href="https://extendr.github.io/extendr/extendr_api/">extendr</a> types and proper handling you’ll get a <code>panic!</code> which will cause the R function to error.</p>
-<div class="cell">
-<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bench</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  lapply <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_lapply</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, </span>
-<span>  rust <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Some expressions had a GC in every iteration; so filtering is
-disabled.</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 6
-  expression      min   median `itr/sec` mem_alloc `gc/sec`
-  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 lapply        945ms    945ms      1.06    1.58MB     37.0
-2 rust           59ms     60ms     16.7    781.3KB      0  </code></pre>
-</div>
-</div>
-<p>The R implementation is still super fast. It’s just that Rust is also super super fast!</p>
-<hr>
-<section id="addendum-chatgpt-rules-apparently" class="level2"><h2 class="anchored" data-anchor-id="addendum-chatgpt-rules-apparently">Addendum: ChatGPT rules apparently</h2>
-<p>So I asked Chat GPT to rewrite my above function but using C++ and the results are absolutely startling!</p>
-<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb21-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">std::</span>vector<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">size_t</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> count_seq_chars_to_ref_cpp<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">std::</span>vector<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">std::</span>string<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">const</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">std::</span>string<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb21-2">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">std::</span>vector<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">size_t</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> result<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb21-3">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">const</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">auto</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> xi <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb21-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">size_t</span> count <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb21-5">    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">auto</span> it_x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> xi<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>begin<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">();</span></span>
-<span id="cb21-6">    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">auto</span> it_y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>begin<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">();</span></span>
-<span id="cb21-7">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>it_x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> xi<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>end<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;&amp;</span> it_y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>end<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;&amp;</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>it_x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>it_y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb21-8">      <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span>count<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb21-9">      <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span>it_x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb21-10">      <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span>it_y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb21-11">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb21-12">    result<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>push_back<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>count<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb21-13">  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb21-14">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">return</span> result<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb21-15"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div>
-<p>This is the code it wrote after only one prompt. I didn’t correct it. It worked right off the rip. I did, however, provide ChatGPT with my above rust code.</p>
-<p>Let’s bench mark this.</p>
-<div class="cell">
-<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Rcpp</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/Rcpp/man/cppFunction.html">cppFunction</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"std::vector&lt;size_t&gt; count_seq_chars_to_ref_cpp(std::vector&lt;std::string&gt; x, const std::string&amp; y) {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  std::vector&lt;size_t&gt; result;</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  for (const auto&amp; xi : x) {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    size_t count = 0;</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    auto it_x = xi.begin();</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    auto it_y = y.begin();</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    while (it_x != xi.end() &amp;&amp; it_y != y.end() &amp;&amp; *it_x == *it_y) {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">      ++count;</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">      ++it_x;</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">      ++it_y;</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    }</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    result.push_back(count);</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  }</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  return result;</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">}"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bench</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  GPT_cpp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref_cpp</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>  rust <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 6
-  expression      min   median `itr/sec` mem_alloc `gc/sec`
-  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 GPT_cpp         2ms   2.19ms     453.      784KB     8.46
-2 rust         58.9ms  59.74ms      16.7     781KB     0   </code></pre>
-</div>
-</div>
-<p>Absolutely friggin’ bonkers!! If I was better at concurrency and threading I’d try to compare that but alas. I’m stopping here :)</p>
-</section><section id="double-addendum." class="level2"><h2 class="anchored" data-anchor-id="double-addendum.">Double addendum….</h2>
-<p>Okay, after consulting the gods in the extendr discord they pointed to a number of ways in which this can be improved and made faster.</p>
-<p>First off, <code>rust_function()</code> compiled using the <code>dev</code> profile first. This is used for debugging. If we set <code>profile = "release"</code> we compile the function for release performance. H/t to <a href="https://github.com/ilia"><span class="citation" data-cites="iliak">@iliak</span></a>.</p>
-<div class="cell">
-<div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rextendr</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  fn count_seq_chars_to_ref(x: Vec&lt;String&gt;, y: &amp;str) -&gt; Vec&lt;usize&gt; {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">    x.into_iter()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .map(|xi| </span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            xi.as_str().chars().zip(y.chars())</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .take_while(|a| a.0 == a.1)</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .count()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        )</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .collect()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  }</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>,</span>
-<span>profile <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"release"</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>ℹ build directory: '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp114U2N/filea5ce392cc520'
-✔ Writing '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp114U2N/filea5ce392cc520/target/extendr_wrappers.R'</code></pre>
-</div>
-<div class="sourceCode" id="cb26" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bench</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  GPT_cpp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref_cpp</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>  rust <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 6
-  expression      min   median `itr/sec` mem_alloc `gc/sec`
-  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 GPT_cpp      1.99ms   2.27ms     427.      784KB     8.45
-2 rust         13.7ms  14.44ms      68.9     781KB     2.03</code></pre>
-</div>
-</div>
-<p>This brings the run time down a whole lot. The next enhancement pointed out is that both <code>Vec&lt;String&gt;</code> and <code>Vec&lt;usize&gt;</code> use copies. Instead, I should be using <code>extendr</code> objects <code>Strings</code> and <code>Integers</code>. Here I:</p>
-<ul>
-<li>change the <code>x</code> to <code>Strings</code>
-</li>
-<li>cast usize to i32 using <code>.count() as i32</code> (h/t <a href="https://github.com/multimeric"><span class="citation" data-cites="multimeric">@multimeric</span></a>)</li>
-<li>use <code>collect_robj()</code> instead of <code>collect()</code> so that it turns into an <code>Robj</code> (R object)</li>
-</ul>
-<div class="cell">
-<div class="sourceCode" id="cb28" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rextendr</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"    fn count_seq_chars_to_ref(x: Strings, y: &amp;str) -&gt; Robj {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">     x.into_iter()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .map(|xi| </span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">          xi.as_str().chars().zip(y.chars())</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .take_while(|a| a.0 == a.1)</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .count() as i32</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        )</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .collect_robj()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        </span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  }"</span>,</span>
-<span>profile <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"release"</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>ℹ build directory: '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp114U2N/filea5ce392cc520'
-✔ Writing '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp114U2N/filea5ce392cc520/target/extendr_wrappers.R'</code></pre>
-</div>
-<div class="sourceCode" id="cb30" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bench</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  GPT_cpp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref_cpp</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>  rust <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 6
-  expression      min   median `itr/sec` mem_alloc `gc/sec`
-  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 GPT_cpp      1.99ms   2.25ms      441.     784KB     8.64
-2 rust         1.42ms   1.52ms      628.     391KB     6.24</code></pre>
-</div>
-</div>
-<p>Now rust is faster.</p>
-<p>Further, shout out to <a href="https://github.com/CGMossa"><span class="citation" data-cites="cgmossa">@cgmossa</span></a> for this last implementation that shaves off some more time by using <code>Integers</code> specifically.</p>
-<div class="cell">
-<div class="sourceCode" id="cb32" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rextendr</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://extendr.github.io/rextendr/reference/rust_source.html">rust_function</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  fn count_seq_chars_to_ref(x: Strings, y: &amp;str) -&gt; Integers {</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  x.iter()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .map(|xi|</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            xi.chars().zip(y.chars())</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .take_while(|a| a.0 == a.1)</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">            .count()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        ).map(|x|(x as i32).into())</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">        .collect()</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  }</span></span>
-<span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>,</span>
-<span>extendr_fn_options <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"use_try_from"</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, </span>
-<span>use_dev_extendr <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>, </span>
-<span>profile <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"release"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>ℹ build directory: '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp114U2N/filea5ce392cc520'
-✔ Writing '/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/Rtmp114U2N/filea5ce392cc520/target/extendr_wrappers.R'</code></pre>
-</div>
-<div class="sourceCode" id="cb34" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bench</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  GPT_cpp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref_cpp</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>  rust <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count_seq_chars_to_ref</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_strings</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"abcd123"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 6
-  expression      min   median `itr/sec` mem_alloc `gc/sec`
-  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 GPT_cpp      1.96ms   2.31ms      407.     784KB     8.47
-2 rust         1.38ms   1.49ms      663.     391KB     6.22</code></pre>
-</div>
-</div>
-
-
-</section> ]]></description>
-  <category>rust</category>
-  <category>r</category>
-  <guid>https://josiahparry.com/posts/2023-04-13-counting-chars/</guid>
-  <pubDate>Thu, 13 Apr 2023 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
