@@ -9,7 +9,7 @@
 <link>https://josiahparry.com/#category=r</link>
 <atom:link href="https://josiahparry.com/index-r.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.4.489</generator>
+<generator>quarto-1.6.40</generator>
 <lastBuildDate>Sun, 01 Dec 2024 08:00:00 GMT</lastBuildDate>
 <item>
   <title>🎄dvent Day 1: Rust and R solutions</title>
@@ -165,6 +165,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::error::</span><span class="bu" style="color: null;
@@ -174,6 +175,7 @@ background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb5-2"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::fs::</span>File<span class="op" style="color: #5E5E5E;
@@ -181,6 +183,7 @@ background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb5-3"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::io::</span><span class="op" style="color: #5E5E5E;
@@ -195,6 +198,7 @@ font-style: inherit;">};</span></span>
 <span id="cb5-4"></span>
 <span id="cb5-5"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> read_day1(path<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
@@ -231,6 +235,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -240,6 +245,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb5-6">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> file <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
@@ -249,6 +255,7 @@ background-color: null;
 font-style: inherit;">?;</span></span>
 <span id="cb5-7">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> reader <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
@@ -262,8 +269,10 @@ background-color: null;
 font-style: inherit;">// Create two vectors to hold the integers</span></span>
 <span id="cb5-10">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> vec1 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
@@ -275,8 +284,10 @@ background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb5-11">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> vec2 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
@@ -292,8 +303,10 @@ background-color: null;
 font-style: inherit;">// Read the file line by line</span></span>
 <span id="cb5-14">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> line <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> reader<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">.</span>lines() <span class="op" style="color: #5E5E5E;
@@ -301,6 +314,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb5-15">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> line <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> line<span class="op" style="color: #5E5E5E;
@@ -308,8 +322,10 @@ background-color: null;
 font-style: inherit;">?;</span></span>
 <span id="cb5-16">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> nums <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> line</span>
@@ -345,8 +361,10 @@ background-color: null;
 font-style: inherit;">// Collect the numbers into the two vectors</span></span>
 <span id="cb5-21">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> (<span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">Some</span>(<span class="cn" style="color: #8f5902;
@@ -382,6 +400,7 @@ font-style: inherit;">;</span></span>
 background-color: null;
 font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -415,8 +434,10 @@ font-style: inherit;">}</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb6-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> day_one_part_one(path<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
@@ -439,6 +460,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -451,12 +473,15 @@ background-color: null;
 font-style: inherit;">// read the input. needs to be mutable to sort</span></span>
 <span id="cb6-3">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> (<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> x<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> y) <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> read_day1(path)<span class="op" style="color: #5E5E5E;
@@ -482,6 +507,7 @@ background-color: null;
 font-style: inherit;">// calculate the sum</span></span>
 <span id="cb6-10">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
@@ -500,6 +526,7 @@ font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> (xx<span class="op" style="color: #5E5E5E;
@@ -552,6 +579,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 </div>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb7-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::error::</span><span class="bu" style="color: null;
@@ -562,6 +590,7 @@ font-style: inherit;">;</span></span>
 <span id="cb7-2"></span>
 <span id="cb7-3"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> main() <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
@@ -576,6 +605,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -585,6 +615,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb7-4">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> d1p1 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> day_one_part_one(<span class="st" style="color: #20794D;
@@ -793,8 +824,10 @@ font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb17-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> day_one_part_two(path<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
@@ -817,6 +850,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -829,6 +863,7 @@ background-color: null;
 font-style: inherit;">// read the inputs</span></span>
 <span id="cb17-3">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> (x<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> y) <span class="op" style="color: #5E5E5E;
@@ -842,8 +877,10 @@ background-color: null;
 font-style: inherit;">// Create an empty BTreeMap to count the occurrences</span></span>
 <span id="cb17-6">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> counts <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
@@ -860,13 +897,16 @@ background-color: null;
 font-style: inherit;">// each time we see an entry</span></span>
 <span id="cb17-10">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> yi <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb17-11">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> entry <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
@@ -902,6 +942,7 @@ background-color: null;
 font-style: inherit;">// that is what the unwrap_or() is for</span></span>
 <span id="cb17-18">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
@@ -916,6 +957,7 @@ font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> next<span class="op" style="color: #5E5E5E;
@@ -925,6 +967,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb17-19">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> multiplier <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
@@ -963,13 +1006,16 @@ font-style: inherit;">}</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb18-1">  <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> yi <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb18-2">      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> entry <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
@@ -998,6 +1044,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb19-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
@@ -1012,6 +1059,7 @@ font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> next<span class="op" style="color: #5E5E5E;
@@ -1021,6 +1069,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb19-2">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> multiplier <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
@@ -1285,6 +1334,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </div>
 <div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb25-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::error::</span><span class="bu" style="color: null;
@@ -1295,11 +1345,13 @@ font-style: inherit;">;</span></span>
 <span id="cb25-2"></span>
 <span id="cb25-3"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mod</span> day1<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb25-4"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">day1::</span><span class="op" style="color: #5E5E5E;
@@ -1307,6 +1359,7 @@ background-color: null;
 font-style: inherit;">*;</span></span>
 <span id="cb25-5"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> main() <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-&gt;</span> <span class="dt" style="color: #AD0000;
@@ -1321,6 +1374,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -1330,6 +1384,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb25-6">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> d1p1 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> day_one_part_one(<span class="st" style="color: #20794D;
@@ -1339,6 +1394,7 @@ background-color: null;
 font-style: inherit;">?;</span></span>
 <span id="cb25-7">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> d1p2 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> day_one_part_two(<span class="st" style="color: #20794D;
@@ -1379,6 +1435,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 </div>
 <div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb26-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::collections::</span>BTreeMap<span class="op" style="color: #5E5E5E;
@@ -1386,6 +1443,7 @@ background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb26-2"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::error::</span><span class="bu" style="color: null;
@@ -1395,6 +1453,7 @@ background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb26-3"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::fs::</span>File<span class="op" style="color: #5E5E5E;
@@ -1402,6 +1461,7 @@ background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb26-4"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">use</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">std::io::</span><span class="op" style="color: #5E5E5E;
@@ -1416,6 +1476,7 @@ font-style: inherit;">};</span></span>
 <span id="cb26-5"></span>
 <span id="cb26-6"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> read_day1(path<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
@@ -1452,6 +1513,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -1461,6 +1523,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb26-7">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> file <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
@@ -1470,6 +1533,7 @@ background-color: null;
 font-style: inherit;">?;</span></span>
 <span id="cb26-8">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> reader <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
@@ -1483,8 +1547,10 @@ background-color: null;
 font-style: inherit;">// Create two vectors to hold the integers</span></span>
 <span id="cb26-11">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> vec1 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
@@ -1496,8 +1562,10 @@ background-color: null;
 font-style: inherit;">;</span></span>
 <span id="cb26-12">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> vec2 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="dt" style="color: #AD0000;
@@ -1513,8 +1581,10 @@ background-color: null;
 font-style: inherit;">// Read the file line by line</span></span>
 <span id="cb26-15">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> line <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> reader<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">.</span>lines() <span class="op" style="color: #5E5E5E;
@@ -1522,6 +1592,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb26-16">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> line <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> line<span class="op" style="color: #5E5E5E;
@@ -1529,8 +1600,10 @@ background-color: null;
 font-style: inherit;">?;</span></span>
 <span id="cb26-17">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> nums <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> line</span>
@@ -1566,8 +1639,10 @@ background-color: null;
 font-style: inherit;">// Collect the numbers into the two vectors</span></span>
 <span id="cb26-22">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> (<span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">Some</span>(<span class="cn" style="color: #8f5902;
@@ -1603,6 +1678,7 @@ font-style: inherit;">;</span></span>
 background-color: null;
 font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -1633,8 +1709,10 @@ font-style: inherit;">}</span></span>
 <span id="cb26-32"></span>
 <span id="cb26-33"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> day_one_part_one(path<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
@@ -1657,6 +1735,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -1669,12 +1748,15 @@ background-color: null;
 font-style: inherit;">// read the input. needs to be mutable to sort</span></span>
 <span id="cb26-35">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> (<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> x<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> y) <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> read_day1(path)<span class="op" style="color: #5E5E5E;
@@ -1700,6 +1782,7 @@ background-color: null;
 font-style: inherit;">// calculate the sum</span></span>
 <span id="cb26-42">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
@@ -1718,6 +1801,7 @@ font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> (xx<span class="op" style="color: #5E5E5E;
@@ -1752,8 +1836,10 @@ font-style: inherit;">}</span></span>
 <span id="cb26-49"></span>
 <span id="cb26-50"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">pub</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> day_one_part_two(path<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
@@ -1776,6 +1862,7 @@ font-style: inherit;">Box</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">dyn</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">Error</span><span class="op" style="color: #5E5E5E;
@@ -1788,6 +1875,7 @@ background-color: null;
 font-style: inherit;">// read the inputs</span></span>
 <span id="cb26-52">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> (x<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> y) <span class="op" style="color: #5E5E5E;
@@ -1801,8 +1889,10 @@ background-color: null;
 font-style: inherit;">// Create an empty BTreeMap to count the occurrences</span></span>
 <span id="cb26-55">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> counts <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
@@ -1819,13 +1909,16 @@ background-color: null;
 font-style: inherit;">// each time we see an entry</span></span>
 <span id="cb26-59">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> yi <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb26-60">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> entry <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
@@ -1861,6 +1954,7 @@ background-color: null;
 font-style: inherit;">// that is what the unwrap_or() is for</span></span>
 <span id="cb26-67">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> res <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
@@ -1875,6 +1969,7 @@ font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">mut</span> acc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span> next<span class="op" style="color: #5E5E5E;
@@ -1884,6 +1979,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb26-68">        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> multiplier <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> counts<span class="op" style="color: #5E5E5E;
@@ -1954,6 +2050,7 @@ font-style: inherit;">"https://dev-2ts7ytkts28hfj4o.us.auth0.com"</span></span><
 <div class="cell">
 <div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -1968,6 +2065,7 @@ font-style: inherit;">oidc_discovery</span> <span class="op" style="color: #5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -2066,6 +2164,7 @@ font-style: inherit;">print.oidc_provider</span> <span class="op" style="color: 
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -2152,6 +2251,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
@@ -2183,6 +2283,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>            <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
@@ -2216,6 +2317,7 @@ background-color: null;
 font-style: inherit;">}</span></span>
 <span>            <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -2236,6 +2338,7 @@ background-color: null;
 font-style: inherit;">}</span></span>
 <span>        <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -2351,6 +2454,7 @@ font-style: inherit;">oidc_client</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
@@ -2538,6 +2642,7 @@ font-style: inherit;">oidc_flow_auth_code</span> <span class="op" style="color: 
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
@@ -2663,6 +2768,7 @@ font-style: inherit;">parse_id_token</span> <span class="op" style="color: #5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -2844,6 +2950,7 @@ font-style: inherit;">req_auth_oidc</span> <span class="op" style="color: #5E5E5
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -2919,6 +3026,7 @@ font-style: inherit;">oidc_user_info</span> <span class="op" style="color: #5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -3417,6 +3525,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -3454,6 +3563,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -3724,6 +3834,7 @@ font-style: inherit;">)</span></span>
 <span></span>
 <span>    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -3769,6 +3880,7 @@ font-style: inherit;">"unique"</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -3804,6 +3916,7 @@ font-style: inherit;">)</span></span>
 <span></span>
 <span>    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
@@ -3842,6 +3955,7 @@ background-color: null;
 font-style: inherit;">)</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
@@ -3887,6 +4001,7 @@ background-color: null;
 font-style: inherit;">}</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="cn" style="color: #8f5902;
@@ -3900,6 +4015,7 @@ font-style: inherit;">}</span></span>
 <span></span>
 <span>    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -3930,6 +4046,7 @@ font-style: inherit;">}</span></span>
 <span></span>
 <span>    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4016,6 +4133,7 @@ font-style: inherit;">TRUE</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4027,6 +4145,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4083,6 +4202,7 @@ font-style: inherit;">"\""</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4094,6 +4214,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4150,6 +4271,7 @@ font-style: inherit;">TRUE</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4161,6 +4283,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4216,6 +4339,7 @@ font-style: inherit;">0L</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4227,6 +4351,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4282,6 +4407,7 @@ font-style: inherit;">Inf</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4293,6 +4419,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4348,6 +4475,7 @@ font-style: inherit;">1000L</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4359,6 +4487,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4415,6 +4544,7 @@ font-style: inherit;">Inf</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4426,6 +4556,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4489,6 +4620,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4500,6 +4632,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>      <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4563,6 +4696,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4574,6 +4708,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>         <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4641,6 +4776,7 @@ font-style: inherit;">TRUE</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4652,6 +4788,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>         <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4707,6 +4844,7 @@ font-style: inherit;">TRUE</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4718,6 +4856,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>         <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -4782,6 +4921,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -4793,6 +4933,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span>         <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -5007,6 +5148,7 @@ font-style: inherit;">read_csv</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
@@ -5108,7 +5250,7 @@ font-style: inherit;">use_github_action</span>(</span>
 background-color: null;
 font-style: inherit;">url =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"https://github.com/flrsh-dev/cran-checks/blob/main/check-pkg/cran-checks.yaml"</span>,</span>
+font-style: inherit;">"https://github.com/ricochet-rs/cran-checks/blob/main/check-pkg/cran-checks.yaml"</span>,</span>
 <span id="cb1-3">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">open =</span> <span class="cn" style="color: #8f5902;
@@ -5120,6 +5262,7 @@ font-style: inherit;">TRUE</span></span>
 background-color: null;
 font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> Check CRAN status</span></span>
@@ -5128,6 +5271,7 @@ font-style: inherit;"> Check CRAN status</span></span>
 background-color: null;
 font-style: inherit;">on</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-4"><span class="at" style="color: #657422;
 background-color: null;
@@ -5135,6 +5279,7 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">schedule</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-5"><span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -5143,12 +5288,14 @@ font-style: inherit;">    # Runs daily at 4:00 PM UTC (9:00 AM PST)</span></span
 background-color: null;
 font-style: inherit;">    </span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">-</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">cron</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="st" style="color: #20794D;
@@ -5165,12 +5312,14 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">workflow_dispatch</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-9"></span>
 <span id="cb2-10"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">jobs</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-11"><span class="at" style="color: #657422;
 background-color: null;
@@ -5178,6 +5327,7 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">check_cran_status</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-12"><span class="at" style="color: #657422;
 background-color: null;
@@ -5185,6 +5335,7 @@ font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">runs-on</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> ubuntu-latest</span></span>
@@ -5195,17 +5346,20 @@ font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">steps</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-15"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">-</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> Get CRAN checks</span></span>
@@ -5215,15 +5369,17 @@ font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">uses</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;"> flrsh-dev/cran-checks/check-pkg@main</span></span>
+font-style: inherit;"> ricochet-rs/cran-checks/check-pkg@main</span></span>
 <span id="cb2-17"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">with</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-18"><span class="at" style="color: #657422;
 background-color: null;
@@ -5231,6 +5387,7 @@ font-style: inherit;">          </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pkg</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> YOUR-PKG-NAME</span></span></code></pre></div>
@@ -5240,7 +5397,7 @@ font-style: inherit;"> YOUR-PKG-NAME</span></span></code></pre></div>
 <h3 class="anchored" data-anchor-id="how-this-works">How this works</h3>
 <p>Since CRAN can’t be bothered to email us when they remove a package, we can utilized GitHub Actions to be our messenger.</p>
 <p>Whenever a GitHub Action fails, an email is sent to you so you know. Isn’t that nice?</p>
-<p>The <a href="https://github.com/flrsh-dev/cran-checks"><code>flrsh-dev/cran-checks</code></a> repository fetches the status of all packages daily. Then stores them as a json file that is hosted on GitHub pages. They can be accessed from url <a href="https://flrsh-dev.github.io/cran-checks/b64.json"><code>https://flrsh-dev.github.io/cran-checks/b64.json</code></a>.</p>
+<p>The <a href="https://github.com/ricochet-rs/cran-checks"><code>ricochet-rs/cran-checks</code></a> repository fetches the status of all packages daily. Then stores them as a json file that is hosted on GitHub pages. They can be accessed from url <a href="https://ricochet-rs.github.io/cran-checks/b64.json"><code>https://ricochet-rs.github.io/cran-checks/b64.json</code></a>.</p>
 <p>The GitHub Action checks for your package’s json file and looks at all of the statuses. If the package isn’t found or if there is a single warning or error, it fails.</p>
 </section>
 </section>
@@ -5288,6 +5445,7 @@ font-style: inherit;">scale_by</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -5339,6 +5497,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 <p>In Rust, you define a type and that type is unique.</p>
 <div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb4-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">struct</span> Person <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -5360,6 +5519,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <p>To create a person you would write <code>Person { name: "Josiah".to_string(), age: 28 }</code> . This is recognized as a <code>Person</code> struct. In Rust, a function must know its argument types, for example:</p>
 <div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> calculate_birth_year(person<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
@@ -5376,6 +5536,7 @@ background-color: null;
 font-style: inherit;">// use chrono::DateLike</span></span>
 <span id="cb5-3">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">let</span> now <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="pp" style="color: #AD0000;
@@ -5391,6 +5552,7 @@ font-style: inherit;">-</span> person<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">.</span>age <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">as</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">i32</span>) </span>
@@ -5400,6 +5562,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <p>This function takes a reference to a <code>Person</code> and calculates (roughly) what year they were born in. If I had another struct called <code>Me</code> with the same exact fields, this wouldn’t work.</p>
 <div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb6-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">struct</span> Me <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -5488,6 +5651,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </div>
 <div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="st" style="color: #20794D;
@@ -5501,6 +5665,7 @@ background-color: null;
 font-style: inherit;">)</span></span>
 <span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="st" style="color: #20794D;
@@ -5514,6 +5679,7 @@ background-color: null;
 font-style: inherit;">)</span></span>
 <span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -5728,6 +5894,7 @@ font-style: inherit;">upload</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -5756,6 +5923,7 @@ font-style: inherit;">upload</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -5812,6 +5980,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -6104,6 +6273,7 @@ background-color: null;
 font-style: inherit;">#* @post /read_csv</span></span>
 <span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -6319,6 +6489,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 </div>
 <div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -6338,6 +6509,7 @@ font-style: inherit;">upload</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -6378,6 +6550,7 @@ background-color: null;
 font-style: inherit;">#* @post /read_csv</span></span>
 <span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -6456,6 +6629,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -6499,6 +6673,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -6734,6 +6909,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -7078,6 +7254,7 @@ me, sobbing: just use postgres <a href="https://t.co/rJ4JcZJ4Zj">https://t.co/rJ
 <div class="cell">
 <div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -7239,6 +7416,7 @@ font-style: inherit;">housing</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -7787,6 +7965,7 @@ font-style: inherit;">plot_comp</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -8066,6 +8245,7 @@ font-style: inherit;">comps_autocorr</span> <span class="op" style="color: #5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -8089,6 +8269,7 @@ font-style: inherit;">rotation</span>, <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span>, <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -8246,6 +8427,7 @@ font-style: inherit;">regress_component</span> <span class="op" style="color: #5
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -9049,6 +9231,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -9058,6 +9241,7 @@ background-color: null;
 font-style: inherit;">)</span></span>
 <span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -9130,6 +9314,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -10117,6 +10302,7 @@ font-style: inherit;">st_make_grid</span> <span class="op" style="color: #5E5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -10168,6 +10354,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 </div></div><p>We make them by defining the name of the enum and the <strong><em>variants</em></strong> they may take on.</p>
 <div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb4-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">enum</span> GridShape <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -10182,6 +10369,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <p>Enums are very nice because we can match on the variants and do different things based on them. For example we can have a function like so:</p>
 <div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> which_shape(x<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> GridShape) <span class="op" style="color: #5E5E5E;
@@ -10189,6 +10377,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb5-2">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">match</span> x <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -10285,6 +10474,7 @@ font-style: inherit;">#&gt; We have a square!</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="annotated-cell-5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -10332,6 +10522,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -10343,6 +10534,7 @@ background-color: null;
 font-style: inherit;">{</span> </span>
 <span>    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
@@ -10373,8 +10565,10 @@ font-style: inherit;">"enum value's are length 1"</span></span>
 background-color: null;
 font-style: inherit;">}</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
@@ -10438,6 +10632,7 @@ font-style: inherit;">new_enum_class</span> <span class="op" style="color: #5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -10496,6 +10691,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -10632,6 +10828,7 @@ font-style: inherit;">print.Enum</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -10715,6 +10912,7 @@ font-style: inherit;">square</span></span></code></pre></div>
 <p>Rust enums are even more powerful than what I briefly introduced. Each variant of an enum can actually be <em>typed</em>!!! Take a look at the example from <a href="https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html">The Book™</a>.</p>
 <div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb18-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">enum</span> Message <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -10763,6 +10961,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <p>A silly example function that illustrates how each value can be used can be</p>
 <div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb19-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">fn</span> which_msg(x<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> Message) <span class="op" style="color: #5E5E5E;
@@ -10770,6 +10969,7 @@ background-color: null;
 font-style: inherit;">{</span></span>
 <span id="cb19-2">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">match</span> x <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -10914,9 +11114,11 @@ font-style: inherit;">hello_world</span>()</span></code></pre></div>
 <p>Store python scripts inside of <code>inst/</code>. These files can be read using <code>system.file()</code>. In this example <code>inst/helloworld.py</code> contains</p>
 <div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> hello_world():</span>
 <span id="cb3-2">  <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Helloooo world"</span></span></code></pre></div>
@@ -10939,6 +11141,7 @@ font-style: inherit;">env</span>()</span></code></pre></div>
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span>(libname, pkgname){</span>
 <span id="cb5-2">  reticulate<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -10971,6 +11174,7 @@ font-style: inherit;">#'@export</span></span>
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span>() {</span>
 <span id="cb6-3">  pyfn_env<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -11024,6 +11228,7 @@ font-style: inherit;">#' in degrees</span></span>
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span>(degrees, minutes) {</span>
 <span id="cb5-4">  d <span class="ot" style="color: #003B4F;
 background-color: null;
@@ -11526,6 +11731,7 @@ font-style: inherit;">sleep</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -11598,6 +11804,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <div class="cell">
 <div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -11828,6 +12035,7 @@ font-style: inherit;">#&gt; Time difference of 20.04956 secs</span></span></code
 <p>In an R session load {valve}.</p>
 <div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
@@ -12029,8 +12237,10 @@ background-color: null;
 font-style: inherit;">"/types"</span>)</span>
 <span id="cb6-6"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">async</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> types(n: <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">int</span>) <span class="op" style="color: #5E5E5E;
@@ -12040,6 +12250,7 @@ background-color: null;
 font-style: inherit;">int</span>:</span>
 <span id="cb6-7">  <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
@@ -12361,6 +12572,7 @@ font-style: inherit;">class_unclass</span> <span class="op" style="color: #5E5E5
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;

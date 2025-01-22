@@ -23,7 +23,7 @@ There is a new GitHub Action that you can use with your CRAN package. It will ru
 
 ```r
 usethis::use_github_action(
-  url = "https://github.com/flrsh-dev/cran-checks/blob/main/check-pkg/cran-checks.yaml",
+  url = "https://github.com/ricochet-rs/cran-checks/blob/main/check-pkg/cran-checks.yaml",
   open = TRUE
 )
 ```
@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Get CRAN checks
-        uses: flrsh-dev/cran-checks/check-pkg@main
+        uses: ricochet-rs/cran-checks/check-pkg@main
         with:
           pkg: YOUR-PKG-NAME
 ```
@@ -61,7 +61,7 @@ Since CRAN can't be bothered to email us when they remove a package, we can util
 
 Whenever a GitHub Action fails, an email is sent to you so you know. Isn't that nice?
 
-The [`flrsh-dev/cran-checks`](https://github.com/flrsh-dev/cran-checks) repository fetches the status of all packages daily. Then stores them as a json file that is hosted on GitHub pages. They can be accessed from url [`https://flrsh-dev.github.io/cran-checks/b64.json`](https://flrsh-dev.github.io/cran-checks/b64.json).
+The [`ricochet-rs/cran-checks`](https://github.com/ricochet-rs/cran-checks) repository fetches the status of all packages daily. Then stores them as a json file that is hosted on GitHub pages. They can be accessed from url [`https://ricochet-rs.github.io/cran-checks/b64.json`](https://ricochet-rs.github.io/cran-checks/b64.json).
 
 The GitHub Action checks for your package's json file and looks at all of the statuses. If the package isn't found or if there is a single warning or error, it fails. 
 

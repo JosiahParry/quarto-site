@@ -17,16 +17,8 @@ I think the R community would **benefit greatly** by adopting DuckDB into their 
 
 For example, here is a demo of a Shiny application filtering, plotting, and visualizing 4.5 million records very quickly! 
 
-![](https://raw.githubusercontent.com/flrsh-dev/flrsh-lessons/main/duckdb-deep-dive/project/final-app.gif)
+![](https://raw.githubusercontent.com/ricochet-rs/flrsh-lessons/main/duckdb-deep-dive/project/final-app.gif)
 
-:::{.callout-note collapse="true"}
-## a personal note
-I'm beginning to build out some content for courses that I'll be making availble through my new website [flrsh.dev](https://flrsh.dev/) (pronounced flourish). Sign up if you want to be notified when we start rolling things out 🙃. 
-
-The first course will be on DuckDB! 
-
-Also, if it takes a while to load, thats because the provider is spinning up an instance because no one is on it lol! It is very much a **WIP**.
-:::
 
 
 ## Y'all keep asking me `{duckdb}` or `{duckplyr}`
@@ -120,7 +112,7 @@ Here we will download a medium sized csv and import it.
 ```{r}
 tmp <- tempfile(fileext = ".csv")
 download.file(
-  "https://raw.githubusercontent.com/flrsh-dev/flrsh-lessons/main/data/houses1990.csv",
+  "https://raw.githubusercontent.com/ricochet-rs/flrsh-lessons/main/data/houses1990.csv",
   tmp
 )
 
