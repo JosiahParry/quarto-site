@@ -15,4 +15,4 @@ I have built
 - [`{arcgisgeocode}`](https://github.com/R-ArcGIS/arcgisgeocode): Rust based R package that interfaces to the ArcGIS World Geocoding service. Possibly the fastest geocoding client in the R ecosystem. 
 - [`{arcgisplaces}`](https://github.com/r-arcgis/arcgisplaces): Rust based R package built upon [serde_esri](https://github.com/JosiahParry/serde_esri) to interact with the [ArcGIS Places Service](https://developers.arcgis.com/documentation/mapping-apis-and-services/places/)
 - [`{arcpbf}`](https://github.com/R-ArcGIS/arcpbf/): Rust based R package to process protocol buffers from ArcGIS Feature Services. This results in a dramatically faster parsing time than processing JSON. 
-
+- [`{calcite}`](https://github.com/R-ArcGIS/calcite): Shiny extension package providing bindings to the [Calcite Design System React components](https://developers.arcgis.com/calcite-design-system/components/).

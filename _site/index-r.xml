@@ -1234,7 +1234,7 @@ font-style: inherit;">bench</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="http://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://bench.r-lib.org/reference/mark.html">mark</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>  r <span class="op" style="color: #5E5E5E;
@@ -3304,7 +3304,7 @@ background-color: null;
 font-style: inherit;">)</span></span></code></pre></div>
 </div>
 
-<div class="no-row-height column-margin column-container"><div class="">
+<div class="no-row-height column-margin column-container"><div class="margin-aside">
 <p>In the case of <code>write_csv()</code> the argument <code>col_names</code> is <em>always</em> a logical scalar</p>
 </div></div><p>In this case, the <code>col_names = character()</code> works well!</p>
 <div class="cell">
@@ -3391,8 +3391,8 @@ font-style: inherit;">FALSE</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-row">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <pre><code># A tibble: 149 × 5
    `5.1` `3.5` `1.4` `0.2` setosa
    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
@@ -3408,7 +3408,7 @@ font-style: inherit;">)</span></span></code></pre></div>
 10   5.4   3.7   1.5   0.2 setosa
 # ℹ 139 more rows</code></pre>
 </div>
-<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <pre><code># A tibble: 150 × 5
       X1    X2    X3    X4 X5    
    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 

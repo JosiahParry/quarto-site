@@ -2,7 +2,7 @@ project:
   type: website  
   resources:
     - ads.txt 
-  
+
 execute: 
   freeze: true
 
@@ -28,9 +28,6 @@ website:
         - icon: "linkedin"
           href: https://linkedin.com/in/josiahparry
           text: "LinkedIn"
-        - icon: twitter
-          href: https://twitter.com/josiahparry
-          text: "Twitter"
         - icon: youtube
           text: YouTube
           href: https://www.youtube.com/@josiahparry
