@@ -9,8 +9,251 @@
 <link>https://josiahparry.com/#category=r</link>
 <atom:link href="https://josiahparry.com/index-r.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.6.40</generator>
-<lastBuildDate>Sun, 01 Dec 2024 08:00:00 GMT</lastBuildDate>
+<generator>quarto-1.6.42</generator>
+<lastBuildDate>Thu, 10 Apr 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Create and edit TOML in R with {tomledit}</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2025-04-10-tomledit.html</link>
+  <description><![CDATA[ <p><a href="https://extendr.github.io/tomledit/"><code>{tomledit}</code></a> v0.1.1 has found its way onto <a href="https://cran.r-project.org/web/packages/tomledit/index.html">CRAN</a>.</p>
+<p><a href="https://extendr.github.io/tomledit/">tomledit</a> is a package for <em>creating</em> and <em>editing</em> TOML files from R with support for reading as well.</p>
+<p>The most basic use of <code>tomledit</code> is via <code><a href="https://extendr.github.io/tomledit/reference/toml.html">toml()</a></code>. <code><a href="https://extendr.github.io/tomledit/reference/toml.html">toml()</a></code> creates a <code>Toml</code> object from named arguments passed to <code>...</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://extendr.github.io/tomledit/">tomledit</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://extendr.github.io/tomledit/reference/toml.html">toml</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>person <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>age <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30L</span>, name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Wilma"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;Toml&gt;
+[person]
+age = 30
+name = "Wilma"</code></pre>
+</div>
+</div>
+<section id="v0.1.1-features" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="v0.1.1-features">v0.1.1 Features</h2>
+<p>This newest release supports the use of arrays with inline tables. This feature comes as a request from <a href="https://github.com/dpastoor"><span class="citation" data-cites="dpastoor">@dpastoor</span></a> to support the experimental <code>rproject.toml</code> file for <a href="https://github.com/A2-ai/rv"><code>rv</code></a>.</p>
+
+<div class="no-row-height column-margin column-container"><div class="margin-aside">
+<p>I’m bullish on <code>rv</code> as a new alternative to <a href="https://rstudio.github.io/renv/">renv</a>. I think it will be a great addition to the R community.</p>
+</div></div><p>This new feature allows us to have a list of unnamed lists inside of our TOML.</p>
+<p>Below we create an item called <code>repositories</code> which is an array of inline tables containing the alias and url to a CRAN-like repository.</p>
+<p>Similarly, the <code>dependencies</code> item is an array of <em>both</em> inline-tables and strings. This new feature adds more flexibility to the type of TOML that we can create.</p>
+<div class="cell">
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">r_proj_toml</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>  name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"upgrade"</span>, </span>
+<span>  r_version <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"4.4"</span>,</span>
+<span>  repositories <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>alias <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gh-pkg-mirror"</span>, url <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://a2-ai.github.io/gh-pkg-mirror/2024-02-22"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>alias <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"RSPM"</span>, url <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://packagemanager.posit.co/cran/2024-02-22"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>alias <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"new-mirror"</span>, url <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://a2-ai.github.io/gh-pkg-mirror/2024-12-04"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>alias <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"new-rspm"</span>, url <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://packagemanager.posit.co/cran/2024-12-04"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>  dependencies <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pmplots"</span>, repository <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"new-mirror"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pmtables"</span>,</span>
+<span>    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bbr"</span>,</span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ggplot2"</span>, repository <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"new-rspm"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> </span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://extendr.github.io/tomledit/reference/toml.html">as_toml</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>project <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">r_proj_toml</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;Toml&gt;
+[project]
+name = "upgrade"
+r_version = "4.4"
+repositories = [
+    { alias = "gh-pkg-mirror", url = "https://a2-ai.github.io/gh-pkg-mirror/2024-02-22" },
+    { alias = "RSPM", url = "https://packagemanager.posit.co/cran/2024-02-22" },
+    { alias = "new-mirror", url = "https://a2-ai.github.io/gh-pkg-mirror/2024-12-04" },
+    { alias = "new-rspm", url = "https://packagemanager.posit.co/cran/2024-12-04" }
+]
+dependencies = [
+    { name = "pmplots", repository = "new-mirror" },
+    "pmtables",
+    "bbr",
+    { name = "ggplot2", repository = "new-rspm" }
+]</code></pre>
+</div>
+</div>
+
+
+</section> ]]></description>
+  <category>r</category>
+  <category>toml</category>
+  <category>rust</category>
+  <category>extendr</category>
+  <guid>https://josiahparry.com/posts/2025-04-10-tomledit.html</guid>
+  <pubDate>Thu, 10 Apr 2025 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>🎄dvent Day 1: Rust and R solutions</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -12551,405 +12794,6 @@ font-style: inherit;">#&gt; Mean runtime: 1.2629 milliseconds</span></span></cod
   <category>production</category>
   <guid>https://josiahparry.com/posts/2023-07-06-r-is-still-fast.html</guid>
   <pubDate>Thu, 06 Jul 2023 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>What’s so special about arrays?</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-06-11-matrix-bug.html</link>
-  <description><![CDATA[ <p>I’m working on a new video about S3 objects in R and class inheritance / hierarchy. One of my favorite functions for exploring objecs and their structure is <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code>.</p>
-<p>The documentation states</p>
-<blockquote class="blockquote">
-<p><code>unclass</code> returns (a copy of) its argument with its class attribute removed. (It is not allowed for objects which cannot be copied, namely environments and external pointers.)</p>
-</blockquote>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>see <code><a href="https://rdrr.io/r/base/class.html">?unclass</a></code> and review <code>Details</code></p>
-</div></div><p>So, <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code> <em>should</em> remove the class of any and all objects. For the sake clarity of this post I’m going to make a helper function.</p>
-<div class="cell">
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">class_unclass</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/class.html">unclass</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-</div>
-<p>This works for <code>factor</code>s which are just integer vectors which have the attribute <code>levels</code></p>
-<div class="cell">
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">class_unclass</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "integer"</code></pre>
-</div>
-</div>
-<p>and <code>data.frame</code>s are lists (also technically a vector just not atomic but instead recursive) with attributes <code>row.names</code>, and <code>names</code>.</p>
-<div class="cell">
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">class_unclass</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "list"</code></pre>
-</div>
-</div>
-<p>But when we get down to <code>matrix</code> another poser type (just like data.frame and factor pretending to be something they’re not actually), we get something different.</p>
-<div class="cell">
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">class_unclass</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "matrix" "array" </code></pre>
-</div>
-</div>
-<p>Well, why the heck is that? What about it makes it so special? Let’s explore this a bit more.</p>
-<p>The two things that make a matrix are the classes <code>c("matrix", "array")</code> and the <code>dim</code> attribute which specifies the dimensions. Matrixes are two dimensional arrays, by the way!</p>
-<div class="cell">
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$dim
-[1] 1 1</code></pre>
-</div>
-</div>
-<p>What is weird is that you can make a matrix just by adding the <code>dim</code> attribute to a vector.</p>
-<div class="cell">
-<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">m</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/structure.html">structure</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/integer.html">integer</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, dim <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">class_unclass</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">m</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "matrix" "array" </code></pre>
-</div>
-</div>
-<p>We didn’t even specify the class. Why does this happen?</p>
-<p>And when we remove the dim attribute….</p>
-<div class="cell">
-<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">m</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dim"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">class_unclass</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">m</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "integer"</code></pre>
-</div>
-</div>
-<p>we get an integer vector. This differs from the behavior of other similar types. Recall that factors are <code>integer</code> vectors with an attribute of <code>levels</code> that is a character vector.</p>
-<p>So let’s try something here. Let’s create a factor from scratch.</p>
-<div class="cell">
-<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/structure.html">structure</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/integer.html">integer</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, levels <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/character.html">character</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, class <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"factor"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>factor()
-Levels: </code></pre>
-</div>
-</div>
-<p>Now, if the behavior is similar to <code>matrix</code> or <code>array</code> we would expect that by omitting the <code>class</code> attribute R should reconstruct it.</p>
-<div class="cell">
-<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/structure.html">structure</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/integer.html">integer</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, levels <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/character.html">character</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>integer(0)
-attr(,"levels")
-character(0)</code></pre>
-</div>
-</div>
-<p>Nope! Would you look at that!</p>
-<p><a href="https://github.com/yjunechoe"><strong><span class="citation" data-cites="yjunechoe">@yjunechoe</span></strong></a> pointed me to some excerpts from <a href="https://deepr.gagolewski.com/">Deep R Programming</a>, a book I wish I had read yesterday. It refers to these attributes as “<em>special attributes</em>”. The author, <a href="https://www.gagolewski.com/">Marek Gagolewski</a> (author of <a href="https://stringi.gagolewski.com/"><code>stringi</code></a>, by the way), makes note of this special behavior of matrix but leaves it at that.</p>
-<p>To me, this is a fundamental inconsistency in the language. Either all poser types (data.frame, matrix, factor, etc) should be automatically created if their special attributes are set on the appropriate type or not at all. What justification is there for <em>only</em> <code>matrix</code> having a special behavior in <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code>?</p>
-<p>To me, this warrants a bug report for <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code>. Based on the documentation, <code><a href="https://rdrr.io/r/base/class.html">unclass()</a></code> should <em>always</em> remove the class attribute from an object but it fails to do so for <code>arrays</code> and <code>matrix</code>es.</p>
-<section id="looking-deeper" class="level2"><h2 class="anchored" data-anchor-id="looking-deeper">Looking deeper!</h2>
-<p>With some further exploratory help of June we can see the internal representation of these objects.</p>
-<p>Let’s create an object with a <code>dim</code> attribute and a custom class. Suprisingly, the custom class is respected and <code>matrix</code> and <code>array</code> aren’t slapped on it.</p>
-<div class="cell">
-<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/structure.html">structure</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/integer.html">integer</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, dim <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, class <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"meep"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "meep"</code></pre>
-</div>
-</div>
-<p>If we look at the internal representation using <code>.Internal(inspect(x))</code> we get to see some of the C goodies.</p>
-<div class="cell">
-<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/Internal.html">.Internal</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">inspect</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>@10ea6ccd0 13 INTSXP g0c1 [OBJ,REF(2),ATT] (len=1, tl=0) 0
-ATTRIB:
-  @10f0d5570 02 LISTSXP g0c0 [REF(1)] 
-    TAG: @13d00e880 01 SYMSXP g1c0 [MARK,REF(2905),LCK,gp=0x4000] "dim" (has value)
-    @10ea6cd08 13 INTSXP g0c1 [REF(65535)] (len=2, tl=0) 1,1
-    TAG: @13d00e9d0 01 SYMSXP g1c0 [MARK,REF(32428),LCK,gp=0x6000] "class" (has value)
-    @12d670170 16 STRSXP g0c1 [REF(65535)] (len=1, tl=0)
-      @12d6701a8 09 CHARSXP g0c1 [REF(2),gp=0x60] [ASCII] [cached] "meep"</code></pre>
-</div>
-</div>
-<p>Just look to the right hand side of these gibberish. See that the <code>dim</code> has a value of <code>1,1</code> and <code>class</code> has a value of <code>meep</code>. There is no matrix or array or nothing.</p>
-<p>Now we remove the <code>meep</code> class and check again.</p>
-<div class="cell">
-<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">class_unclass</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "matrix" "array" </code></pre>
-</div>
-</div>
-<p>Boom matrix and array. But if we look at the internals…</p>
-<div class="cell">
-<div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/Internal.html">.Internal</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">inspect</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/class.html">unclass</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">x</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>@10fa94200 13 INTSXP g0c1 [ATT] (len=1, tl=0) 0
-ATTRIB:
-  @10f31f5d8 02 LISTSXP g0c0 [REF(1)] 
-    TAG: @13d00e880 01 SYMSXP g1c0 [MARK,REF(2933),LCK,gp=0x4000] "dim" (has value)
-    @10ea6cd08 13 INTSXP g0c1 [REF(65535)] (len=2, tl=0) 1,1</code></pre>
-</div>
-</div>
-<p>THEY AREN’T THERE!!!!!!</p>
-
-
-</section> ]]></description>
-  <category>r</category>
-  <guid>https://josiahparry.com/posts/2023-06-11-matrix-bug.html</guid>
-  <pubDate>Sun, 11 Jun 2023 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
