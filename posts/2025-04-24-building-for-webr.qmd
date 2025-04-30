@@ -1,0 +1,36 @@
+---
+title: "Building local packages for WebR"
+date: "2025-04-30"
+author: "Josiah Parry"
+categories: [webr, r, wasm]
+---
+
+We've recently [added WebR support](https://github.com/extendr/rextendr/pull/431) for [extendr](https://extendr.github.io/).
+
+::: callout-tip
+[WebR](https://docs.r-wasm.org/webr/latest/) is a distribution of the R programming language that runs natively in [WebAssembly](https://webassembly.org/). WebAssembly is binary format that runs directly in the browser.
+
+Using WebR means that R can be used directly by the browser / [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) without a backend server running R for you.
+:::
+
+
+Typically, folks rely on [R-universe](https://r-universe.dev/) to build their packages for WebR. However, compiled packages require a bit more work. Figuring out how to build a package for WebR locally was surprsingly confusing and also very straightfoward.
+
+I've releaned how to do this a few times now. Here is how it is done: 
+
+## How to build for WebR
+
+The easiest way to build a local package for WebR is using the Docker image.
+
+To do so, cd into your R package you want to build. Then spin up the Docker image and then enter R from inside of the container.
+
+```bash
+docker run -it --rm -v ${PWD}/output:/output -w /output ghcr.io/r-wasm/webr:main
+R
+```
+
+Then from R inside of the container, run `rwasm::build(".")`. 
+
+That's it! 
+
+Thanks to [George Stagg](https://github.com/r-wasm/rwasm/issues/50#issuecomment-2827097396) for helping with this! 

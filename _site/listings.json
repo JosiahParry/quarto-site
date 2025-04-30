@@ -21,6 +21,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2025-04-24-building-for-webr.html",
       "/posts/2025-04-10-tomledit.html",
       "/posts/2024-12-01-advent-day-1/index.html",
       "/posts/2024-11-28-httr2-oidc.html",
@@ -110,6 +111,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2025-04-24-building-for-webr.html",
       "/posts/2025-04-10-tomledit.html",
       "/posts/2024-12-01-advent-day-1/index.html",
       "/posts/2024-11-28-httr2-oidc.html",
