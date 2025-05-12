@@ -1,0 +1,15 @@
+{
+  "hash": "9af35885118eb3ccd40a2a48b6398454",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: https with `{plumber}` using Caddy\ndate: \"2025-05-12\"\nauthor: \"Josiah Parry\"\ncategories: [r, prod, plumber]\n---\n\n\n\n\nSay you have a plumber API and you need to serve it over https. You can do this by spinning up a Docker container in something like [DigitalOcean](https://digitalocean.com/), [Render](https://render.com), [Heroku](https://heroku.com), or [AWS ECS](https://aws.amazon.com/ecs).\n\nIf you have you own server, you may want to use that instead. The most common way to do this is by using a [**reverse proxy**](https://www.cloudflare.com/learning/cdn/glossary/reverse-proxy/).\n\n\n[Caddy](https://caddyserver.com/) is the simplest reverse proxy I am aware of.\n\n## The Plumber API \n\nBelow we define a simple plumber API. Save this file to `plumber.R`.\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(plumber)\n\npr() |>\n  pr_get(\"/echo\", function(msg = \"\") {\n    list(msg = paste0(\"The message is: '\", msg, \"'\"))\n  }) |>\n  pr_get(\"/sum\", function(a, b) {\n    as.numeric(a) + as.numeric(b)\n  }) |>\n  pr_run(port = 8888)\n```\n:::\n\n\n\n\n\n## Serving with https\n\nReverse proxies are typically the most common way of adding https to a site. Many organization use [nginx](https://nginx.org/). Though for simplicity I recommend Caddy.\n\nCaddy automatically implements https by default. \n\nThe below `Caddyfile` will serve the plumber API over https. It takes any requests to `localhost` and passes the request to the plumber API on port `8888`, captures the response and sends it back to the client. \n\n::: callout-tip\nThe https protocol requires binding to port 443.\n:::\n\n\nSave this as `Caddyfile`\n\n```caddy\n# serve the plumber API over HTTPS\nlocalhost:443 {\n    reverse_proxy localhost:8888\n}\n```\n\n## Running the API & proxy\n\nTo serve the plumber API via Caddy you need to start both processes. \n\n```shell\n(R -f plumber.R) & caddy run\n```\n\nThis will run the plumber API in the background and then the caddy process.\n\n\n## Generalizing\n\nNote that these are instructions specifically for using Caddy. However this point genealizes to all reverse proxies. They likely require more boiler plate, but will work just as well.\n\n## Resources \n\n[Andrew Heiss](https://www.andrewheiss.com/) has a really great [demo repository](https://github.com/andrewheiss/docker-plumber-caddy) that is a much more advanced version of this that uses [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/).\n\nUse [Valve](https://github.com/JosiahParry/valve) to scale your plumber API and apply the same principles. \n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

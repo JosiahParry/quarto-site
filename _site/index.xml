@@ -10,7 +10,185 @@
 <atom:link href="https://josiahparry.com/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.6.42</generator>
-<lastBuildDate>Wed, 30 Apr 2025 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 12 May 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>https with {plumber} using Caddy</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2025-05-12-plumber-caddy-https.html</link>
+  <description><![CDATA[ <p>Say you have a plumber API and you need to serve it over https. You can do this by spinning up a Docker container in something like <a href="https://digitalocean.com/">DigitalOcean</a>, <a href="https://render.com">Render</a>, <a href="https://heroku.com">Heroku</a>, or <a href="https://aws.amazon.com/ecs">AWS ECS</a>.</p>
+<p>If you have you own server, you may want to use that instead. The most common way to do this is by using a <a href="https://www.cloudflare.com/learning/cdn/glossary/reverse-proxy/"><strong>reverse proxy</strong></a>.</p>
+<p><a href="https://caddyserver.com/">Caddy</a> is the simplest reverse proxy I am aware of.</p>
+<section id="the-plumber-api" class="level2"><h2 class="anchored" data-anchor-id="the-plumber-api">The Plumber API</h2>
+<p>Below we define a simple plumber API. Save this file to <code>plumber.R</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;"><a href="https://www.rplumber.io">plumber</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://www.rplumber.io/reference/pr.html">pr</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://www.rplumber.io/reference/pr_handle.html">pr_get</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/echo"</span>, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">msg</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>msg <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The message is: '"</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">msg</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"'"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://www.rplumber.io/reference/pr_handle.html">pr_get</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/sum"</span>, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">a</span>, <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">b</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">a</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">b</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://www.rplumber.io/reference/pr_run.html">pr_run</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>port <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8888</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+</div>
+</section><section id="serving-with-https" class="level2"><h2 class="anchored" data-anchor-id="serving-with-https">Serving with https</h2>
+<p>Reverse proxies are typically the most common way of adding https to a site. Many organization use <a href="https://nginx.org/">nginx</a>. Though for simplicity I recommend Caddy.</p>
+<p>Caddy automatically implements https by default.</p>
+<p>The below <code>Caddyfile</code> will serve the plumber API over https. It takes any requests to <code>localhost</code> and passes the request to the plumber API on port <code>8888</code>, captures the response and sends it back to the client.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The https protocol requires binding to port 443.</p>
+</div>
+</div>
+<p>Save this as <code>Caddyfile</code></p>
+<pre class="caddy"><code># serve the plumber API over HTTPS
+localhost:443 {
+    reverse_proxy localhost:8888
+}</code></pre>
+</section><section id="running-the-api-proxy" class="level2"><h2 class="anchored" data-anchor-id="running-the-api-proxy">Running the API &amp; proxy</h2>
+<p>To serve the plumber API via Caddy you need to start both processes.</p>
+<pre class="shell"><code>(R -f plumber.R) &amp; caddy run</code></pre>
+<p>This will run the plumber API in the background and then the caddy process.</p>
+</section><section id="generalizing" class="level2"><h2 class="anchored" data-anchor-id="generalizing">Generalizing</h2>
+<p>Note that these are instructions specifically for using Caddy. However this point genealizes to all reverse proxies. They likely require more boiler plate, but will work just as well.</p>
+</section><section id="resources" class="level2"><h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<p><a href="https://www.andrewheiss.com/">Andrew Heiss</a> has a really great <a href="https://github.com/andrewheiss/docker-plumber-caddy">demo repository</a> that is a much more advanced version of this that uses <a href="https://www.docker.com/">Docker</a> and <a href="https://docs.docker.com/compose/">Docker Compose</a>.</p>
+<p>Use <a href="https://github.com/JosiahParry/valve">Valve</a> to scale your plumber API and apply the same principles.</p>
+
+
+</section> ]]></description>
+  <category>r</category>
+  <category>prod</category>
+  <category>plumber</category>
+  <guid>https://josiahparry.com/posts/2025-05-12-plumber-caddy-https.html</guid>
+  <pubDate>Mon, 12 May 2025 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Building local packages for WebR</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -11990,53 +12168,6 @@ Moran I statistic       Expectation          Variance
   <category>r</category>
   <guid>https://josiahparry.com/posts/2024-05-17-moran-eigenvectors.html</guid>
   <pubDate>Fri, 17 May 2024 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Databases for Data Scientist</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2024-05-16-databases-for-ds.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>It’s been coming up a lot recently, or, maybe, I’ve just been focused on this a lot more. Data scientists are coming to terms with the fact that they have to work with databases if they want their analytics to scale. That is pretty normal. But one of the bigger challenges is that these data scientists don’t really know how to make that leap. What do they need to know to make that transition?</p>
-<p>For many of use in the “know”, we know that there actually isn’t all that much different between a database and a data.frame. A data frame is in memory but a database table is just <em>over there</em> sitting somewhere else.</p>
-<blockquote class="blockquote">
-<p>If you know how to write dplyr, you already know how to work with a database.</p>
-</blockquote>
-<section id="what-do-you-need-to-know" class="level2">
-<h2 class="anchored" data-anchor-id="what-do-you-need-to-know">What do you need to know?</h2>
-<p>For those of you who want to begin to use databases in your work and want to start scaling your analysis, there are a few topics that would be helpful for you to know. I’m not going to teach you them here. But list them out so you can google it. And truthfully, you already know what these are but you don’t know the terminology.</p>
-<p>Here is my list of things to know:</p>
-<ol type="1">
-<li>Learn what <strong>RDBMS</strong> means.</li>
-</ol>
-<ul>
-<li>relational database management system or sometimes just DBMS</li>
-</ul>
-<ol start="2" type="1">
-<li>Understand <strong>primary keys</strong> and <strong>foreign keys</strong></li>
-<li>Figure out what database <strong>normalization</strong> is and when its useful</li>
-<li>Schemas vs.&nbsp;tables for organizational purposes</li>
-<li>Views vs tables (this is handy for making tables to be consumed by BI / other things)</li>
-<li>Table indexes and what they are (that way you can know when you might need them)</li>
-</ol>
-</section>
-<section id="why-you-might-not-actually-need-a-full-rdbms" class="level2">
-<h2 class="anchored" data-anchor-id="why-you-might-not-actually-need-a-full-rdbms">Why you might not actually need a full RDBMS</h2>
-<p>With the ubiquity of parquet and tools like apache arrow and DuckDB, there’s a good chance that for what you want to accomplish in your analytical workflow, you don’t need a fully fledged database. Organized parquet files into a database-like structure will be sufficient. DuckDB and Arrow can allow you to work with these data in a larger than memory capacity. You don’t need to read it all into memory, actually.</p>
-<p>Before you say you need Postgres for analytics, instead, try parquet (and with hive partitioning if your data are larger) with DuckDB and Apache Arrow. It’s likely all you need.</p>
-
-
-</section>
-
- ]]></description>
-  <category>production</category>
-  <category>arrow</category>
-  <category>duckdb</category>
-  <guid>https://josiahparry.com/posts/2024-05-16-databases-for-ds.html</guid>
-  <pubDate>Thu, 16 May 2024 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

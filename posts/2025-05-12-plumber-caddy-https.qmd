@@ -1,0 +1,76 @@
+---
+title: https with `{plumber}` using Caddy
+date: "2025-05-12"
+author: "Josiah Parry"
+categories: [r, prod, plumber]
+---
+
+Say you have a plumber API and you need to serve it over https. You can do this by spinning up a Docker container in something like [DigitalOcean](https://digitalocean.com/), [Render](https://render.com), [Heroku](https://heroku.com), or [AWS ECS](https://aws.amazon.com/ecs).
+
+If you have you own server, you may want to use that instead. The most common way to do this is by using a [**reverse proxy**](https://www.cloudflare.com/learning/cdn/glossary/reverse-proxy/).
+
+
+[Caddy](https://caddyserver.com/) is the simplest reverse proxy I am aware of.
+
+## The Plumber API 
+
+Below we define a simple plumber API. Save this file to `plumber.R`.
+
+```{r, eval = FALSE}
+library(plumber)
+
+pr() |>
+  pr_get("/echo", function(msg = "") {
+    list(msg = paste0("The message is: '", msg, "'"))
+  }) |>
+  pr_get("/sum", function(a, b) {
+    as.numeric(a) + as.numeric(b)
+  }) |>
+  pr_run(port = 8888)
+
+```
+
+
+## Serving with https
+
+Reverse proxies are typically the most common way of adding https to a site. Many organization use [nginx](https://nginx.org/). Though for simplicity I recommend Caddy.
+
+Caddy automatically implements https by default. 
+
+The below `Caddyfile` will serve the plumber API over https. It takes any requests to `localhost` and passes the request to the plumber API on port `8888`, captures the response and sends it back to the client. 
+
+::: callout-tip
+The https protocol requires binding to port 443.
+:::
+
+
+Save this as `Caddyfile`
+
+```caddy
+# serve the plumber API over HTTPS
+localhost:443 {
+    reverse_proxy localhost:8888
+}
+```
+
+## Running the API & proxy
+
+To serve the plumber API via Caddy you need to start both processes. 
+
+```shell
+(R -f plumber.R) & caddy run
+```
+
+This will run the plumber API in the background and then the caddy process.
+
+
+## Generalizing
+
+Note that these are instructions specifically for using Caddy. However this point genealizes to all reverse proxies. They likely require more boiler plate, but will work just as well.
+
+## Resources 
+
+[Andrew Heiss](https://www.andrewheiss.com/) has a really great [demo repository](https://github.com/andrewheiss/docker-plumber-caddy) that is a much more advanced version of this that uses [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/).
+
+Use [Valve](https://github.com/JosiahParry/valve) to scale your plumber API and apply the same principles. 
+
