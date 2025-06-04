@@ -24,6 +24,10 @@ If you want to get in contact with me please send me an email at `josiah.parry a
 
 <details>
 
+* [Arrow, Rust, and cross-language data science tooling](https://scientificcomputing.rs/2025/talks/parry.html)
+  * [Scientific Computing in Rust, 2025](https://scientificcomputing.rs/2025/talks/parry.html)
+  * [Repository](https://github.com/JosiahParry/2025-scientific-computing-in-rust)
+  * June 4th, 2025 
 * [Exploratory Spatal Data Analysis in the tidyverse](https://www.rstudio.com/conference/2022/talks/exploratory-spatial-data-analysis/)
   * July 28th, 2022 rstudio::conf(2022L)
 * [Exploratory Spatial Data Analysis in R](https://github.com/josiahparry/exploratory-spatial-data-analysis/)

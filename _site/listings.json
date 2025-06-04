@@ -21,6 +21,7 @@
   {
     "listing": "/posts/index.html",
     "items": [
+      "/posts/2025-06-04-cross-language-ds/index.html",
       "/posts/2025-05-12-plumber-caddy-https.html",
       "/posts/2025-04-24-building-for-webr.html",
       "/posts/2025-04-10-tomledit.html",
@@ -112,6 +113,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2025-06-04-cross-language-ds/index.html",
       "/posts/2025-05-12-plumber-caddy-https.html",
       "/posts/2025-04-24-building-for-webr.html",
       "/posts/2025-04-10-tomledit.html",

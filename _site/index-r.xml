@@ -10,7 +10,313 @@
 <atom:link href="https://josiahparry.com/index-r.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.6.42</generator>
-<lastBuildDate>Mon, 12 May 2025 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 04 Jun 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Apache Arrow, Rust, and cross-langauge data science</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2025-06-04-cross-language-ds/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="tldr" class="level2">
+<h2 class="anchored" data-anchor-id="tldr">TL;DR</h2>
+<ul>
+<li><a href="https://arrow.apache.org/">Apache Arrow</a> standardized memory layout so that memory can be used in any language without (de)serialization.</li>
+<li><a href="https://www.rust-lang.org/">Rust</a> is a great candidate for building core algorithm / tool implementations as it has robust <a href="https://doc.rust-lang.org/std/ffi/index.html">foreign function interface</a> (<a href="https://en.wikipedia.org/wiki/Foreign_function_interface">FFI</a>) tooling and bindings tools like <a href="https://extendr.github.io/">extendr</a>, <a href="https://pyo3.rs/">PyO3</a>, and <a href="https://docs.rs/jlrs/latest/jlrs/">jlrs</a>.</li>
+<li>Use Apache Arrow as inputs and outputs from the tool standardize the API across languages.</li>
+</ul>
+<hr>
+</section>
+<section id="the-status-quo" class="level2">
+<h2 class="anchored" data-anchor-id="the-status-quo">The Status Quo</h2>
+<p>I would categorize the majority of scientific computing libraries as either:</p>
+<ul>
+<li>tightly coupled</li>
+<li>loosely coupled</li>
+</ul>
+</section>
+<section id="tightly-coupled" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="tightly-coupled">Tightly coupled</h2>
+<p>Many of the most popular scientific computing libraries in R and Python are developed in a tightly coupled manner.</p>
+<div class="columns">
+<div class="column">
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/rdatatable.png" class="img-fluid"></p>
+</div><div class="column">
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/numpy.svg" class="img-fluid"></p>
+</div>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="margin-aside">
+<p>Julia is a different beast because it is inherently fast and native implementations are exceptionally performant.</p>
+</div></div><p>For example <a href="https://rdatatable.gitlab.io/data.table/"><code>{data.table}</code></a> is one of the fastest data frame libraries in the world—and for a while was <em>the</em> fastest. It is developed in C directly with R’s C API.</p>
+<p><a href="https://numpy.org/">NumPy</a> is probably the most numerical computing library in the world. It is written directly in C with Cython and is intended for use directly with Python.</p>
+<section id="pros" class="level3">
+<h3 class="anchored" data-anchor-id="pros">Pros</h3>
+<ul>
+<li>Highly efficient</li>
+<li>Ergonomic APIs for the language</li>
+</ul>
+</section>
+<section id="cons" class="level3">
+<h3 class="anchored" data-anchor-id="cons">Cons</h3>
+<ul>
+<li>Innovation and development siloed to the language of implementation</li>
+<li>Contributor pool shrinks to the intersection of C developers with knowledge of the language-specific C API</li>
+</ul>
+</section>
+</section>
+<section id="loosely-coupled" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="loosely-coupled">Loosely coupled</h2>
+<p>Loose coupling is another common approach to scientific computing and is pervasive in the geospatial ecosystem.</p>
+<p>Core libraries such as <a href="https://libgeos.org/">GEOS</a>, <a href="https://gdal.org/en/stable/">GDAL</a>, and <a href="https://proj.org/en/stable/">PROJ</a> are written in C/++ with bindings to them in R, Python, Julia, and others.</p>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><a href="https://arxiv.org/abs/2503.16686"><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/sdsl.png" class="img-fluid figure-img" alt="Pebesma, et al.&nbsp;2025"></a></p>
+<figcaption class="margin-caption">Pebesma, et al.&nbsp;2025</figcaption>
+</figure>
+</div>
+<p>There are many packages that have bindings to these libraries. However, due to the lack of standardized interface, the APIs that are developed may not work with each other even if they’re implemented in the same language.</p>
+<section id="pros-1" class="level3">
+<h3 class="anchored" data-anchor-id="pros-1">Pros</h3>
+<ul>
+<li>Innovations and development is not siloed</li>
+<li>Contributions to the core library can be propagated to the client bindings</li>
+</ul>
+</section>
+<section id="cons-1" class="level3">
+<h3 class="anchored" data-anchor-id="cons-1">Cons</h3>
+<ul>
+<li>Little / no standardization of data format leads to <em>tons</em> of very different and incompatible libraries</li>
+<li>Using output from one library in another requires intermediate representation</li>
+</ul>
+</section>
+</section>
+<section id="using-rust-for-a-core-library" class="level2">
+<h2 class="anchored" data-anchor-id="using-rust-for-a-core-library">Using Rust for a core library</h2>
+<p>It is not my intention to belabor the point of “why Rust.” But I will list out a few bullets for why I believe Rust is the best candidate for core implementations.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pro</th>
+<th>Me belaboring the point</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rust is (fairly) easy to pick up.</td>
+<td>I’ve tried and failed many times to learn C++. I’ve tried to learn Java. I’ve tried to learn Go. Nothing has the guide rails that Rust does.</td>
+</tr>
+<tr class="even">
+<td>Dependency free</td>
+<td>Rust crates are compiled into a single shared library which has no dependencies to other libraries. More often than not there is also no system dependency requirement either.</td>
+</tr>
+<tr class="odd">
+<td>Stupid fast by default 🚀</td>
+<td>The most naive implementations often out perform even advanced implementations in R or Python (and sometimes even Julia)</td>
+</tr>
+<tr class="even">
+<td>Easy parallelization with <a href="https://github.com/rayon-rs/rayon"><code>rayon</code></a></td>
+<td><code>rayon</code> allows you to parallelize your code with next to no effort. For example changing <code>.iter()</code> ➡️ <code>.par_iter()</code> is all you need.</td>
+</tr>
+<tr class="odd">
+<td>Cross-platform support.</td>
+<td>Rust libraries can support Windows, Mac, x86 and Arm, Linux, and WASM, all with no modification of the core library. That’s HUGE!</td>
+</tr>
+</tbody>
+</table>
+<p>Creating a Rust core would still be considered a “loose coupling.” Though, you do at least get the above benefits of using Rust. We can improve this experience a bit more by incorporating Apache Arrow into the picture.</p>
+</section>
+<section id="apache-arrow" class="level2">
+<h2 class="anchored" data-anchor-id="apache-arrow">Apache Arrow</h2>
+<p>Apache Arrow is a <strong>specification</strong> of what data should look like <em>in memory</em> (not stored as a file). Additionally, Apache Arrow <strong>is not</strong> the R package <code>{arrow}</code> and it is also not pyarrow. Those package are <em>implementations</em> of Arrow with additional goodies.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I really recommend reading Danielle Navarro’s <a href="https://blog.djnavarro.net/posts/2021-11-19_starting-apache-arrow-in-r/#fiiiiiine-ill-keep-reading-tell-me-what-arrow-is">blog post on Apache Arrow</a> for a very human introduction to the topic.</p>
+</div>
+</div>
+<section id="the-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-problem">The Problem</h3>
+<p>In this status-quo of cross-language tooling, we have this issue where data in R is represented differently than data is represented in Python, which is represented differently in Rust or Julia—and so on.</p>
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/paste-7.png" class="img-fluid"></p>
+<p>This process of copying data and converting is <em>expensive</em> and time consuming. The canonical example is that of a database.</p>
+<p>We typically work with tabular data that looks like so</p>
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/paste-9.png" class="img-fluid"></p>
+<p>However, these databases typically represent data in a row-oriented manner. Where each row is stored in memory followed by the next row etc.</p>
+</section>
+<section id="columnar-data" class="level3">
+<h3 class="anchored" data-anchor-id="columnar-data">Columnar data</h3>
+<p>Instead, Apache Arrow is a columnar data format. Instead of each row being represented in memory, we have each column. This is a huge enhancement particularly for analytical processes where we are working with <em>columns</em> of data instead of _rows.</p>
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/paste-13.png" class="img-fluid"></p>
+<p>The above shows the difference between these.</p>
+<p>Apache Arrow is a standized way of saying what data should look like in memory. So instead of copying and converting between each tool, we can use the same exact arrow data set by each tool .</p>
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/paste-8.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="arrow-and-cross-langauge-tooling" class="level2">
+<h2 class="anchored" data-anchor-id="arrow-and-cross-langauge-tooling">Arrow and cross-langauge tooling</h2>
+<p>By adopting Apache Arrow as a standard memory format, we can have data science workflows that look something like this.</p>
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/paste-4.png" class="img-fluid"></p>
+<p>At step 1, we may call a library that uses Rust under the hood. But when we send data to it, it uses Apache Arrow, and it also gives us back Arrow. Then in the next step, we use our Arrow data to call out to a C++ library which <em>also</em> accepts and returns Arrow.</p>
+<p>Doing this will eliminate the overhead of copying and converting data to each tool’s desired format. This also helps us move towards a standardized API that shouldn’t be too different between language binding. Also, by using the same data format, even if there are multiple bindings to the same underlying library, if they all accept Arrow, there is no cost incurred by sending data to them.</p>
+</section>
+<section id="a-real-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-real-example">A real example</h2>
+<p>A real world example of this is the <a href="https://github.com/JosiahParry/anime">ANIME</a> algorithm that I developed along with <a href="https://www.robinlovelace.net/">Dr.&nbsp;Robin Lovelace</a>.</p>
+<p>Approximate Network Integration, Matching, and Enrichment (ANIME) is a partial line matching algorithm that is written in Rust with bindings to it in both R and Python—no Julia bindings, so if you’re interested in building them, please help!</p>
+<p><img src="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/paste-16.png" class="img-fluid"></p>
+<p>The ANIME crate is designed to work <a href="https://geoarrow.org/">GeoArrow</a> data.</p>
+<section id="repo-structure" class="level3">
+<h3 class="anchored" data-anchor-id="repo-structure">Repo structure</h3>
+<p>I use a monorepo structure to accomplish this where the core algorithm is implemented in <code>/rust</code> and the R bindings in <code>r/</code> and the python bindings in <code>/python</code>.</p>
+<pre><code>.
+├── rust/
+│   └── Cargo.toml
+├── r/
+│   └── src/rust/Cargo.toml
+└── py/
+    └── Cargo.toml</code></pre>
+<p>The result is bindings with a very similar API and <em>identical</em> results:</p>
+<div>
+
+</div>
+</section>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<section id="r-bindings" class="level3 quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<h3 class="anchored" data-anchor-id="r-bindings">R Bindings</h3>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(sf)</span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(anime)</span>
+<span id="cb2-3"></span>
+<span id="cb2-4">targets <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_sf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"maine-osm-targets.fgb"</span>)</span>
+<span id="cb2-5">sources <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_sf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"maine-tigris-sources.fgb"</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7">matches <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">anime</span>(</span>
+<span id="cb2-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">source =</span> sources,</span>
+<span id="cb2-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">targets =</span> targets,</span>
+<span id="cb2-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">distance_tolerance =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, </span>
+<span id="cb2-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">angle_tolerance =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span></span>
+<span id="cb2-12">)</span></code></pre></div>
+</section>
+<section id="python-bindings" class="level3 quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<h3 class="anchored" data-anchor-id="python-bindings">Python Bindings</h3>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> anime <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> PyAnime</span>
+<span id="cb3-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> geoarrow.rust.io <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> read_flatgeobuf</span>
+<span id="cb3-3"></span>
+<span id="cb3-4">target <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> read_flatgeobuf(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"maine-osm-targets.fgb"</span>)</span>
+<span id="cb3-5">sources <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> read_flatgeobuf(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"maine-tigris-sources.fgb"</span>)</span>
+<span id="cb3-6"></span>
+<span id="cb3-7">anime <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> PyAnime(</span>
+<span id="cb3-8">  source <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sources.column(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>).chunk(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>), </span>
+<span id="cb3-9">  target <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> target.column(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>).chunk(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>), </span>
+<span id="cb3-10">  distance_tolerance <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, </span>
+<span id="cb3-11">  angle_tolerance <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span></span>
+<span id="cb3-12">)</span></code></pre></div>
+</section>
+</div>
+</div>
+</section>
+<section id="arrow-ffi-helpers" class="level2">
+<h2 class="anchored" data-anchor-id="arrow-ffi-helpers">Arrow FFI helpers</h2>
+<p>There still exists a challenge of taking Arrow from R, Python, or Julia and getting it across the language barrier.</p>
+<p>To do so from R with extendr is <a href="https://github.com/JosiahParry/arrow-extendr"><code>arrow-extendr</code></a>. And from Python is <a href="https://kylebarron.dev/arro3/latest/">arro3</a>.</p>
+</section>
+<section id="a-quick-caveat" class="level2">
+<h2 class="anchored" data-anchor-id="a-quick-caveat">A quick caveat</h2>
+<p>ANIME is not a perfectly fleshed out example. At present, the core rust library does not <em>return</em> Arrow but <em>it is</em> designed to work with the geoarrow-rust library. The current bindings are a loose-ish coupling approach where on the extendr and PyO3 side the results are processed into a data.frame and Arrow Table respectively.</p>
+<p><strong>Call to action</strong> if you’re interested in contributing Julia bindings or improving the Python bindings (and maybe publishing them), please do make a PR or an issue.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>rust</category>
+  <category>r</category>
+  <category>python</category>
+  <category>extendr</category>
+  <category>arrow</category>
+  <guid>https://josiahparry.com/posts/2025-06-04-cross-language-ds/</guid>
+  <pubDate>Wed, 04 Jun 2025 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>https with {plumber} using Caddy</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -11901,192 +12207,6 @@ font-style: inherit;">16</span></span>
   <category>spatial</category>
   <guid>https://josiahparry.com/posts/2023-10-28/</guid>
   <pubDate>Sat, 28 Oct 2023 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Spatial Data Science Across Languages</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-09-20-sdsl/</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>I feel very fortunate to have been invited to the first Spatial Data Science Across Languages (SDSL) workshop at the University of Münster. I am even more fortunate that I have an employer who sees the value in an event such as this and be my patron for it.</p>
-<p>The event brought together package maintainers from Julia, Python, and R languages to just <em>discuss</em>. The event was loosely framed around a few broad discussion topics that were varied and drifted.</p>
-<p>In general, the theme of the workshop was “standards.” We need standards be able to ensure cohesion not only <em>within</em> languages, but across them. Users should be able to move between languages and be able to expect similar behavior, have similar terminology, and expect the same analysis results.</p>
-<section id="arrow" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="arrow">Arrow</h2>
-<p>We started everything off by discussing Arrow which set the theme of “standards.” Arrow gets conflated at many thing all at once—I do that. At the core Arrow is a memory format specification. It describes how data should be held in memory.</p>
-<p>R holds objects in memory one way, Python another, and Julia another as well. Arrow describes just one way that specific types of object can be held in memory. GeoArrow is an extension of Arrow that specifies the memory layout for geometry arrays.</p>
-<section id="geoarrow" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="geoarrow">GeoArrow</h3>
-<p>Specifications like well-known text (WKT) and well-known binary (WKB) are encodings of a <em>single</em> geometry. GeoArrow recognizes that we almost never work with scalar objects alone. GeoArrow is a memory layout for an array of geometries.</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image.png" class="img-fluid"></p>
-<p>If each language can hold Arrow arrays in memory, they can be passed from one tool to another with 0 cost. Python can create an arrow array and R can pick it up if it knows where it exists.</p>
-<p>The current approach looks something like this. Each tool serializes its data in one way. In order for another tool to use it, the data needs to be copied (memory inefficient) and converted (computationally expensive) into the appropriate format.</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image-2.png" class="img-fluid"></p>
-<p>The Arrow specification would allow data handoff between tools to be much more seamless and look like so:</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image-1.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Maybe we ought to start framing adoption of Arrow as an effort to be more “green.” If we spend less time computing we use less energy which is overall a net positive for the world.</p>
-</div></div><p>This is a massive productivity improvement. There’s no computation cost in converting between one format to another saving time, energy, and money.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>There’s a good chance that in order to adopt Arrow in <code>{sf}</code> there will be breaking changes. I am an advocate for breaking changes when they are for a good reason. Being on the leading edge is how to make a language succeed.</p>
-<p>I also think if we can move towards a “trait-driven” approach to spatial data frames, we can support both GeoArrow geometries as well as current <code>sfc</code> objects.</p>
-<p><a href="https://github.com/JosiahParry/sdf">Read my spatial data frame manifesto.</a></p>
-</div></div><p>The key thing though, is that in order for Arrow to be useful, <strong>it has to be adopted widely</strong>. If GeoPandas uses Arrow and <code>{sf}</code> does not, we have to go through the copy and convert process anyways.</p>
-</section>
-<section id="why-geoarrow-excites-me" class="level3">
-<h3 class="anchored" data-anchor-id="why-geoarrow-excites-me">Why GeoArrow excites me</h3>
-<p>The promise of Arrow and GeoArrow is that memory can be handed off between tools without any additional cost. This (in theory) lowers the bar for what is needed to hand off between tools and languages. Hopefully <a href="https://wesmckinney.com/blog/the-problem-with-the-data-science-language-wars/">ending the language wars</a></p>
-<p><a href="https://github.com/kylebarron">Kyle Barron</a> demonstrated really cool example use-case where he created GeoArrow arrays using <a href="https://github.com/geopolars/geopolars">GeoPolars</a>. That array was then written to a buffer and picked up by javascript. Since there was no serialization or deserialization it was unbelievably fast!</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/image-3.png" class="img-fluid"></p>
-<p>Additionally, we are seeing <a href="https://webassembly.org/">WebAssembly</a> proliferate in the data science community. <a href="https://webr.r-wasm.org/">WebR</a> provides R users with the ability to execute R in the browser. This is also possible in Python, Rust, Go, and I’m sure many others. Each language can be compiled to be used in the browser and hand off components between them.</p>
-<p>Client side computation will reduce the need for server side operations. If we can reduce the amount of hours that servers are constantly running by offloading lighter operations into the browser, we may be able to save money, energy, be more green, and create tools that do not necessarily require an active internet connection.</p>
-</section>
-</section>
-<section id="spatial-support" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="spatial-support">Spatial Support</h2>
-<p>We also discussed the more esoteric topic of <strong>spatial support</strong>. This was completely new to me. Support defines the relationship between an attribute to the geometry. There are two kinds:</p>
-<ul>
-<li><strong>point support</strong> - a constant values associated with every location in a geometry
-<ul>
-<li><em>example</em>: temperature measurement at a weather station</li>
-</ul></li>
-<li><strong>block support</strong> - a value derived from aggregating measures over space
-<ul>
-<li><em>example</em>: population count in a census tract</li>
-</ul></li>
-</ul>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Read <a href="https://r-spatial.org/book/01-hello.html#sec-support">chapter 1.6 of Spatial Data Science</a> (SDS) for more on this topic.</p>
-</div>
-</div>
-<p>When geometries are manipulated and the associated attributes come along for the ride, support assumptions are often violated resulting in inaccurate calculations or maps.</p>
-<section id="attribute-geometry-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="attribute-geometry-relationships">Attribute-Geometry Relationships</h3>
-<p>SDS formalizes the relationship between attributes and geometry a bit further in something they call the <strong>Attribute-Geometry Relationship (AGR)</strong>. Attributes of spatial features can have one of 3 types of AGR:</p>
-<ul>
-<li>constant value (i.e.&nbsp;point support)</li>
-<li>aggregate value (i.e.&nbsp;block support)</li>
-<li>identity (i.e.&nbsp;attribute unique to a geometry)</li>
-</ul>
-<p>Knowing the relationships between geometries can be useful in tracking the assumptions of analyses. For example, taking the mean of an <em>aggregate</em> attribute such as median age, creates as assumptions of homogeneity in the aggregated areas and can contribute to the <a href="https://en.wikipedia.org/wiki/Modifiable_areal_unit_problem">modifiable areal unit problem (MAUP)</a>.</p>
-</section>
-<section id="intensive-vs-extensive" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="intensive-vs-extensive">Intensive vs Extensive</h3>
-<p>Spatial intensive vs extensive variables were also discussed in the context of spatial interpolation. I’m still quite unclear on how to conceptualize intensive and extensive variables. <a href="https://github.com/MobiTobi">Tobias G</a> pointed out that these terms come from physics and provided a useful non-geometry motivating example.</p>
-<blockquote class="blockquote">
-<p>“The price of an ingot of gold is an extensive property and its temperature would be intensive.”</p>
-</blockquote>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>The common example is that population is extensive and population density is intensive. This requires the assumption that population is <em>constant</em> across space. So the examples are more confusing than helpful. I have yet to come up with an example of a spatially intensive variable that makes sense.</p>
-<p>If you can think of one, please comment on below!</p>
-</div></div><p><strong>Extensive</strong> variables are one that are associated with the physical geometry itself. <strong>Intensive</strong> ones <em>do not</em> change when a geometry is modified.</p>
-<p>If an ingot of gold is split into half the price changes, each piece is now worth less than the whole. But, assuming the room temperature didn’t change, the temperature of each piece remained the same.</p>
-</section>
-<section id="domains" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="domains">Domains</h3>
-<p>These properties of attributes are quite important but are forgotten about. One of the ideas raised in discussions was adding attribute-geometry relationship and a flag like <code>is_intensive</code> to a field domain.</p>
-<p>A <a href="https://desktop.arcgis.com/en/arcmap/latest/manage-data/geodatabases/an-overview-of-attribute-domains.htm">Domain</a> is a concept that <em>I think</em> originated at Esri. It allows you to specify the field type, range of valid values, as well as policies that determine how fields behave when they are split or merged. <a href="https://github.com/OSGeo/gdal/releases/tag/v3.3.0">Field domains were added to GDAL in version 3.3</a>.</p>
-<p>Is there utility in adding <code>AGR</code> and (ex/in)tensive flags to a field domain?</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Arrow allows for embedded metadata at an array and table level. Perhaps there should be a GeoArrow table (data frame) format spec too? I’d like that. It would fit with my generic spatial data frame manifesto as well.</p>
-</div></div></section>
-</section>
-<section id="geodesic-first" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="geodesic-first">Geodesic first</h2>
-<p>A good amount of attention was paid to geodesic coordinate operations. The conversation was kicked off by this “motivating example.”</p>
-<p><img src="https://josiahparry.com/posts/2023-09-20-sdsl/geopandas-geodesic.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Really, I think this was just an excuse for Edzer to poke fun at the GeoPandas devs! 😵‍💫🤣</p>
-</div></div><p>The example shows an area calculation on a dataset that uses a geographic coordinate system (GCS). Area, though, is typically calculated under the assumption that coordinates are on a plane (rectangle). With GCS, the data is on a circle. So if we calculate the area of angles the result is <em>definitely wrong</em>.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>I think about it like calculating the area but cutting through the Earth like so: <img src="https://josiahparry.com/posts/2023-09-20-sdsl/circle.png" class="img-fluid"></p>
-</div></div><p>The open source ecosystem is behind on support of geodetic calculations. Data more often than not is captured using GCS and users often fail to project their data. It would be nice if tools did this.</p>
-<p>R supports spherical geometries by using <a href="https://r-spatial.github.io/s2/">Google’s S2 library</a>. Python is presently building out support for S2. Some operations like buffering still aren’t made available by S2.</p>
-<section id="the-full-polygon" class="level3">
-<h3 class="anchored" data-anchor-id="the-full-polygon">The “full polygon”</h3>
-<p>One interesting point that was brought up is that in a GCS there is a concept of a <strong>full polygon</strong>. This is the polygon that covers the entire ellipsoid. There is no way to capture this using typical coordinates.</p>
-</section>
-</section>
-<section id="spatial-weights-matrix-serialization" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="spatial-weights-matrix-serialization">Spatial Weights Matrix Serialization</h2>
-<p>Probably the second most interesting topic to me was around how to store spatial weights matrixes. We didn’t really discuss the “how” of holding it memory. Though I think they can be held in memory as a ragged Arrow array of indices or IDs. What was quite interesting was the concept of <em>serializing</em> the spatial weights matrix.</p>
-<p><a href="https://martinfleischmann.net/">Martin</a> mentioned that in Pysal they had moved to serializing spatial weights as a parquet file which greatly improved their speed. In essence, spatial weights are stored in a 3 column table.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<table class="table">
-<caption>Spatial Weights Matrix</caption>
-<thead>
-<tr class="header">
-<th>i</th>
-<th>j</th>
-<th>wij</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>3</td>
-<td>0.5</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>2</td>
-<td>0.75</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>9</td>
-<td>0.3</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>7</td>
-<td>0.2</td>
-</tr>
-</tbody>
-</table>
-</div></div><p>It was noted that additional metadata can be associated at the table level or column level. This can be very handy to keep track of things like the method for identifying neighbors, the weighting mechanism used, storing flags to know if the focal feature is included and maybe even remove weights if there is a constant value.</p>
-<p>Additionally, since this is parquet, it can be handled and stored by a number of databases.</p>
-<p>One benefit of using arrow here, is that we can conceivably have a future where spatial weights matrices are interchangeable between spdep, pysal, geoda, and ArcGIS.</p>
-</section>
-<section id="closing" class="level2">
-<h2 class="anchored" data-anchor-id="closing">Closing</h2>
-<p>I’m about to hop on a flight back to the US now—10 hours without internet is going to be a test of monk-like fortitude. I have left my strongest feels for another time. Chatting with devs from other languages makes is clear how great CRAN is as a package storage and testing mechanism but yet how utterly abysmal it is as a developer. I will write another post soon on the topics of retirement and how I think we can make CRAN a better place for developers.</p>
-</section>
-<section id="links" class="level2">
-<h2 class="anchored" data-anchor-id="links">Additional links</h2>
-<p>I’ll add more here as I can (hopefully).</p>
-<ul>
-<li><a href="https://martinfleischmann.net/a-note-on-spatial-data-science-across-languages-vol.1/">Martin’s SDSL blog post</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>r</category>
-  <category>r-spatial</category>
-  <category>spatial</category>
-  <guid>https://josiahparry.com/posts/2023-09-20-sdsl/</guid>
-  <pubDate>Fri, 22 Sep 2023 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

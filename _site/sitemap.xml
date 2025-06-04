@@ -134,7 +134,7 @@
   </url>
   <url>
     <loc>https://josiahparry.com/about.html</loc>
-    <lastmod>2024-06-07T23:39:44.210Z</lastmod>
+    <lastmod>2025-06-04T18:40:11.539Z</lastmod>
   </url>
   <url>
     <loc>https://josiahparry.com/posts/2023-09-20-sdsl/index.html</loc>
@@ -287,5 +287,9 @@
   <url>
     <loc>https://josiahparry.com/posts/2025-05-12-plumber-caddy-https.html</loc>
     <lastmod>2025-05-12T19:01:05.322Z</lastmod>
+  </url>
+  <url>
+    <loc>https://josiahparry.com/posts/2025-06-04-cross-language-ds/index.html</loc>
+    <lastmod>2025-06-04T18:38:08.309Z</lastmod>
   </url>
 </urlset>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josiah Parry">
+<meta name="dcterms.date" content="2025-06-04">
+
+<title>Apache Arrow, Rust, and cross-langauge data science – Josiah Parry</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a185852c63625fd9ffbdc57047c9a77e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-00e0999047efbb59956d29c6441bf673.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8NVVBLZBVF"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8NVVBLZBVF', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9842567530621468" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta name="twitter:title" content="Apache Arrow, Rust, and cross-langauge data science – Josiah Parry">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="https://josiahparry.com/posts/2025-06-04-cross-language-ds/images/rdatatable.png">
+<meta name="twitter:creator" content="@josiahparry">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="1865">
+<meta name="twitter:image-width" content="1619">
+</head>
+
+<body class="nav-sidebar docked slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      Josiah Parry
+      </li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Josiah Parry</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../services.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><em>want my help?</em></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">about</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../posts/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">posts</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">projects</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">socials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://github.com/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://linkedin.com/in/josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.youtube.com/@josiahparry" class="sidebar-item-text sidebar-link"><i class="bi bi-youtube" role="img">
+</i> 
+ <span class="menu-text">YouTube</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.xml" class="sidebar-item-text sidebar-link"><i class="bi bi-rss-fill" role="img">
+</i> 
+ <span class="menu-text">RSS</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#tldr" id="toc-tldr" class="nav-link active" data-scroll-target="#tldr">TL;DR</a></li>
+  <li><a href="#the-status-quo" id="toc-the-status-quo" class="nav-link" data-scroll-target="#the-status-quo">The Status Quo</a></li>
+  <li><a href="#tightly-coupled" id="toc-tightly-coupled" class="nav-link" data-scroll-target="#tightly-coupled">Tightly coupled</a>
+  <ul class="collapse">
+  <li><a href="#pros" id="toc-pros" class="nav-link" data-scroll-target="#pros">Pros</a></li>
+  <li><a href="#cons" id="toc-cons" class="nav-link" data-scroll-target="#cons">Cons</a></li>
+  </ul></li>
+  <li><a href="#loosely-coupled" id="toc-loosely-coupled" class="nav-link" data-scroll-target="#loosely-coupled">Loosely coupled</a>
+  <ul class="collapse">
+  <li><a href="#pros-1" id="toc-pros-1" class="nav-link" data-scroll-target="#pros-1">Pros</a></li>
+  <li><a href="#cons-1" id="toc-cons-1" class="nav-link" data-scroll-target="#cons-1">Cons</a></li>
+  </ul></li>
+  <li><a href="#using-rust-for-a-core-library" id="toc-using-rust-for-a-core-library" class="nav-link" data-scroll-target="#using-rust-for-a-core-library">Using Rust for a core library</a></li>
+  <li><a href="#apache-arrow" id="toc-apache-arrow" class="nav-link" data-scroll-target="#apache-arrow">Apache Arrow</a>
+  <ul class="collapse">
+  <li><a href="#the-problem" id="toc-the-problem" class="nav-link" data-scroll-target="#the-problem">The Problem</a></li>
+  <li><a href="#columnar-data" id="toc-columnar-data" class="nav-link" data-scroll-target="#columnar-data">Columnar data</a></li>
+  </ul></li>
+  <li><a href="#arrow-and-cross-langauge-tooling" id="toc-arrow-and-cross-langauge-tooling" class="nav-link" data-scroll-target="#arrow-and-cross-langauge-tooling">Arrow and cross-langauge tooling</a></li>
+  <li><a href="#a-real-example" id="toc-a-real-example" class="nav-link" data-scroll-target="#a-real-example">A real example</a>
+  <ul class="collapse">
+  <li><a href="#repo-structure" id="toc-repo-structure" class="nav-link" data-scroll-target="#repo-structure">Repo structure</a></li>
+  </ul></li>
+  <li><a href="#arrow-ffi-helpers" id="toc-arrow-ffi-helpers" class="nav-link" data-scroll-target="#arrow-ffi-helpers">Arrow FFI helpers</a></li>
+  <li><a href="#a-quick-caveat" id="toc-a-quick-caveat" class="nav-link" data-scroll-target="#a-quick-caveat">A quick caveat</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Apache Arrow, Rust, and cross-langauge data science</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">rust</div>
+    <div class="quarto-category">r</div>
+    <div class="quarto-category">python</div>
+    <div class="quarto-category">extendr</div>
+    <div class="quarto-category">arrow</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josiah Parry </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 4, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="tldr" class="level2">
+<h2 class="anchored" data-anchor-id="tldr">TL;DR</h2>
+<ul>
+<li><a href="https://arrow.apache.org/">Apache Arrow</a> standardized memory layout so that memory can be used in any language without (de)serialization.</li>
+<li><a href="https://www.rust-lang.org/">Rust</a> is a great candidate for building core algorithm / tool implementations as it has robust <a href="https://doc.rust-lang.org/std/ffi/index.html">foreign function interface</a> (<a href="https://en.wikipedia.org/wiki/Foreign_function_interface">FFI</a>) tooling and bindings tools like <a href="https://extendr.github.io/">extendr</a>, <a href="https://pyo3.rs/">PyO3</a>, and <a href="https://docs.rs/jlrs/latest/jlrs/">jlrs</a>.</li>
+<li>Use Apache Arrow as inputs and outputs from the tool standardize the API across languages.</li>
+</ul>
+<hr>
+</section>
+<section id="the-status-quo" class="level2">
+<h2 class="anchored" data-anchor-id="the-status-quo">The Status Quo</h2>
+<p>I would categorize the majority of scientific computing libraries as either:</p>
+<ul>
+<li>tightly coupled</li>
+<li>loosely coupled</li>
+</ul>
+</section>
+<section id="tightly-coupled" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="tightly-coupled">Tightly coupled</h2>
+<p>Many of the most popular scientific computing libraries in R and Python are developed in a tightly coupled manner.</p>
+<div class="columns">
+<div class="column">
+<p><img src="images/rdatatable.png" class="img-fluid"></p>
+</div><div class="column">
+<p><img src="images/numpy.svg" class="img-fluid"></p>
+</div>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="margin-aside">
+<p>Julia is a different beast because it is inherently fast and native implementations are exceptionally performant.</p>
+</div></div><p>For example <a href="https://rdatatable.gitlab.io/data.table/"><code>{data.table}</code></a> is one of the fastest data frame libraries in the world—and for a while was <em>the</em> fastest. It is developed in C directly with R’s C API.</p>
+<p><a href="https://numpy.org/">NumPy</a> is probably the most numerical computing library in the world. It is written directly in C with Cython and is intended for use directly with Python.</p>
+<section id="pros" class="level3">
+<h3 class="anchored" data-anchor-id="pros">Pros</h3>
+<ul>
+<li>Highly efficient</li>
+<li>Ergonomic APIs for the language</li>
+</ul>
+</section>
+<section id="cons" class="level3">
+<h3 class="anchored" data-anchor-id="cons">Cons</h3>
+<ul>
+<li>Innovation and development siloed to the language of implementation</li>
+<li>Contributor pool shrinks to the intersection of C developers with knowledge of the language-specific C API</li>
+</ul>
+</section>
+</section>
+<section id="loosely-coupled" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="loosely-coupled">Loosely coupled</h2>
+<p>Loose coupling is another common approach to scientific computing and is pervasive in the geospatial ecosystem.</p>
+<p>Core libraries such as <a href="https://libgeos.org/">GEOS</a>, <a href="https://gdal.org/en/stable/">GDAL</a>, and <a href="https://proj.org/en/stable/">PROJ</a> are written in C/++ with bindings to them in R, Python, Julia, and others.</p>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><a href="https://arxiv.org/abs/2503.16686"><img src="images/sdsl.png" class="img-fluid figure-img" alt="Pebesma, et al.&nbsp;2025"></a></p>
+<figcaption class="margin-caption">Pebesma, et al.&nbsp;2025</figcaption>
+</figure>
+</div>
+<p>There are many packages that have bindings to these libraries. However, due to the lack of standardized interface, the APIs that are developed may not work with each other even if they’re implemented in the same language.</p>
+<section id="pros-1" class="level3">
+<h3 class="anchored" data-anchor-id="pros-1">Pros</h3>
+<ul>
+<li>Innovations and development is not siloed</li>
+<li>Contributions to the core library can be propagated to the client bindings</li>
+</ul>
+</section>
+<section id="cons-1" class="level3">
+<h3 class="anchored" data-anchor-id="cons-1">Cons</h3>
+<ul>
+<li>Little / no standardization of data format leads to <em>tons</em> of very different and incompatible libraries</li>
+<li>Using output from one library in another requires intermediate representation</li>
+</ul>
+</section>
+</section>
+<section id="using-rust-for-a-core-library" class="level2">
+<h2 class="anchored" data-anchor-id="using-rust-for-a-core-library">Using Rust for a core library</h2>
+<p>It is not my intention to belabor the point of “why Rust.” But I will list out a few bullets for why I believe Rust is the best candidate for core implementations.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pro</th>
+<th>Me belaboring the point</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rust is (fairly) easy to pick up.</td>
+<td>I’ve tried and failed many times to learn C++. I’ve tried to learn Java. I’ve tried to learn Go. Nothing has the guide rails that Rust does.</td>
+</tr>
+<tr class="even">
+<td>Dependency free</td>
+<td>Rust crates are compiled into a single shared library which has no dependencies to other libraries. More often than not there is also no system dependency requirement either.</td>
+</tr>
+<tr class="odd">
+<td>Stupid fast by default 🚀</td>
+<td>The most naive implementations often out perform even advanced implementations in R or Python (and sometimes even Julia)</td>
+</tr>
+<tr class="even">
+<td>Easy parallelization with <a href="https://github.com/rayon-rs/rayon"><code>rayon</code></a></td>
+<td><code>rayon</code> allows you to parallelize your code with next to no effort. For example changing <code>.iter()</code> ➡️ <code>.par_iter()</code> is all you need.</td>
+</tr>
+<tr class="odd">
+<td>Cross-platform support.</td>
+<td>Rust libraries can support Windows, Mac, x86 and Arm, Linux, and WASM, all with no modification of the core library. That’s HUGE!</td>
+</tr>
+</tbody>
+</table>
+<p>Creating a Rust core would still be considered a “loose coupling.” Though, you do at least get the above benefits of using Rust. We can improve this experience a bit more by incorporating Apache Arrow into the picture.</p>
+</section>
+<section id="apache-arrow" class="level2">
+<h2 class="anchored" data-anchor-id="apache-arrow">Apache Arrow</h2>
+<p>Apache Arrow is a <strong>specification</strong> of what data should look like <em>in memory</em> (not stored as a file). Additionally, Apache Arrow <strong>is not</strong> the R package <code>{arrow}</code> and it is also not pyarrow. Those package are <em>implementations</em> of Arrow with additional goodies.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I really recommend reading Danielle Navarro’s <a href="https://blog.djnavarro.net/posts/2021-11-19_starting-apache-arrow-in-r/#fiiiiiine-ill-keep-reading-tell-me-what-arrow-is">blog post on Apache Arrow</a> for a very human introduction to the topic.</p>
+</div>
+</div>
+<section id="the-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-problem">The Problem</h3>
+<p>In this status-quo of cross-language tooling, we have this issue where data in R is represented differently than data is represented in Python, which is represented differently in Rust or Julia—and so on.</p>
+<p><img src="images/paste-7.png" class="img-fluid"></p>
+<p>This process of copying data and converting is <em>expensive</em> and time consuming. The canonical example is that of a database.</p>
+<p>We typically work with tabular data that looks like so</p>
+<p><img src="images/paste-9.png" class="img-fluid"></p>
+<p>However, these databases typically represent data in a row-oriented manner. Where each row is stored in memory followed by the next row etc.</p>
+</section>
+<section id="columnar-data" class="level3">
+<h3 class="anchored" data-anchor-id="columnar-data">Columnar data</h3>
+<p>Instead, Apache Arrow is a columnar data format. Instead of each row being represented in memory, we have each column. This is a huge enhancement particularly for analytical processes where we are working with <em>columns</em> of data instead of _rows.</p>
+<p><img src="images/paste-13.png" class="img-fluid"></p>
+<p>The above shows the difference between these.</p>
+<p>Apache Arrow is a standized way of saying what data should look like in memory. So instead of copying and converting between each tool, we can use the same exact arrow data set by each tool .</p>
+<p><img src="images/paste-8.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="arrow-and-cross-langauge-tooling" class="level2">
+<h2 class="anchored" data-anchor-id="arrow-and-cross-langauge-tooling">Arrow and cross-langauge tooling</h2>
+<p>By adopting Apache Arrow as a standard memory format, we can have data science workflows that look something like this.</p>
+<p><img src="images/paste-4.png" class="img-fluid"></p>
+<p>At step 1, we may call a library that uses Rust under the hood. But when we send data to it, it uses Apache Arrow, and it also gives us back Arrow. Then in the next step, we use our Arrow data to call out to a C++ library which <em>also</em> accepts and returns Arrow.</p>
+<p>Doing this will eliminate the overhead of copying and converting data to each tool’s desired format. This also helps us move towards a standardized API that shouldn’t be too different between language binding. Also, by using the same data format, even if there are multiple bindings to the same underlying library, if they all accept Arrow, there is no cost incurred by sending data to them.</p>
+</section>
+<section id="a-real-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-real-example">A real example</h2>
+<p>A real world example of this is the <a href="https://github.com/JosiahParry/anime">ANIME</a> algorithm that I developed along with <a href="https://www.robinlovelace.net/">Dr.&nbsp;Robin Lovelace</a>.</p>
+<p>Approximate Network Integration, Matching, and Enrichment (ANIME) is a partial line matching algorithm that is written in Rust with bindings to it in both R and Python—no Julia bindings, so if you’re interested in building them, please help!</p>
+<p><img src="images/paste-16.png" class="img-fluid"></p>
+<p>The ANIME crate is designed to work <a href="https://geoarrow.org/">GeoArrow</a> data.</p>
+<section id="repo-structure" class="level3">
+<h3 class="anchored" data-anchor-id="repo-structure">Repo structure</h3>
+<p>I use a monorepo structure to accomplish this where the core algorithm is implemented in <code>/rust</code> and the R bindings in <code>r/</code> and the python bindings in <code>/python</code>.</p>
+<pre><code>.
+├── rust/
+│   └── Cargo.toml
+├── r/
+│   └── src/rust/Cargo.toml
+└── py/
+    └── Cargo.toml</code></pre>
+<p>The result is bindings with a very similar API and <em>identical</em> results:</p>
+<div>
+
+</div>
+</section>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<section id="r-bindings" class="level3 quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<h3 class="anchored" data-anchor-id="r-bindings">R Bindings</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(anime)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>targets <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"maine-osm-targets.fgb"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sources <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"maine-tigris-sources.fgb"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>matches <span class="ot">&lt;-</span> <span class="fu">anime</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">source =</span> sources,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">targets =</span> targets,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">distance_tolerance =</span> <span class="dv">10</span>, </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle_tolerance =</span> <span class="dv">5</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="python-bindings" class="level3 quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<h3 class="anchored" data-anchor-id="python-bindings">Python Bindings</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> anime <span class="im">import</span> PyAnime</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geoarrow.rust.io <span class="im">import</span> read_flatgeobuf</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> read_flatgeobuf(<span class="st">"maine-osm-targets.fgb"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>sources <span class="op">=</span> read_flatgeobuf(<span class="st">"maine-tigris-sources.fgb"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>anime <span class="op">=</span> PyAnime(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  source <span class="op">=</span> sources.column(<span class="st">""</span>).chunk(<span class="dv">0</span>), </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  target <span class="op">=</span> target.column(<span class="st">""</span>).chunk(<span class="dv">0</span>), </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  distance_tolerance <span class="op">=</span> <span class="dv">10</span>, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  angle_tolerance <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</div>
+</div>
+</section>
+<section id="arrow-ffi-helpers" class="level2">
+<h2 class="anchored" data-anchor-id="arrow-ffi-helpers">Arrow FFI helpers</h2>
+<p>There still exists a challenge of taking Arrow from R, Python, or Julia and getting it across the language barrier.</p>
+<p>To do so from R with extendr is <a href="https://github.com/JosiahParry/arrow-extendr"><code>arrow-extendr</code></a>. And from Python is <a href="https://kylebarron.dev/arro3/latest/">arro3</a>.</p>
+</section>
+<section id="a-quick-caveat" class="level2">
+<h2 class="anchored" data-anchor-id="a-quick-caveat">A quick caveat</h2>
+<p>ANIME is not a perfectly fleshed out example. At present, the core rust library does not <em>return</em> Arrow but <em>it is</em> designed to work with the geoarrow-rust library. The current bindings are a loose-ish coupling approach where on the extendr and PyO3 side the results are processed into a data.frame and Arrow Table respectively.</p>
+<p><strong>Call to action</strong> if you’re interested in contributing Julia bindings or improving the Python bindings (and maybe publishing them), please do make a PR or an issue.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/josiahparry\.com");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="josiahparry/quarto-site" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
