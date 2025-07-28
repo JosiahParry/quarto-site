@@ -22,8 +22,17 @@ If you want to get in contact with me please send me an email at `josiah.parry a
 ### talks i've given
 
 
-<details>
-
+* [Exploring R and Rust in Bioinformatics](https://blog.bioconductor.org/posts/2025-07-09-developers-forum-july28/)
+  * Bioconductor Developer Forum
+  * July 28th, 2025
+* [Intro to Rust for R Developers](https://cascadiarconf.org/2025/workshop/rust1/)
+  - Cascadia R Conference, 2025
+  - June 20th, 2025
+  - [Materials](https://josiahparry.github.io/2025-cascadia-rust-for-r-devs/)
+* [Building Rust based R Packages](https://cascadiarconf.org/2025/workshop/rust2/)  
+  - Cascadia R Conference, 2025
+  - June 20th, 2025
+  - [Materials](https://josiahparry.github.io/2025-cascadia-rust-for-r-devs/) 
 * [Arrow, Rust, and cross-language data science tooling](https://scientificcomputing.rs/2025/talks/parry.html)
   * [Scientific Computing in Rust, 2025](https://scientificcomputing.rs/2025/talks/parry.html)
   * [Repository](https://github.com/JosiahParry/2025-scientific-computing-in-rust)
@@ -46,5 +55,3 @@ If you want to get in contact with me please send me an email at `josiah.parry a
   * New England St. Lawrence River Valley regional American Associations of Geographers Conference
   * 2016
   
-  
-</details>
