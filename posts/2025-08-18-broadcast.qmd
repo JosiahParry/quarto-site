@@ -1,0 +1,177 @@
+---
+title: "Broadcasting: Scalars _or_ vectors"
+categories: [r, rlang]
+date: "2025-08-18"
+author: Josiah Parry
+---
+
+
+There's a common pattern that we encounter when writing functions for R. A single argument can often either be
+
+- a scalar
+- or a vector of the same length as another argument
+
+When it's a scalar, it makes sense to "broadcast" it to the same length of another argument. Since R is vectorized we often want our functions to be able to handle these scenarios. 
+
+## What is broadcasting? 
+
+Broadcasting definitely isn't a new idea. It was first exposed to me from [Kyle Barron's](http://kylebarron.dev/) work in [geoarrow-rs](https://docs.rs/geoarrow/0.4.0-beta.4/geoarrow/algorithm/broadcasting/enum.BroadcastablePrimitive.html). It gave words to a pattern I have handled many times. 
+
+Broadcasting ensures that the "shape" of two arrays are the same. We are essentially stretching a scalar to the length of a longer array.
+
+You can find broadcasting in many places: 
+
+- [Julia has array broadcasting](https://docs.julialang.org/en/v1/manual/arrays/#Broadcasting)
+- [NumPy has broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html) that solve this elegantly for array operations. 
+- The [rray package](https://rray.r-lib.org/reference/rray_broadcast.html)
+
+
+
+## My use case 
+
+In my work on the [R-ArcGIS Bridge](https://developers.arcgis.com/r-bridge) we create many [httr2](https://github.com/r-lib/httr2/) requests and send them in parallel. 
+
+For ergonomic reasons, arguments should accept either a scalar OR a vector of the same length. This is similar to R's recycling
+
+Here's a function I'm working with:
+
+```r
+make_requests <- function(con, xid, yid) {
+  # what if xid is a scalar?
+  # TODO we need to broadcast
+  n <- length(xid)
+
+  # initialize empty list
+  all_reqs <- vector("list", n)
+
+  for (i in seq_len(n)) {
+    # create an httr2 request and store it in the list
+    req <- httr2::request(url) |>
+      httr2::req_body_form(
+        xid = xid[i],
+        yid = yid[i]
+      )
+    all_reqs[[i]] <- req
+  }
+  # send all of the requests
+  all_resps <- httr2::req_perform_parallel(
+    all_reqs,
+    max_active = 3
+  )
+
+  # process the requests
+  all_resps
+}
+```
+
+The problem occurs when `xid` is a scalar. This means that the loop length with be `1` when insteaad it should be the length of `yid`. Additionally, if `xid` is a scalar and i subset into it with `xid[i]` and `i > 1` then the value will be NA. We **don't** want that!
+
+If `xid` was broadcasted to the length of `yid` first then we can be sure that the lengths are the same. 
+
+Right now, implementing this flexibility means writing manual validation and broadcasting logic in every single function. That's tedious and error-prone.
+
+## A solution
+
+I think if there was a formalized `broadcast()` function that could make this pattern more stable and reproducible without much overhead or boilerplate for devs.
+
+```r
+#' Broadcast x to the same length as y
+#' 
+#' Broadcasts the argument `x` to the same length as `y`.
+#'
+#' @param x a scalar atomic or an atomic of the same length as `y`
+#' @param y an atomic vector
+broadcast <- function(x, y) {
+  if (!rlang::is_bare_atomic(x) || !rlang::is_bare_atomic(y)) {
+    rlang::abort("`x` and `y` must be atomic vectors")
+  }
+
+  if (typeof(x) != typeof(y)) {
+    rlang::abort("`x` and `y` must be the same type")
+  }
+
+  len_y <- length(y)
+  len_x <- length(x)
+  
+  if (len_x == 1L) {
+    return(rep(x, len_y))
+  }
+  
+  if (len_x != len_y) {
+    rlang::abort("`x` must be a scalar or the same length as `y`")
+  }
+  
+  x
+}
+```
+
+## How it works
+
+It takes the first argument and casts it to the length of `y`. If `x` is the same length as `y` then it returns it unchanged. 
+
+Additionally, it ensures that the two types of vectors are the same classes. 
+
+```r
+# Scalar broadcasting
+broadcast("xyz", letters)
+#>  [1] "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz"
+#> [13] "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz"
+#> [25] "xyz" "xyz"
+
+# Same-length vectors pass through
+broadcast(rep("abc", 26), letters)
+#>  [1] "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc"
+#> [13] "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc"
+#> [25] "abc" "abc"
+
+# Incompatible lengths error
+broadcast(rep("xyz", 2), letters)
+#> Error in `broadcast()`:
+#> ! `x` must be a scalar or the same length as `y`
+```
+
+Now the function becomes way cleaner:
+
+```r
+make_requests <- function(con, xid, yid) {
+  # broadcast arguments to same length
+  xid <- broadcast(xid, yid)
+  n <- length(yid)  # now we can safely use yid length
+
+  # initialize empty list
+  all_reqs <- vector("list", n)
+
+  for (i in seq_len(n)) {
+    # create an httr2 request and store it in the list
+    req <- httr2::request(url) |>
+      httr2::req_body_form(
+        xid = xid[i],
+        yid = yid[i]
+      )
+    all_reqs[[i]] <- req
+  }
+  # send all of the requests
+  all_resps <- httr2::req_perform_parallel(
+    all_reqs,
+    max_active = 3
+  )
+
+  # process the requests
+  all_resps
+}
+```
+
+::: {.callout-tip}
+## Performance note
+For large vectors, `rep()` creates a new vector in memory.
+
+A better approach would be able to create an ALTREP vector here that just has a reference to the initial scalar value. 
+:::
+
+## What's next
+
+A production version might need to handle more cases like factor level compatibility, date/datetime broadcasting, and NA handling. But the core pattern works.
+
+I've proposed this for rlang in [issue #1819](https://github.com/r-lib/rlang/issues/1819). If you run into this pattern too, give it a thumbs up!
+
+R excels at making complex operations simple and expressive. Broadcasting feels like a natural next step.

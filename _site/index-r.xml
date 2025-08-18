@@ -10,7 +10,438 @@
 <atom:link href="https://josiahparry.com/index-r.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.6.42</generator>
-<lastBuildDate>Wed, 04 Jun 2025 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 18 Aug 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Broadcasting: Scalars or vectors</title>
+  <dc:creator>Josiah Parry</dc:creator>
+  <link>https://josiahparry.com/posts/2025-08-18-broadcast.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>There’s a common pattern that we encounter when writing functions for R. A single argument can often either be</p>
+<ul>
+<li>a scalar</li>
+<li>or a vector of the same length as another argument</li>
+</ul>
+<p>When it’s a scalar, it makes sense to “broadcast” it to the same length of another argument. Since R is vectorized we often want our functions to be able to handle these scenarios.</p>
+<section id="what-is-broadcasting" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-broadcasting">What is broadcasting?</h2>
+<p>Broadcasting definitely isn’t a new idea. It was first exposed to me from <a href="http://kylebarron.dev/">Kyle Barron’s</a> work in <a href="https://docs.rs/geoarrow/0.4.0-beta.4/geoarrow/algorithm/broadcasting/enum.BroadcastablePrimitive.html">geoarrow-rs</a>. It gave words to a pattern I have handled many times.</p>
+<p>Broadcasting ensures that the “shape” of two arrays are the same. We are essentially stretching a scalar to the length of a longer array.</p>
+<p>You can find broadcasting in many places:</p>
+<ul>
+<li><a href="https://docs.julialang.org/en/v1/manual/arrays/#Broadcasting">Julia has array broadcasting</a></li>
+<li><a href="https://numpy.org/doc/stable/user/basics.broadcasting.html">NumPy has broadcasting rules</a> that solve this elegantly for array operations.</li>
+<li>The <a href="https://rray.r-lib.org/reference/rray_broadcast.html">rray package</a></li>
+</ul>
+</section>
+<section id="my-use-case" class="level2">
+<h2 class="anchored" data-anchor-id="my-use-case">My use case</h2>
+<p>In my work on the <a href="https://developers.arcgis.com/r-bridge">R-ArcGIS Bridge</a> we create many <a href="https://github.com/r-lib/httr2/">httr2</a> requests and send them in parallel.</p>
+<p>For ergonomic reasons, arguments should accept either a scalar OR a vector of the same length. This is similar to R’s recycling</p>
+<p>Here’s a function I’m working with:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">make_requests <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(con, xid, yid) {</span>
+<span id="cb1-2">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># what if xid is a scalar?</span></span>
+<span id="cb1-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">TODO</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> we need to broadcast</span></span>
+<span id="cb1-4">  n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(xid)</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># initialize empty list</span></span>
+<span id="cb1-7">  all_reqs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"list"</span>, n)</span>
+<span id="cb1-8"></span>
+<span id="cb1-9">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n)) {</span>
+<span id="cb1-10">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># create an httr2 request and store it in the list</span></span>
+<span id="cb1-11">    req <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> httr2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">request</span>(url) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-12">      httr2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">req_body_form</span>(</span>
+<span id="cb1-13">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xid =</span> xid[i],</span>
+<span id="cb1-14">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yid =</span> yid[i]</span>
+<span id="cb1-15">      )</span>
+<span id="cb1-16">    all_reqs[[i]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> req</span>
+<span id="cb1-17">  }</span>
+<span id="cb1-18">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># send all of the requests</span></span>
+<span id="cb1-19">  all_resps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> httr2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">req_perform_parallel</span>(</span>
+<span id="cb1-20">    all_reqs,</span>
+<span id="cb1-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_active =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb1-22">  )</span>
+<span id="cb1-23"></span>
+<span id="cb1-24">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># process the requests</span></span>
+<span id="cb1-25">  all_resps</span>
+<span id="cb1-26">}</span></code></pre></div>
+<p>The problem occurs when <code>xid</code> is a scalar. This means that the loop length with be <code>1</code> when insteaad it should be the length of <code>yid</code>. Additionally, if <code>xid</code> is a scalar and i subset into it with <code>xid[i]</code> and <code>i &gt; 1</code> then the value will be NA. We <strong>don’t</strong> want that!</p>
+<p>If <code>xid</code> was broadcasted to the length of <code>yid</code> first then we can be sure that the lengths are the same.</p>
+<p>Right now, implementing this flexibility means writing manual validation and broadcasting logic in every single function. That’s tedious and error-prone.</p>
+</section>
+<section id="a-solution" class="level2">
+<h2 class="anchored" data-anchor-id="a-solution">A solution</h2>
+<p>I think if there was a formalized <code>broadcast()</code> function that could make this pattern more stable and reproducible without much overhead or boilerplate for devs.</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' Broadcast x to the same length as y</span></span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' </span></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' Broadcasts the argument `x` to the same length as `y`.</span></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#'</span></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' @param x a scalar atomic or an atomic of the same length as `y`</span></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#' @param y an atomic vector</span></span>
+<span id="cb2-7">broadcast <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x, y) {</span>
+<span id="cb2-8">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>rlang<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is_bare_atomic</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">||</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>rlang<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is_bare_atomic</span>(y)) {</span>
+<span id="cb2-9">    rlang<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abort</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"`x` and `y` must be atomic vectors"</span>)</span>
+<span id="cb2-10">  }</span>
+<span id="cb2-11"></span>
+<span id="cb2-12">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">typeof</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">typeof</span>(y)) {</span>
+<span id="cb2-13">    rlang<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abort</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"`x` and `y` must be the same type"</span>)</span>
+<span id="cb2-14">  }</span>
+<span id="cb2-15"></span>
+<span id="cb2-16">  len_y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(y)</span>
+<span id="cb2-17">  len_x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(x)</span>
+<span id="cb2-18">  </span>
+<span id="cb2-19">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (len_x <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>L) {</span>
+<span id="cb2-20">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(x, len_y))</span>
+<span id="cb2-21">  }</span>
+<span id="cb2-22">  </span>
+<span id="cb2-23">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (len_x <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> len_y) {</span>
+<span id="cb2-24">    rlang<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abort</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"`x` must be a scalar or the same length as `y`"</span>)</span>
+<span id="cb2-25">  }</span>
+<span id="cb2-26">  </span>
+<span id="cb2-27">  x</span>
+<span id="cb2-28">}</span></code></pre></div>
+</section>
+<section id="how-it-works" class="level2">
+<h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>
+<p>It takes the first argument and casts it to the length of <code>y</code>. If <code>x</code> is the same length as <code>y</code> then it returns it unchanged.</p>
+<p>Additionally, it ensures that the two types of vectors are the same classes.</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Scalar broadcasting</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">broadcast</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"xyz"</span>, letters)</span>
+<span id="cb3-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;  [1] "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz"</span></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; [13] "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz" "xyz"</span></span>
+<span id="cb3-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; [25] "xyz" "xyz"</span></span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Same-length vectors pass through</span></span>
+<span id="cb3-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">broadcast</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"abc"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">26</span>), letters)</span>
+<span id="cb3-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt;  [1] "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc"</span></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; [13] "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc" "abc"</span></span>
+<span id="cb3-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; [25] "abc" "abc"</span></span>
+<span id="cb3-12"></span>
+<span id="cb3-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Incompatible lengths error</span></span>
+<span id="cb3-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">broadcast</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"xyz"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>), letters)</span>
+<span id="cb3-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; Error in `broadcast()`:</span></span>
+<span id="cb3-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#&gt; ! `x` must be a scalar or the same length as `y`</span></span></code></pre></div>
+<p>Now the function becomes way cleaner:</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">make_requests <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(con, xid, yid) {</span>
+<span id="cb4-2">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># broadcast arguments to same length</span></span>
+<span id="cb4-3">  xid <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">broadcast</span>(xid, yid)</span>
+<span id="cb4-4">  n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(yid)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># now we can safely use yid length</span></span>
+<span id="cb4-5"></span>
+<span id="cb4-6">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># initialize empty list</span></span>
+<span id="cb4-7">  all_reqs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"list"</span>, n)</span>
+<span id="cb4-8"></span>
+<span id="cb4-9">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n)) {</span>
+<span id="cb4-10">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># create an httr2 request and store it in the list</span></span>
+<span id="cb4-11">    req <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> httr2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">request</span>(url) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb4-12">      httr2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">req_body_form</span>(</span>
+<span id="cb4-13">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xid =</span> xid[i],</span>
+<span id="cb4-14">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yid =</span> yid[i]</span>
+<span id="cb4-15">      )</span>
+<span id="cb4-16">    all_reqs[[i]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> req</span>
+<span id="cb4-17">  }</span>
+<span id="cb4-18">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># send all of the requests</span></span>
+<span id="cb4-19">  all_resps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> httr2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">req_perform_parallel</span>(</span>
+<span id="cb4-20">    all_reqs,</span>
+<span id="cb4-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_active =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb4-22">  )</span>
+<span id="cb4-23"></span>
+<span id="cb4-24">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># process the requests</span></span>
+<span id="cb4-25">  all_resps</span>
+<span id="cb4-26">}</span></code></pre></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Performance note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For large vectors, <code>rep()</code> creates a new vector in memory.</p>
+<p>A better approach would be able to create an ALTREP vector here that just has a reference to the initial scalar value.</p>
+</div>
+</div>
+</section>
+<section id="whats-next" class="level2">
+<h2 class="anchored" data-anchor-id="whats-next">What’s next</h2>
+<p>A production version might need to handle more cases like factor level compatibility, date/datetime broadcasting, and NA handling. But the core pattern works.</p>
+<p>I’ve proposed this for rlang in <a href="https://github.com/r-lib/rlang/issues/1819">issue #1819</a>. If you run into this pattern too, give it a thumbs up!</p>
+<p>R excels at making complex operations simple and expressive. Broadcasting feels like a natural next step.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>r</category>
+  <category>rlang</category>
+  <guid>https://josiahparry.com/posts/2025-08-18-broadcast.html</guid>
+  <pubDate>Mon, 18 Aug 2025 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Apache Arrow, Rust, and cross-langauge data science</title>
   <dc:creator>Josiah Parry</dc:creator>
@@ -11978,234 +12409,6 @@ font-style: inherit;">hello_world</span>()</span>
   <category>python</category>
   <category>package-dev</category>
   <guid>https://josiahparry.com/posts/2023-10-28-python-fns/</guid>
-  <pubDate>Sat, 28 Oct 2023 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Where am I in the sky?</title>
-  <dc:creator>Josiah Parry</dc:creator>
-  <link>https://josiahparry.com/posts/2023-10-28/</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>When I was flying back from the Spatial Data Science Across Langauge event from Frankfurt to Atlanta the plane I was bored beyond measure. The plane had no wifi to connect to. I had already watched a movie and couldn’t be bothered by a podcast. I wanted to know where I was.</p>
-<p>When looking at the onboard “About this flight” information, they didn’t show a map even. The gave us our coordinates in degrees and minutes. Helpful right?</p>
-<p>Well, in an attempt to figure out where the hell I was I wrote some code. Here it is.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(sf)</span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(units)</span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>udunits database from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/units/share/udunits/udunits2.xml</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#' Given degrees and minutes calculate the coordinate</span></span>
-<span id="cb5-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#' in degrees</span></span>
-<span id="cb5-3">as_degree <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(degrees, minutes) {</span>
-<span id="cb5-4">  d <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_units</span>(degrees, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arc_degrees"</span>)</span>
-<span id="cb5-5">  m <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_units</span>(minutes, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arc_minutes"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-6">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_units</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arc_degrees"</span>)</span>
-<span id="cb5-7">  d <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> m</span>
-<span id="cb5-8">}</span>
-<span id="cb5-9"></span>
-<span id="cb5-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># get the country shapes</span></span>
-<span id="cb5-11">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> rnaturalearthdata<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>countries50 <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sf</span>() </span>
-<span id="cb5-12"></span>
-<span id="cb5-13"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># filter to North America</span></span>
-<span id="cb5-14">usa <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-15">  dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(continent <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"North America"</span>, </span>
-<span id="cb5-16">                subregion <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Northern America"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_geometry</span>() </span>
-<span id="cb5-18"></span>
-<span id="cb5-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create a bounding box to crop myself to </span></span>
-<span id="cb5-20">crp <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_bbox</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmin =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">128</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmax =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymin =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymax =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">61</span>))</span>
-<span id="cb5-21"></span>
-<span id="cb5-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># plot N. America</span></span>
-<span id="cb5-23">usa <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-24">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_cast</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"POLYGON"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-25">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sf</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-26">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_filter</span>(</span>
-<span id="cb5-27">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sfc</span>(crp) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> </span>
-<span id="cb5-28">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_as_sf</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">crs =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_crs</span>(usa))</span>
-<span id="cb5-29">    ) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb5-30">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>()</span>
-<span id="cb5-31"></span>
-<span id="cb5-32"></span>
-<span id="cb5-33"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># add planes location.</span></span>
-<span id="cb5-34"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(</span>
-<span id="cb5-35">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">st_point</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as_degree</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">61</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19</span>), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as_degree</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">57</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">46</span>))),</span>
-<span id="cb5-36">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">add =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,</span>
-<span id="cb5-37">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>,</span>
-<span id="cb5-38">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span></span>
-<span id="cb5-39">)</span></code></pre></div>
-<div class="cell-output-display">
-<p><img src="https://josiahparry.com/posts/2023-10-28/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-
-
-
- ]]></description>
-  <category>r</category>
-  <category>spatial</category>
-  <guid>https://josiahparry.com/posts/2023-10-28/</guid>
   <pubDate>Sat, 28 Oct 2023 07:00:00 GMT</pubDate>
 </item>
 </channel>
