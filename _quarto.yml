@@ -1,19 +1,20 @@
 project:
-  type: website  
+  type: website
   resources:
-    - ads.txt 
+    - ads.txt
 
-execute: 
+execute:
   freeze: true
 
 website:
+  draft-mode: gone
   title: "Josiah Parry"
   google-analytics: "G-8NVVBLZBVF"
   sidebar:
     style: "docked"
     contents:
-      # - href: index.qmd
-      #   text: home 
+      - href: index.qmd
+        text: home
       - text: "*want my help?*"
         href: services.qmd
       - about.qmd
@@ -22,23 +23,23 @@ website:
       - href: projects.qmd
       - section: socials
         contents:
-        - icon: github
-          href: https://github.com/josiahparry
-          text: "GitHub"
-        - icon: "linkedin"
-          href: https://linkedin.com/in/josiahparry
-          text: "LinkedIn"
-        - icon: youtube
-          text: YouTube
-          href: https://www.youtube.com/@josiahparry
-        - href: index.xml
-          text: RSS
-          icon: rss-fill
+          - icon: github
+            href: https://github.com/josiahparry
+            text: "GitHub"
+          - icon: "linkedin"
+            href: https://linkedin.com/in/josiahparry
+            text: "LinkedIn"
+          - icon: youtube
+            text: YouTube
+            href: https://www.youtube.com/@josiahparry
+          - href: index.xml
+            text: RSS
+            icon: rss-fill
   twitter-card: true
   site-url: "https://josiahparry.com"
 
 highlight-style: pygments
- 
+
 format:
   html:
     include-in-header:
@@ -59,14 +60,8 @@ format:
     reference-location: margin
     footnotes-hover: true
     fontsize: 1em
-    theme: 
+    theme:
       - lux
       - theming.scss
     css: styles.css
     mainfont: "Open Sans"
-
-
-
-
-
-

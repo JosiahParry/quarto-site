@@ -21,7 +21,6 @@
   {
     "listing": "/posts/index.html",
     "items": [
-      "/posts/2023-09-22-sdsl-p2/index.html",
       "/posts/2025-11-14-gnn-for-sds/index.html",
       "/posts/2025-08-18-broadcast.html",
       "/posts/2025-06-04-cross-language-ds/index.html",
@@ -116,7 +115,6 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/2023-09-22-sdsl-p2/index.html",
       "/posts/2025-11-14-gnn-for-sds/index.html",
       "/posts/2025-08-18-broadcast.html",
       "/posts/2025-06-04-cross-language-ds/index.html",

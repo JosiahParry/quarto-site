@@ -1,6 +1,7 @@
 ---
 title: Graph Neural Nets for Spatial Data Science 
 subtitle: Spatial lags all the way down
+description: Graph Neural Nets for the spatial nerds in the house.
 date: "2025-11-16"
 author: Josiah Parry
 categories: [spatial, r, deep-learning, gnn]
